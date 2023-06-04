@@ -1,0 +1,15 @@
+{
+  "domain": "haier",
+  "name": "Haier",
+  "version": "0.0.1",
+  "documentation": "https://github.com/banto6/haier",
+  "issue_tracker": "https://github.com/banto6/haier/issues",
+  "config_flow": true,
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [
+    "@banto6"
+  ]
+}

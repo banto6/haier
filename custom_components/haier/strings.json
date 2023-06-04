@@ -1,0 +1,17 @@
+{
+  "config": {
+    "error": {
+      "auth_error": "Authentication failed"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        },
+        "description": "Enter your Haier Account.",
+        "title": "Authentication"
+      }
+    }
+  }
+}

@@ -1,0 +1,9249 @@
+{
+  "Version": "1.0.4",
+  "BasicInfo": {
+    "deviceType": "燃气热水器/增压+零冷水系列",
+    "name": "788零冷水燃气热水器"
+  },
+  "Property": [
+    {
+      "name": "outWaterTemp",
+      "type": "double",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0.0,
+        "maxValue": 100.0,
+        "step": 0.5,
+        "unit": "℃"
+      },
+      "description": "出水温度",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "inWaterTemp",
+      "type": "double",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0.0,
+        "maxValue": 100.0,
+        "step": 0.5,
+        "unit": "℃"
+      },
+      "description": "进水温度",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "backWaterTemp",
+      "type": "double",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0.0,
+        "maxValue": 100.0,
+        "step": 0.5,
+        "unit": "℃"
+      },
+      "description": "回水温度（预留）",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "targetTemp",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "I&G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 70,
+        "step": 1,
+        "unit": "℃"
+      },
+      "description": "目标温度",
+      "defaultValue": null,
+      "disable": false
+    },
+    {
+      "name": "tankTargetTemp",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "I&G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 70,
+        "step": 1,
+        "unit": "℃"
+      },
+      "description": "浴缸目标温度",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "zeroColdWaterTargetTemp",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 70,
+        "step": 1,
+        "unit": "℃"
+      },
+      "description": "零冷水目标温度（预留）",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "runFanSpd",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 65535,
+        "step": 1,
+        "unit": "RPM"
+      },
+      "description": "运行风速",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "pwm",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 255,
+        "step": 1,
+        "unit": null
+      },
+      "description": "比例阀输出PWM",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "ratedPower",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 255,
+        "step": 1,
+        "unit": "L"
+      },
+      "description": "额定功率",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "tankTargetFlux",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "I&G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 990,
+        "step": 10,
+        "unit": "L"
+      },
+      "description": "浴缸注水量",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "realTimePowerPct",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 99,
+        "step": 1,
+        "unit": "%"
+      },
+      "description": "智慧节能实时燃烧功率百分比",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "curWaterFlux",
+      "type": "double",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0.0,
+        "maxValue": 25.5,
+        "step": 0.1,
+        "unit": "L/min"
+      },
+      "description": "当前流量",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "tankCurrentFlux",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 990,
+        "step": 1,
+        "unit": "L"
+      },
+      "description": "浴缸注水实际已注水量",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "coValue",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 65535,
+        "step": 1,
+        "unit": "PPM"
+      },
+      "description": "CO气体浓度",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "ch4Value",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 65535,
+        "step": 1,
+        "unit": "PPM"
+      },
+      "description": "CH4气体浓度",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "singleResnTime",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "I&G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 50,
+        "step": 1,
+        "unit": "min"
+      },
+      "description": "单次循环预约时间",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "userWaterBurnTime",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 60,
+        "step": 1,
+        "unit": "min"
+      },
+      "description": "本次用户用水燃烧时间",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "tankWateringStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "浴缸注水功能",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "tankWaterLevel",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "注水未满"
+        },
+        {
+          "stdValue": true,
+          "description": "注水满"
+        }
+      ],
+      "description": "浴缸注水状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "alarmMuteStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关/禁用"
+        },
+        {
+          "stdValue": true,
+          "description": "开/使能"
+        }
+      ],
+      "description": "报警消音",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "alarmDetectionStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "GS检测/CO安防状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "zeroColdWaterStatus",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "I&G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "关闭"
+        },
+        {
+          "stdValue": 1,
+          "description": "单次循环"
+        },
+        {
+          "stdValue": 2,
+          "description": "定时循环"
+        },
+        {
+          "stdValue": 3,
+          "description": "水动循环"
+        },
+        {
+          "stdValue": 4,
+          "description": "云智慧循环"
+        },
+        {
+          "stdValue": 5,
+          "description": "全天循环"
+        },
+        {
+          "stdValue": 6,
+          "description": "节能循环(低温水动)"
+        },
+        {
+          "stdValue": 7,
+          "description": "预约循环(按天定时)"
+        }
+      ],
+      "description": "设置零冷水运行状态",
+      "defaultValue": null,
+      "disable": false
+    },
+    {
+      "name": "pressurizeSupported",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "无增压版本"
+        },
+        {
+          "stdValue": true,
+          "description": "有增压版本"
+        }
+      ],
+      "description": "增压版本有无",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "smartTempSensingStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "智能(感温)状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "energySavingStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "节能功能状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "safetyLockStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "50度安全锁",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "burnTime1HourRemindStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "燃烧1h时间未到"
+        },
+        {
+          "stdValue": true,
+          "description": "燃烧1h时间到"
+        }
+      ],
+      "description": "燃烧时间1小时提醒",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "flowStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "无"
+        },
+        {
+          "stdValue": true,
+          "description": "有"
+        }
+      ],
+      "description": "水流状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "fanStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "停止"
+        },
+        {
+          "stdValue": true,
+          "description": "运行"
+        }
+      ],
+      "description": "风机状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "flameStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "无"
+        },
+        {
+          "stdValue": true,
+          "description": "有"
+        }
+      ],
+      "description": "火焰有无",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "onOffStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I&G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关机"
+        },
+        {
+          "stdValue": true,
+          "description": "开机"
+        }
+      ],
+      "description": "开关机状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartRunningStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "停止"
+        },
+        {
+          "stdValue": true,
+          "description": "开始"
+        }
+      ],
+      "description": "云智慧模式运行状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "waterUsedStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "无"
+        },
+        {
+          "stdValue": true,
+          "description": "有"
+        }
+      ],
+      "description": "用户用水状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "altitudeAdaptationStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "海拔自适应功能状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "forceDelete",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "强制删除",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "ctrPriority",
+      "type": "enum",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 1,
+          "description": "显示板优先"
+        },
+        {
+          "stdValue": 2,
+          "description": "线控器优先"
+        },
+        {
+          "stdValue": 3,
+          "description": "线控器1优先"
+        },
+        {
+          "stdValue": 4,
+          "description": "客户端优先"
+        }
+      ],
+      "description": "客户端设置优先",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "prtlVersion",
+      "type": "enum",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "版本0"
+        },
+        {
+          "stdValue": 1,
+          "description": "版本1"
+        },
+        {
+          "stdValue": 2,
+          "description": "版本2"
+        },
+        {
+          "stdValue": 3,
+          "description": "版本3"
+        },
+        {
+          "stdValue": 4,
+          "description": "版本4"
+        },
+        {
+          "stdValue": 5,
+          "description": "版本5"
+        },
+        {
+          "stdValue": 6,
+          "description": "版本6"
+        },
+        {
+          "stdValue": 7,
+          "description": "版本7"
+        }
+      ],
+      "description": "协议版本号",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "zeroColdWaterFuncExist",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "无"
+        },
+        {
+          "stdValue": true,
+          "description": "有"
+        }
+      ],
+      "description": "智慧零冷水功能有无",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "selfTestStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "未在自检状态"
+        },
+        {
+          "stdValue": true,
+          "description": "在自检状态"
+        }
+      ],
+      "description": "GS检测状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "valveStatus",
+      "type": "enum",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "阀关闭"
+        },
+        {
+          "stdValue": 1,
+          "description": "单段燃烧"
+        },
+        {
+          "stdValue": 2,
+          "description": "双段燃烧"
+        },
+        {
+          "stdValue": 3,
+          "description": "三段燃烧"
+        },
+        {
+          "stdValue": 4,
+          "description": "四段燃烧"
+        }
+      ],
+      "description": "阀状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "tankCode",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "0"
+        },
+        {
+          "stdValue": 1,
+          "description": "1"
+        },
+        {
+          "stdValue": 2,
+          "description": "2"
+        },
+        {
+          "stdValue": 3,
+          "description": "3"
+        },
+        {
+          "stdValue": 4,
+          "description": "4"
+        },
+        {
+          "stdValue": 5,
+          "description": "5"
+        },
+        {
+          "stdValue": 6,
+          "description": "6"
+        },
+        {
+          "stdValue": 7,
+          "description": "7"
+        },
+        {
+          "stdValue": 8,
+          "description": "8"
+        },
+        {
+          "stdValue": 9,
+          "description": "9"
+        },
+        {
+          "stdValue": 10,
+          "description": "10"
+        },
+        {
+          "stdValue": 11,
+          "description": "11"
+        },
+        {
+          "stdValue": 12,
+          "description": "12"
+        },
+        {
+          "stdValue": 13,
+          "description": "13"
+        },
+        {
+          "stdValue": 14,
+          "description": "14"
+        },
+        {
+          "stdValue": 15,
+          "description": "15"
+        }
+      ],
+      "description": "浴缸状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "showerCode",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "0"
+        },
+        {
+          "stdValue": 1,
+          "description": "1"
+        },
+        {
+          "stdValue": 2,
+          "description": "2"
+        },
+        {
+          "stdValue": 3,
+          "description": "3"
+        },
+        {
+          "stdValue": 4,
+          "description": "4"
+        },
+        {
+          "stdValue": 5,
+          "description": "5"
+        },
+        {
+          "stdValue": 6,
+          "description": "6"
+        },
+        {
+          "stdValue": 7,
+          "description": "7"
+        },
+        {
+          "stdValue": 8,
+          "description": "8"
+        },
+        {
+          "stdValue": 9,
+          "description": "9"
+        },
+        {
+          "stdValue": 10,
+          "description": "10"
+        },
+        {
+          "stdValue": 11,
+          "description": "11"
+        },
+        {
+          "stdValue": 12,
+          "description": "12"
+        },
+        {
+          "stdValue": 13,
+          "description": "13"
+        },
+        {
+          "stdValue": 14,
+          "description": "14"
+        },
+        {
+          "stdValue": 15,
+          "description": "15"
+        }
+      ],
+      "description": "淋浴状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "scourState",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "I&G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 1,
+          "description": "普通模式"
+        },
+        {
+          "stdValue": 2,
+          "description": "注水模式"
+        },
+        {
+          "stdValue": 3,
+          "description": "云模式"
+        },
+        {
+          "stdValue": 4,
+          "description": "生活温水模式"
+        },
+        {
+          "stdValue": 5,
+          "description": "e感温模式"
+        },
+        {
+          "stdValue": 6,
+          "description": "随温感模式"
+        },
+        {
+          "stdValue": 7,
+          "description": "厨房模式"
+        },
+        {
+          "stdValue": 8,
+          "description": "高温水模式"
+        },
+        {
+          "stdValue": 9,
+          "description": "厨宝洗模式"
+        },
+        {
+          "stdValue": 10,
+          "description": "衣物洗模式"
+        },
+        {
+          "stdValue": 11,
+          "description": "碗碟洗模式"
+        },
+        {
+          "stdValue": 12,
+          "description": "微火模式"
+        },
+        {
+          "stdValue": 13,
+          "description": "节能模式"
+        },
+        {
+          "stdValue": 14,
+          "description": "果蔬洗模式"
+        },
+        {
+          "stdValue": 15,
+          "description": "ECO模式"
+        },
+        {
+          "stdValue": 16,
+          "description": "按摩浴模式（调温调泵）"
+        },
+        {
+          "stdValue": 17,
+          "description": "SPA浴模式（调温）"
+        },
+        {
+          "stdValue": 18,
+          "description": "婴儿洗模式"
+        },
+        {
+          "stdValue": 19,
+          "description": "浴室模式"
+        },
+        {
+          "stdValue": 20,
+          "description": "温水宝"
+        },
+        {
+          "stdValue": 21,
+          "description": "ECO小智"
+        },
+        {
+          "stdValue": 129,
+          "description": "智慧家-冲凉洗"
+        },
+        {
+          "stdValue": 130,
+          "description": "智慧家-高温泡"
+        },
+        {
+          "stdValue": 131,
+          "description": "智慧家-老人浴"
+        },
+        {
+          "stdValue": 132,
+          "description": "智慧家-婴儿洗"
+        },
+        {
+          "stdValue": 133,
+          "description": "智慧家-果蔬洗"
+        },
+        {
+          "stdValue": 134,
+          "description": "智慧家-衣物洗"
+        },
+        {
+          "stdValue": 135,
+          "description": "智慧家-碗碟洗"
+        },
+        {
+          "stdValue": 136,
+          "description": "智慧家-洗漱用水"
+        },
+        {
+          "stdValue": 137,
+          "description": "智慧家-舒适浴"
+        },
+        {
+          "stdValue": 138,
+          "description": "智慧家-用户自定义温度"
+        }
+      ],
+      "description": "洗浴状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "ecoStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "ECO模式开关",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "alarmModuleExist",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "报警器安防模块是否存在",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "NFCStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "NFC功能开关",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "smartEnergySavingStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "智慧节能功能开关",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "smartCapacityChangeStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "智能变升开关",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "uvSterilizationStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "UV杀菌功能状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "fanSelfCleaningStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "未在自清洁状态"
+        },
+        {
+          "stdValue": true,
+          "description": "自清洁运转中"
+        }
+      ],
+      "description": "风机自清洁运转状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "safeSelfTestStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "未在自检状态"
+        },
+        {
+          "stdValue": true,
+          "description": "处于自检状态"
+        }
+      ],
+      "description": "安全自检状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "pipeAntifreezingStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "停止"
+        },
+        {
+          "stdValue": true,
+          "description": "运行"
+        }
+      ],
+      "description": "管路防冻运行状态（加热电阻）",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cycAntifreezingStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "停止"
+        },
+        {
+          "stdValue": true,
+          "description": "运行"
+        }
+      ],
+      "description": "循环防冻运行状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cycFuncSelect",
+      "type": "enum",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "使用定时循环"
+        },
+        {
+          "stdValue": 1,
+          "description": "使用预约循环"
+        }
+      ],
+      "description": "循环功能选择",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "pumpRunningStatus",
+      "type": "enum",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "水泵停止"
+        },
+        {
+          "stdValue": 1,
+          "description": "零冷水水泵运转中"
+        },
+        {
+          "stdValue": 2,
+          "description": "循环防冻水泵运转中"
+        },
+        {
+          "stdValue": 3,
+          "description": "增压瀑布洗水泵运转中"
+        },
+        {
+          "stdValue": 4,
+          "description": "按摩浴水泵运转中"
+        },
+        {
+          "stdValue": 5,
+          "description": "预留"
+        },
+        {
+          "stdValue": 6,
+          "description": "预留"
+        },
+        {
+          "stdValue": 7,
+          "description": "预留"
+        }
+      ],
+      "description": "水泵运转状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "waterCycleFinish",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "未完成"
+        },
+        {
+          "stdValue": true,
+          "description": "完成"
+        }
+      ],
+      "description": "水动循环首次完成提醒",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "singleCycleFinish",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "未完成"
+        },
+        {
+          "stdValue": true,
+          "description": "完成"
+        }
+      ],
+      "description": "单次循环首次完成提醒",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "highTempRemindStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "设定温度≤50℃"
+        },
+        {
+          "stdValue": true,
+          "description": "设定温度＞50℃"
+        }
+      ],
+      "description": "50度超温提醒",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "netCfgStatus",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "正常状态"
+        },
+        {
+          "stdValue": 1,
+          "description": "配网状态（语音播报进入配网）"
+        },
+        {
+          "stdValue": 2,
+          "description": "工作状态（语音播报退出配网）"
+        }
+      ],
+      "description": "配网状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "discaleStatus",
+      "type": "enum",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "正常"
+        },
+        {
+          "stdValue": 1,
+          "description": "闪烁(需更换)"
+        },
+        {
+          "stdValue": 2,
+          "description": "熄灭（已失效）"
+        }
+      ],
+      "description": "抑垢状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "burnTimeHalfHourRemindStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "未提醒"
+        },
+        {
+          "stdValue": true,
+          "description": "正在提醒"
+        }
+      ],
+      "description": "燃烧时间半小时提醒",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "curveManualSetSuccess",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "曲线未手动设置过，可以由服务器下发"
+        },
+        {
+          "stdValue": true,
+          "description": "曲线已手动下载过"
+        }
+      ],
+      "description": "曲线手动设置完成标识",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "curveDownloadSuccess",
+      "type": "bool",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "本机未下载或下载失败"
+        },
+        {
+          "stdValue": true,
+          "description": "本机已下载成功"
+        }
+      ],
+      "description": "曲线下载成功标识（掉电记忆）",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "userSceneFuncCode",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 255,
+        "step": 1,
+        "unit": null
+      },
+      "description": "语音WIFI功能组合",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "timeHH",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 23,
+        "step": 1,
+        "unit": "h"
+      },
+      "description": "当前时间小时",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "timeMM",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 59,
+        "step": 1,
+        "unit": "min"
+      },
+      "description": "当前时间分钟",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "zeroColdWaterMode",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 4,
+          "description": "本机默认模式"
+        },
+        {
+          "stdValue": 5,
+          "description": "朝九晚五模式"
+        },
+        {
+          "stdValue": 6,
+          "description": "家有老幼模式"
+        },
+        {
+          "stdValue": 7,
+          "description": "舒适畅享模式"
+        }
+      ],
+      "description": "设置定时循环类型",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "week",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 1,
+          "description": "星期一"
+        },
+        {
+          "stdValue": 2,
+          "description": "星期二"
+        },
+        {
+          "stdValue": 3,
+          "description": "星期三"
+        },
+        {
+          "stdValue": 4,
+          "description": "星期四"
+        },
+        {
+          "stdValue": 5,
+          "description": "星期五"
+        },
+        {
+          "stdValue": 6,
+          "description": "星期六"
+        },
+        {
+          "stdValue": 7,
+          "description": "星期日"
+        }
+      ],
+      "description": "星期几",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkDaySun",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日-周日是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkDaySat",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日-周六是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkDayFri",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日-周五是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkDayThu",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日-周四是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkDayWed",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日-周三是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkDayTue",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日-周二是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkDayMon",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日-周一是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour7",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-7点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour6",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-6点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour5",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-5点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour4",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-4点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour3",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-3点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour2",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-2点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour1",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-1点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour0",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-0点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour15",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-15点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour14",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-14点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour13",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-13点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour12",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-12点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour11",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-11点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour10",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-10点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour9",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-9点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour8",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-8点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour23",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-23点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour22",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-22点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour21",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-21点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour20",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-20点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour19",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-19点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour18",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-18点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour17",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-17点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defWorkHour16",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认工作日时段-16点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour7",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-7点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour6",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-6点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour5",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-5点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour4",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-4点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour3",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-3点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour2",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-2点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour1",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-1点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour0",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-0点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour15",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-15点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour14",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-14点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour13",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-13点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour12",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-12点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour11",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-11点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour10",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-10点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour9",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-9点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour8",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-8点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour23",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-23点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour22",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-22点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour21",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-21点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour20",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-20点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour19",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-19点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour18",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-18点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour17",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-17点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "defRestHour16",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "默认休息日时段-16点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workDaySun",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日-周日是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workDaySat",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日-周六是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workDayFri",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日-周五是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workDayThu",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日-周四是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workDayWed",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日-周三是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workDayTue",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日-周二是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workDayMon",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日-周一是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour7",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-7点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour6",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-6点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour5",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-5点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour4",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-4点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour3",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-3点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour2",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-2点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour1",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-1点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour0",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-0点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour15",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-15点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour14",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-14点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour13",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-13点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour12",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-12点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour11",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-11点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour10",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-10点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour9",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-9点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour8",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-8点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour23",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-23点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour22",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-22点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour21",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-21点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour20",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-20点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour19",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-19点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour18",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-18点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour17",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-17点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "workHour16",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五工作日时段-16点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour7",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-7点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour6",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-6点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour5",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-5点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour4",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-4点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour3",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-3点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour2",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-2点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour1",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-1点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour0",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-0点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour15",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-15点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour14",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-14点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour13",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-13点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour12",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-12点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour11",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-11点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour10",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-10点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour9",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-9点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour8",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-8点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour23",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-23点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour22",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-22点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour21",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-21点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour20",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-20点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour19",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-19点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour18",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-18点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour17",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-17点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "restHour16",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "朝九晚五休息日时段-16点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkDaySun",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日-周日是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkDaySat",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日-周六是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkDayFri",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日-周五是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkDayThu",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日-周四是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkDayWed",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日-周三是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkDayTue",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日-周二是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkDayMon",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日-周一是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour7",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-7点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour6",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-6点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour5",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-5点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour4",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-4点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour3",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-3点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour2",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-2点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour1",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-1点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour0",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-0点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour15",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-15点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour14",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-14点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour13",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-13点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour12",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-12点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour11",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-11点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour10",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-10点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour9",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-9点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour8",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-8点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour23",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-23点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour22",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-22点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour21",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-21点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour20",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-20点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour19",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-19点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour18",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-18点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour17",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-17点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyWorkHour16",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼工作日时段-16点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour7",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-7点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour6",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-6点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour5",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-5点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour4",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-4点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour3",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-3点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour2",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-2点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour1",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-1点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour0",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-0点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour15",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-15点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour14",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-14点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour13",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-13点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour12",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-12点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour11",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-11点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour10",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-10点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour9",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-9点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour8",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-8点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour23",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-23点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour22",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-22点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour21",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-21点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour20",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-20点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour19",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-19点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour18",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-18点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour17",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-17点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "oyRestHour16",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "家有老幼休息日时段-16点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkDaySun",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日-周日是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkDaySat",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日-周六是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkDayFri",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日-周五是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkDayThu",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日-周四是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkDayWed",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日-周三是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkDayTue",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日-周二是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkDayMon",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日-周一是否工作日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour7",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-7点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour6",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-6点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour5",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-5点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour4",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-4点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour3",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-3点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour2",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-2点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour1",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-1点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour0",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-0点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour15",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-15点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour14",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-14点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour13",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-13点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour12",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-12点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour11",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-11点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour10",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-10点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour9",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-9点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour8",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-8点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour23",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-23点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour22",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-22点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour21",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-21点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour20",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-20点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour19",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-19点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour18",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-18点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour17",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-17点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allWorkHour16",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享工作日时段-16点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour7",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-7点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour6",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-6点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour5",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-5点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour4",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-4点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour3",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-3点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour2",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-2点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour1",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-1点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour0",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-0点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour15",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-15点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour14",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-14点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour13",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-13点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour12",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-12点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour11",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-11点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour10",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-10点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour9",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-9点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour8",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-8点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour23",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-23点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour22",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-22点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour21",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-21点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour20",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-20点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour19",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-19点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour18",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-18点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour17",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-17点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "allRestHour16",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "否"
+        },
+        {
+          "stdValue": true,
+          "description": "是"
+        }
+      ],
+      "description": "舒适畅享休息日时段-16点是否运行",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "ecoJudgeTemp",
+      "type": "double",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0.0,
+        "maxValue": 35.0,
+        "step": 0.1,
+        "unit": "℃"
+      },
+      "description": "随温感(e动红外)判定温度",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "realTimePower",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 26,
+        "step": 1,
+        "unit": "L"
+      },
+      "description": "实时燃烧功率数",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "indoorTemperature",
+      "type": "double",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0.0,
+        "maxValue": 90.0,
+        "step": 0.5,
+        "unit": "℃"
+      },
+      "description": "室内温度",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "waterfallMode",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "I&G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "关闭"
+        },
+        {
+          "stdValue": 1,
+          "description": "1档"
+        },
+        {
+          "stdValue": 2,
+          "description": "2档"
+        },
+        {
+          "stdValue": 3,
+          "description": "自动档"
+        }
+      ],
+      "description": "瀑布洗模式",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "pressurizeMode",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "I&G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "关闭"
+        },
+        {
+          "stdValue": 1,
+          "description": "智能增压自动"
+        },
+        {
+          "stdValue": 2,
+          "description": "智能增压"
+        },
+        {
+          "stdValue": 3,
+          "description": "加强模式"
+        }
+      ],
+      "description": "智能增压模式",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "voiceModuleVolume",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 255,
+        "step": 1,
+        "unit": null
+      },
+      "description": "设置语音音量",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "voiceModuleAutoBroadcastStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "不主动播报"
+        },
+        {
+          "stdValue": true,
+          "description": "主动播报"
+        }
+      ],
+      "description": "语音主动播报状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "voiceModuleBroadcastStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "播报停止"
+        },
+        {
+          "stdValue": true,
+          "description": "播报中"
+        }
+      ],
+      "description": "语音播报状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "voiceModuleWakeStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "未唤醒"
+        },
+        {
+          "stdValue": true,
+          "description": "已唤醒"
+        }
+      ],
+      "description": "语音唤醒状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "voiceModuleOnOffStatus",
+      "type": "bool",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": false,
+          "description": "关"
+        },
+        {
+          "stdValue": true,
+          "description": "开"
+        }
+      ],
+      "description": "设置语音开关",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "voiceModuleErrCode",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 255,
+        "step": 1,
+        "unit": null
+      },
+      "description": "语音无效状态",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "voiceCommandNumber",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 255,
+        "step": 1,
+        "unit": null
+      },
+      "description": "语音控制报文编号",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "totalWorkTime",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 4294967295,
+        "step": 1,
+        "unit": "min"
+      },
+      "description": "累计工作时间",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "totalUseGasL",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 4294967295,
+        "step": 1,
+        "unit": "L"
+      },
+      "description": "累计用气量",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "totalWaterL",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 4294967295,
+        "step": 1,
+        "unit": "L"
+      },
+      "description": "累计用水量",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "targetRatedPower",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 255,
+        "step": 1,
+        "unit": "L"
+      },
+      "description": "设定额定功率",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "curveID",
+      "type": "enum",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "曲线0"
+        },
+        {
+          "stdValue": 1,
+          "description": "曲线1"
+        },
+        {
+          "stdValue": 2,
+          "description": "曲线2"
+        },
+        {
+          "stdValue": 3,
+          "description": "曲线3"
+        },
+        {
+          "stdValue": 4,
+          "description": "曲线4"
+        },
+        {
+          "stdValue": 5,
+          "description": "曲线5"
+        },
+        {
+          "stdValue": 6,
+          "description": "曲线6"
+        },
+        {
+          "stdValue": 7,
+          "description": "曲线7"
+        },
+        {
+          "stdValue": 8,
+          "description": "曲线8"
+        },
+        {
+          "stdValue": 9,
+          "description": "曲线9"
+        },
+        {
+          "stdValue": 11,
+          "description": "曲线-1"
+        },
+        {
+          "stdValue": 12,
+          "description": "曲线-2"
+        },
+        {
+          "stdValue": 13,
+          "description": "曲线-3"
+        },
+        {
+          "stdValue": 14,
+          "description": "曲线-4"
+        },
+        {
+          "stdValue": 15,
+          "description": "曲线-5"
+        },
+        {
+          "stdValue": 16,
+          "description": "曲线-6"
+        },
+        {
+          "stdValue": 17,
+          "description": "曲线-7"
+        },
+        {
+          "stdValue": 18,
+          "description": "曲线-8"
+        },
+        {
+          "stdValue": 19,
+          "description": "曲线-9"
+        }
+      ],
+      "description": "实际曲线ID",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "targetCurveID",
+      "type": "enum",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "曲线0"
+        },
+        {
+          "stdValue": 1,
+          "description": "曲线1"
+        },
+        {
+          "stdValue": 2,
+          "description": "曲线2"
+        },
+        {
+          "stdValue": 3,
+          "description": "曲线3"
+        },
+        {
+          "stdValue": 4,
+          "description": "曲线4"
+        },
+        {
+          "stdValue": 5,
+          "description": "曲线5"
+        },
+        {
+          "stdValue": 6,
+          "description": "曲线6"
+        },
+        {
+          "stdValue": 7,
+          "description": "曲线7"
+        },
+        {
+          "stdValue": 8,
+          "description": "曲线8"
+        },
+        {
+          "stdValue": 9,
+          "description": "曲线9"
+        },
+        {
+          "stdValue": 11,
+          "description": "曲线-1"
+        },
+        {
+          "stdValue": 12,
+          "description": "曲线-2"
+        },
+        {
+          "stdValue": 13,
+          "description": "曲线-3"
+        },
+        {
+          "stdValue": 14,
+          "description": "曲线-4"
+        },
+        {
+          "stdValue": 15,
+          "description": "曲线-5"
+        },
+        {
+          "stdValue": 16,
+          "description": "曲线-6"
+        },
+        {
+          "stdValue": 17,
+          "description": "曲线-7"
+        },
+        {
+          "stdValue": 18,
+          "description": "曲线-8"
+        },
+        {
+          "stdValue": 19,
+          "description": "曲线-9"
+        }
+      ],
+      "description": "设定曲线ID",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "dateYY",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 2000,
+        "maxValue": 2099,
+        "step": 1,
+        "unit": null
+      },
+      "description": "日期年",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "dateMM",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 12,
+        "step": 1,
+        "unit": null
+      },
+      "description": "日期月",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "dateDD",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 31,
+        "step": 1,
+        "unit": null
+      },
+      "description": "日期日",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartCycleTime",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 65535,
+        "step": 1,
+        "unit": "min"
+      },
+      "description": "云智慧循环时间",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartCommandNum",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 255,
+        "step": 1,
+        "unit": null
+      },
+      "description": "云智慧模式设置命令码",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartPeriodQueryNum",
+      "type": "int",
+      "readable": true,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 47,
+        "step": 1,
+        "unit": null
+      },
+      "description": "云智慧模式查询时段编号",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartQueryStartMM",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 1440,
+        "step": 1,
+        "unit": "min"
+      },
+      "description": "云智慧模式查询时段起始分钟",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartQueryStopMM",
+      "type": "int",
+      "readable": true,
+      "writable": false,
+      "writeType": null,
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 1440,
+        "step": 1,
+        "unit": "min"
+      },
+      "description": "云智慧模式查询时段结束分钟",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "showerTargetFlux",
+      "type": "double",
+      "readable": false,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0.0,
+        "maxValue": 25.5,
+        "step": 0.1,
+        "unit": "L/min"
+      },
+      "description": "设定水流量",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "sendGSTestStatus",
+      "type": "enum",
+      "readable": false,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 1,
+          "description": "/"
+        }
+      ],
+      "description": "GS检测命令",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "scourTargetTemp",
+      "type": "int",
+      "readable": false,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 70,
+        "step": 1,
+        "unit": "℃"
+      },
+      "description": "洗浴温度（组命令）",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartTargetTemp",
+      "type": "int",
+      "readable": false,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 70,
+        "step": 1,
+        "unit": "℃"
+      },
+      "description": "云智慧模式当前时段目标温度",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartStartType",
+      "type": "enum",
+      "readable": false,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 1,
+          "description": "使用运行停止标志启动"
+        },
+        {
+          "stdValue": 2,
+          "description": "使用小时分钟时间启动"
+        }
+      ],
+      "description": "云智慧模式启动方式",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartStartMM",
+      "type": "int",
+      "readable": false,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 1440,
+        "step": 1,
+        "unit": "min"
+      },
+      "description": "云智慧模式当前时段起始分钟",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartStopMM",
+      "type": "int",
+      "readable": false,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 1440,
+        "step": 1,
+        "unit": "min"
+      },
+      "description": "云智慧模式当前时段结束分钟",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartPeriodSetNum",
+      "type": "int",
+      "readable": false,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 47,
+        "step": 1,
+        "unit": null
+      },
+      "description": "云智慧模式配置时段编号",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "cloudSmartPeriodTotalNum",
+      "type": "int",
+      "readable": false,
+      "writable": true,
+      "writeType": "G",
+      "attrLabel": null,
+      "variants": {
+        "minValue": 0,
+        "maxValue": 47,
+        "step": 1,
+        "unit": null
+      },
+      "description": "云智慧模式配置时段总数",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "clearDiscaleRemind",
+      "type": "enum",
+      "readable": false,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "停止提醒"
+        }
+      ],
+      "description": "消除抑垢图标闪烁",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "clearSingleCycleRemind",
+      "type": "enum",
+      "readable": false,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "停止提醒"
+        }
+      ],
+      "description": "消除单次循环首次完成提醒",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "clearWaterCycleRemind",
+      "type": "enum",
+      "readable": false,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "停止提醒"
+        }
+      ],
+      "description": "消除水动循环首次完成提醒",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "clearHalfHourRemind",
+      "type": "enum",
+      "readable": false,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "停止提醒"
+        }
+      ],
+      "description": "消除用户用水燃烧半小时提醒",
+      "defaultValue": null,
+      "disable": true
+    },
+    {
+      "name": "clearTankWaterFullRemind",
+      "type": "enum",
+      "readable": false,
+      "writable": true,
+      "writeType": "I",
+      "attrLabel": null,
+      "variants": [
+        {
+          "stdValue": 0,
+          "description": "停止提醒"
+        }
+      ],
+      "description": "消除浴缸注水满标志",
+      "defaultValue": null,
+      "disable": true
+    }
+  ],
+  "Operation": [
+    {
+      "name": "getAllProperty",
+      "variants": [],
+      "description": "查询所有属性"
+    },
+    {
+      "name": "getAllAlarm",
+      "variants": [],
+      "description": "查询所有报警"
+    },
+    {
+      "name": "stopCurrentAlarm",
+      "variants": [],
+      "description": "停止报警"
+    },
+    {
+      "name": "getBigDataFrame",
+      "variants": [],
+      "description": "查询大数据"
+    },
+    {
+      "name": "grSetShower",
+      "variants": [
+        {
+          "name": "targetTemp"
+        },
+        {
+          "name": "showerCode"
+        },
+        {
+          "name": "showerTargetFlux"
+        }
+      ],
+      "description": "淋浴设置"
+    },
+    {
+      "name": "grSetTank",
+      "variants": [
+        {
+          "name": "tankTargetTemp"
+        },
+        {
+          "name": "tankCode"
+        },
+        {
+          "name": "tankTargetFlux"
+        }
+      ],
+      "description": "浴缸设置"
+    },
+    {
+      "name": "grSetTime",
+      "variants": [
+        {
+          "name": "week"
+        },
+        {
+          "name": "timeHH"
+        },
+        {
+          "name": "timeMM"
+        },
+        {
+          "name": "dateYY"
+        },
+        {
+          "name": "dateMM"
+        },
+        {
+          "name": "dateDD"
+        }
+      ],
+      "description": "设置时间"
+    },
+    {
+      "name": "grSetDefWorkMode",
+      "variants": [
+        {
+          "name": "defWorkDaySun"
+        },
+        {
+          "name": "defWorkDaySat"
+        },
+        {
+          "name": "defWorkDayFri"
+        },
+        {
+          "name": "defWorkDayThu"
+        },
+        {
+          "name": "defWorkDayWed"
+        },
+        {
+          "name": "defWorkDayTue"
+        },
+        {
+          "name": "defWorkDayMon"
+        },
+        {
+          "name": "defWorkHour7"
+        },
+        {
+          "name": "defWorkHour6"
+        },
+        {
+          "name": "defWorkHour5"
+        },
+        {
+          "name": "defWorkHour4"
+        },
+        {
+          "name": "defWorkHour3"
+        },
+        {
+          "name": "defWorkHour2"
+        },
+        {
+          "name": "defWorkHour1"
+        },
+        {
+          "name": "defWorkHour0"
+        },
+        {
+          "name": "defWorkHour15"
+        },
+        {
+          "name": "defWorkHour14"
+        },
+        {
+          "name": "defWorkHour13"
+        },
+        {
+          "name": "defWorkHour12"
+        },
+        {
+          "name": "defWorkHour11"
+        },
+        {
+          "name": "defWorkHour10"
+        },
+        {
+          "name": "defWorkHour9"
+        },
+        {
+          "name": "defWorkHour8"
+        },
+        {
+          "name": "defWorkHour23"
+        },
+        {
+          "name": "defWorkHour22"
+        },
+        {
+          "name": "defWorkHour21"
+        },
+        {
+          "name": "defWorkHour20"
+        },
+        {
+          "name": "defWorkHour19"
+        },
+        {
+          "name": "defWorkHour18"
+        },
+        {
+          "name": "defWorkHour17"
+        },
+        {
+          "name": "defWorkHour16"
+        },
+        {
+          "name": "defRestHour7"
+        },
+        {
+          "name": "defRestHour6"
+        },
+        {
+          "name": "defRestHour5"
+        },
+        {
+          "name": "defRestHour4"
+        },
+        {
+          "name": "defRestHour3"
+        },
+        {
+          "name": "defRestHour2"
+        },
+        {
+          "name": "defRestHour1"
+        },
+        {
+          "name": "defRestHour0"
+        },
+        {
+          "name": "defRestHour15"
+        },
+        {
+          "name": "defRestHour14"
+        },
+        {
+          "name": "defRestHour13"
+        },
+        {
+          "name": "defRestHour12"
+        },
+        {
+          "name": "defRestHour11"
+        },
+        {
+          "name": "defRestHour10"
+        },
+        {
+          "name": "defRestHour9"
+        },
+        {
+          "name": "defRestHour8"
+        },
+        {
+          "name": "defRestHour23"
+        },
+        {
+          "name": "defRestHour22"
+        },
+        {
+          "name": "defRestHour21"
+        },
+        {
+          "name": "defRestHour20"
+        },
+        {
+          "name": "defRestHour19"
+        },
+        {
+          "name": "defRestHour18"
+        },
+        {
+          "name": "defRestHour17"
+        },
+        {
+          "name": "defRestHour16"
+        }
+      ],
+      "description": "设置本机默认零冷水模式"
+    },
+    {
+      "name": "grSetWorkMode",
+      "variants": [
+        {
+          "name": "workDaySun"
+        },
+        {
+          "name": "workDaySat"
+        },
+        {
+          "name": "workDayFri"
+        },
+        {
+          "name": "workDayThu"
+        },
+        {
+          "name": "workDayWed"
+        },
+        {
+          "name": "workDayTue"
+        },
+        {
+          "name": "workDayMon"
+        },
+        {
+          "name": "workHour7"
+        },
+        {
+          "name": "workHour6"
+        },
+        {
+          "name": "workHour5"
+        },
+        {
+          "name": "workHour4"
+        },
+        {
+          "name": "workHour3"
+        },
+        {
+          "name": "workHour2"
+        },
+        {
+          "name": "workHour1"
+        },
+        {
+          "name": "workHour0"
+        },
+        {
+          "name": "workHour15"
+        },
+        {
+          "name": "workHour14"
+        },
+        {
+          "name": "workHour13"
+        },
+        {
+          "name": "workHour12"
+        },
+        {
+          "name": "workHour11"
+        },
+        {
+          "name": "workHour10"
+        },
+        {
+          "name": "workHour9"
+        },
+        {
+          "name": "workHour8"
+        },
+        {
+          "name": "workHour23"
+        },
+        {
+          "name": "workHour22"
+        },
+        {
+          "name": "workHour21"
+        },
+        {
+          "name": "workHour20"
+        },
+        {
+          "name": "workHour19"
+        },
+        {
+          "name": "workHour18"
+        },
+        {
+          "name": "workHour17"
+        },
+        {
+          "name": "workHour16"
+        },
+        {
+          "name": "restHour7"
+        },
+        {
+          "name": "restHour6"
+        },
+        {
+          "name": "restHour5"
+        },
+        {
+          "name": "restHour4"
+        },
+        {
+          "name": "restHour3"
+        },
+        {
+          "name": "restHour2"
+        },
+        {
+          "name": "restHour1"
+        },
+        {
+          "name": "restHour0"
+        },
+        {
+          "name": "restHour15"
+        },
+        {
+          "name": "restHour14"
+        },
+        {
+          "name": "restHour13"
+        },
+        {
+          "name": "restHour12"
+        },
+        {
+          "name": "restHour11"
+        },
+        {
+          "name": "restHour10"
+        },
+        {
+          "name": "restHour9"
+        },
+        {
+          "name": "restHour8"
+        },
+        {
+          "name": "restHour23"
+        },
+        {
+          "name": "restHour22"
+        },
+        {
+          "name": "restHour21"
+        },
+        {
+          "name": "restHour20"
+        },
+        {
+          "name": "restHour19"
+        },
+        {
+          "name": "restHour18"
+        },
+        {
+          "name": "restHour17"
+        },
+        {
+          "name": "restHour16"
+        }
+      ],
+      "description": "设置朝九晚五零冷水模式"
+    },
+    {
+      "name": "grSetOyWorkMode",
+      "variants": [
+        {
+          "name": "oyWorkDaySun"
+        },
+        {
+          "name": "oyWorkDaySat"
+        },
+        {
+          "name": "oyWorkDayFri"
+        },
+        {
+          "name": "oyWorkDayThu"
+        },
+        {
+          "name": "oyWorkDayWed"
+        },
+        {
+          "name": "oyWorkDayTue"
+        },
+        {
+          "name": "oyWorkDayMon"
+        },
+        {
+          "name": "oyWorkHour7"
+        },
+        {
+          "name": "oyWorkHour6"
+        },
+        {
+          "name": "oyWorkHour5"
+        },
+        {
+          "name": "oyWorkHour4"
+        },
+        {
+          "name": "oyWorkHour3"
+        },
+        {
+          "name": "oyWorkHour2"
+        },
+        {
+          "name": "oyWorkHour1"
+        },
+        {
+          "name": "oyWorkHour0"
+        },
+        {
+          "name": "oyWorkHour15"
+        },
+        {
+          "name": "oyWorkHour14"
+        },
+        {
+          "name": "oyWorkHour13"
+        },
+        {
+          "name": "oyWorkHour12"
+        },
+        {
+          "name": "oyWorkHour11"
+        },
+        {
+          "name": "oyWorkHour10"
+        },
+        {
+          "name": "oyWorkHour9"
+        },
+        {
+          "name": "oyWorkHour8"
+        },
+        {
+          "name": "oyWorkHour23"
+        },
+        {
+          "name": "oyWorkHour22"
+        },
+        {
+          "name": "oyWorkHour21"
+        },
+        {
+          "name": "oyWorkHour20"
+        },
+        {
+          "name": "oyWorkHour19"
+        },
+        {
+          "name": "oyWorkHour18"
+        },
+        {
+          "name": "oyWorkHour17"
+        },
+        {
+          "name": "oyWorkHour16"
+        },
+        {
+          "name": "oyRestHour7"
+        },
+        {
+          "name": "oyRestHour6"
+        },
+        {
+          "name": "oyRestHour5"
+        },
+        {
+          "name": "oyRestHour4"
+        },
+        {
+          "name": "oyRestHour3"
+        },
+        {
+          "name": "oyRestHour2"
+        },
+        {
+          "name": "oyRestHour1"
+        },
+        {
+          "name": "oyRestHour0"
+        },
+        {
+          "name": "oyRestHour15"
+        },
+        {
+          "name": "oyRestHour14"
+        },
+        {
+          "name": "oyRestHour13"
+        },
+        {
+          "name": "oyRestHour12"
+        },
+        {
+          "name": "oyRestHour11"
+        },
+        {
+          "name": "oyRestHour10"
+        },
+        {
+          "name": "oyRestHour9"
+        },
+        {
+          "name": "oyRestHour8"
+        },
+        {
+          "name": "oyRestHour23"
+        },
+        {
+          "name": "oyRestHour22"
+        },
+        {
+          "name": "oyRestHour21"
+        },
+        {
+          "name": "oyRestHour20"
+        },
+        {
+          "name": "oyRestHour19"
+        },
+        {
+          "name": "oyRestHour18"
+        },
+        {
+          "name": "oyRestHour17"
+        },
+        {
+          "name": "oyRestHour16"
+        }
+      ],
+      "description": "设置家有老幼零冷水模式"
+    },
+    {
+      "name": "grSetAllWorkMode",
+      "variants": [
+        {
+          "name": "allWorkDaySun"
+        },
+        {
+          "name": "allWorkDaySat"
+        },
+        {
+          "name": "allWorkDayFri"
+        },
+        {
+          "name": "allWorkDayThu"
+        },
+        {
+          "name": "allWorkDayWed"
+        },
+        {
+          "name": "allWorkDayTue"
+        },
+        {
+          "name": "allWorkDayMon"
+        },
+        {
+          "name": "allWorkHour7"
+        },
+        {
+          "name": "allWorkHour6"
+        },
+        {
+          "name": "allWorkHour5"
+        },
+        {
+          "name": "allWorkHour4"
+        },
+        {
+          "name": "allWorkHour3"
+        },
+        {
+          "name": "allWorkHour2"
+        },
+        {
+          "name": "allWorkHour1"
+        },
+        {
+          "name": "allWorkHour0"
+        },
+        {
+          "name": "allWorkHour15"
+        },
+        {
+          "name": "allWorkHour14"
+        },
+        {
+          "name": "allWorkHour13"
+        },
+        {
+          "name": "allWorkHour12"
+        },
+        {
+          "name": "allWorkHour11"
+        },
+        {
+          "name": "allWorkHour10"
+        },
+        {
+          "name": "allWorkHour9"
+        },
+        {
+          "name": "allWorkHour8"
+        },
+        {
+          "name": "allWorkHour23"
+        },
+        {
+          "name": "allWorkHour22"
+        },
+        {
+          "name": "allWorkHour21"
+        },
+        {
+          "name": "allWorkHour20"
+        },
+        {
+          "name": "allWorkHour19"
+        },
+        {
+          "name": "allWorkHour18"
+        },
+        {
+          "name": "allWorkHour17"
+        },
+        {
+          "name": "allWorkHour16"
+        },
+        {
+          "name": "allRestHour7"
+        },
+        {
+          "name": "allRestHour6"
+        },
+        {
+          "name": "allRestHour5"
+        },
+        {
+          "name": "allRestHour4"
+        },
+        {
+          "name": "allRestHour3"
+        },
+        {
+          "name": "allRestHour2"
+        },
+        {
+          "name": "allRestHour1"
+        },
+        {
+          "name": "allRestHour0"
+        },
+        {
+          "name": "allRestHour15"
+        },
+        {
+          "name": "allRestHour14"
+        },
+        {
+          "name": "allRestHour13"
+        },
+        {
+          "name": "allRestHour12"
+        },
+        {
+          "name": "allRestHour11"
+        },
+        {
+          "name": "allRestHour10"
+        },
+        {
+          "name": "allRestHour9"
+        },
+        {
+          "name": "allRestHour8"
+        },
+        {
+          "name": "allRestHour23"
+        },
+        {
+          "name": "allRestHour22"
+        },
+        {
+          "name": "allRestHour21"
+        },
+        {
+          "name": "allRestHour20"
+        },
+        {
+          "name": "allRestHour19"
+        },
+        {
+          "name": "allRestHour18"
+        },
+        {
+          "name": "allRestHour17"
+        },
+        {
+          "name": "allRestHour16"
+        }
+      ],
+      "description": "设置舒适畅享零冷水模式"
+    },
+    {
+      "name": "grSetScourPara",
+      "variants": [
+        {
+          "name": "scourTargetTemp"
+        },
+        {
+          "name": "scourState"
+        }
+      ],
+      "description": "洗浴参数设置组命令"
+    },
+    {
+      "name": "grSetCloudSmart",
+      "variants": [
+        {
+          "name": "zeroColdWaterStatus"
+        },
+        {
+          "name": "cloudSmartTargetTemp"
+        },
+        {
+          "name": "cloudSmartCommandNum"
+        },
+        {
+          "name": "cloudSmartStartType"
+        },
+        {
+          "name": "cloudSmartRunningStatus"
+        },
+        {
+          "name": "cloudSmartCycleTime"
+        },
+        {
+          "name": "cloudSmartStartMM"
+        },
+        {
+          "name": "cloudSmartStopMM"
+        },
+        {
+          "name": "cloudSmartPeriodSetNum"
+        },
+        {
+          "name": "cloudSmartPeriodTotalNum"
+        }
+      ],
+      "description": "云智慧循环模式设置"
+    },
+    {
+      "name": "grSetSingleResn",
+      "variants": [
+        {
+          "name": "zeroColdWaterStatus"
+        },
+        {
+          "name": "singleResnTime"
+        }
+      ],
+      "description": "单次循环预约设置"
+    },
+    {
+      "name": "grSetCycResnAll",
+      "variants": [
+        {
+          "name": "defWorkHour7"
+        },
+        {
+          "name": "defWorkHour6"
+        },
+        {
+          "name": "defWorkHour5"
+        },
+        {
+          "name": "defWorkHour4"
+        },
+        {
+          "name": "defWorkHour3"
+        },
+        {
+          "name": "defWorkHour2"
+        },
+        {
+          "name": "defWorkHour1"
+        },
+        {
+          "name": "defWorkHour0"
+        },
+        {
+          "name": "defWorkHour15"
+        },
+        {
+          "name": "defWorkHour14"
+        },
+        {
+          "name": "defWorkHour13"
+        },
+        {
+          "name": "defWorkHour12"
+        },
+        {
+          "name": "defWorkHour11"
+        },
+        {
+          "name": "defWorkHour10"
+        },
+        {
+          "name": "defWorkHour9"
+        },
+        {
+          "name": "defWorkHour8"
+        },
+        {
+          "name": "defWorkHour23"
+        },
+        {
+          "name": "defWorkHour22"
+        },
+        {
+          "name": "defWorkHour21"
+        },
+        {
+          "name": "defWorkHour20"
+        },
+        {
+          "name": "defWorkHour19"
+        },
+        {
+          "name": "defWorkHour18"
+        },
+        {
+          "name": "defWorkHour17"
+        },
+        {
+          "name": "defWorkHour16"
+        },
+        {
+          "name": "defRestHour7"
+        },
+        {
+          "name": "defRestHour6"
+        },
+        {
+          "name": "defRestHour5"
+        },
+        {
+          "name": "defRestHour4"
+        },
+        {
+          "name": "defRestHour3"
+        },
+        {
+          "name": "defRestHour2"
+        },
+        {
+          "name": "defRestHour1"
+        },
+        {
+          "name": "defRestHour0"
+        },
+        {
+          "name": "defRestHour15"
+        },
+        {
+          "name": "defRestHour14"
+        },
+        {
+          "name": "defRestHour13"
+        },
+        {
+          "name": "defRestHour12"
+        },
+        {
+          "name": "defRestHour11"
+        },
+        {
+          "name": "defRestHour10"
+        },
+        {
+          "name": "defRestHour9"
+        },
+        {
+          "name": "defRestHour8"
+        },
+        {
+          "name": "defRestHour23"
+        },
+        {
+          "name": "defRestHour22"
+        },
+        {
+          "name": "defRestHour21"
+        },
+        {
+          "name": "defRestHour20"
+        },
+        {
+          "name": "defRestHour19"
+        },
+        {
+          "name": "defRestHour18"
+        },
+        {
+          "name": "defRestHour17"
+        },
+        {
+          "name": "defRestHour16"
+        },
+        {
+          "name": "workHour7"
+        },
+        {
+          "name": "workHour6"
+        },
+        {
+          "name": "workHour5"
+        },
+        {
+          "name": "workHour4"
+        },
+        {
+          "name": "workHour3"
+        },
+        {
+          "name": "workHour2"
+        },
+        {
+          "name": "workHour1"
+        },
+        {
+          "name": "workHour0"
+        },
+        {
+          "name": "workHour15"
+        },
+        {
+          "name": "workHour14"
+        },
+        {
+          "name": "workHour13"
+        },
+        {
+          "name": "workHour12"
+        },
+        {
+          "name": "workHour11"
+        },
+        {
+          "name": "workHour10"
+        },
+        {
+          "name": "workHour9"
+        },
+        {
+          "name": "workHour8"
+        },
+        {
+          "name": "workHour23"
+        },
+        {
+          "name": "workHour22"
+        },
+        {
+          "name": "workHour21"
+        },
+        {
+          "name": "workHour20"
+        },
+        {
+          "name": "workHour19"
+        },
+        {
+          "name": "workHour18"
+        },
+        {
+          "name": "workHour17"
+        },
+        {
+          "name": "workHour16"
+        },
+        {
+          "name": "restHour7"
+        },
+        {
+          "name": "restHour6"
+        },
+        {
+          "name": "restHour5"
+        },
+        {
+          "name": "restHour4"
+        },
+        {
+          "name": "restHour3"
+        },
+        {
+          "name": "restHour2"
+        },
+        {
+          "name": "restHour1"
+        },
+        {
+          "name": "restHour0"
+        },
+        {
+          "name": "restHour15"
+        },
+        {
+          "name": "restHour14"
+        },
+        {
+          "name": "restHour13"
+        },
+        {
+          "name": "restHour12"
+        },
+        {
+          "name": "restHour11"
+        },
+        {
+          "name": "restHour10"
+        },
+        {
+          "name": "restHour9"
+        },
+        {
+          "name": "restHour8"
+        },
+        {
+          "name": "restHour23"
+        },
+        {
+          "name": "restHour22"
+        },
+        {
+          "name": "restHour21"
+        },
+        {
+          "name": "restHour20"
+        },
+        {
+          "name": "restHour19"
+        },
+        {
+          "name": "restHour18"
+        },
+        {
+          "name": "restHour17"
+        },
+        {
+          "name": "restHour16"
+        },
+        {
+          "name": "oyWorkHour7"
+        },
+        {
+          "name": "oyWorkHour6"
+        },
+        {
+          "name": "oyWorkHour5"
+        },
+        {
+          "name": "oyWorkHour4"
+        },
+        {
+          "name": "oyWorkHour3"
+        },
+        {
+          "name": "oyWorkHour2"
+        },
+        {
+          "name": "oyWorkHour1"
+        },
+        {
+          "name": "oyWorkHour0"
+        },
+        {
+          "name": "oyWorkHour15"
+        },
+        {
+          "name": "oyWorkHour14"
+        },
+        {
+          "name": "oyWorkHour13"
+        },
+        {
+          "name": "oyWorkHour12"
+        },
+        {
+          "name": "oyWorkHour11"
+        },
+        {
+          "name": "oyWorkHour10"
+        },
+        {
+          "name": "oyWorkHour9"
+        },
+        {
+          "name": "oyWorkHour8"
+        },
+        {
+          "name": "oyWorkHour23"
+        },
+        {
+          "name": "oyWorkHour22"
+        },
+        {
+          "name": "oyWorkHour21"
+        },
+        {
+          "name": "oyWorkHour20"
+        },
+        {
+          "name": "oyWorkHour19"
+        },
+        {
+          "name": "oyWorkHour18"
+        },
+        {
+          "name": "oyWorkHour17"
+        },
+        {
+          "name": "oyWorkHour16"
+        },
+        {
+          "name": "oyRestHour7"
+        },
+        {
+          "name": "oyRestHour6"
+        },
+        {
+          "name": "oyRestHour5"
+        },
+        {
+          "name": "oyRestHour4"
+        },
+        {
+          "name": "oyRestHour3"
+        },
+        {
+          "name": "oyRestHour2"
+        },
+        {
+          "name": "oyRestHour1"
+        },
+        {
+          "name": "oyRestHour0"
+        },
+        {
+          "name": "oyRestHour15"
+        },
+        {
+          "name": "oyRestHour14"
+        },
+        {
+          "name": "oyRestHour13"
+        },
+        {
+          "name": "oyRestHour12"
+        },
+        {
+          "name": "oyRestHour11"
+        },
+        {
+          "name": "oyRestHour10"
+        },
+        {
+          "name": "oyRestHour9"
+        },
+        {
+          "name": "oyRestHour8"
+        },
+        {
+          "name": "oyRestHour23"
+        },
+        {
+          "name": "oyRestHour22"
+        },
+        {
+          "name": "oyRestHour21"
+        },
+        {
+          "name": "oyRestHour20"
+        },
+        {
+          "name": "oyRestHour19"
+        },
+        {
+          "name": "oyRestHour18"
+        },
+        {
+          "name": "oyRestHour17"
+        },
+        {
+          "name": "oyRestHour16"
+        },
+        {
+          "name": "allWorkHour7"
+        },
+        {
+          "name": "allWorkHour6"
+        },
+        {
+          "name": "allWorkHour5"
+        },
+        {
+          "name": "allWorkHour4"
+        },
+        {
+          "name": "allWorkHour3"
+        },
+        {
+          "name": "allWorkHour2"
+        },
+        {
+          "name": "allWorkHour1"
+        },
+        {
+          "name": "allWorkHour0"
+        },
+        {
+          "name": "allWorkHour15"
+        },
+        {
+          "name": "allWorkHour14"
+        },
+        {
+          "name": "allWorkHour13"
+        },
+        {
+          "name": "allWorkHour12"
+        },
+        {
+          "name": "allWorkHour11"
+        },
+        {
+          "name": "allWorkHour10"
+        },
+        {
+          "name": "allWorkHour9"
+        },
+        {
+          "name": "allWorkHour8"
+        },
+        {
+          "name": "allWorkHour23"
+        },
+        {
+          "name": "allWorkHour22"
+        },
+        {
+          "name": "allWorkHour21"
+        },
+        {
+          "name": "allWorkHour20"
+        },
+        {
+          "name": "allWorkHour19"
+        },
+        {
+          "name": "allWorkHour18"
+        },
+        {
+          "name": "allWorkHour17"
+        },
+        {
+          "name": "allWorkHour16"
+        }
+      ],
+      "description": "预约循环模式全部运行设置"
+    },
+    {
+      "name": "grSetCycResnMon",
+      "variants": [
+        {
+          "name": "defWorkHour7"
+        },
+        {
+          "name": "defWorkHour6"
+        },
+        {
+          "name": "defWorkHour5"
+        },
+        {
+          "name": "defWorkHour4"
+        },
+        {
+          "name": "defWorkHour3"
+        },
+        {
+          "name": "defWorkHour2"
+        },
+        {
+          "name": "defWorkHour1"
+        },
+        {
+          "name": "defWorkHour0"
+        },
+        {
+          "name": "defWorkHour15"
+        },
+        {
+          "name": "defWorkHour14"
+        },
+        {
+          "name": "defWorkHour13"
+        },
+        {
+          "name": "defWorkHour12"
+        },
+        {
+          "name": "defWorkHour11"
+        },
+        {
+          "name": "defWorkHour10"
+        },
+        {
+          "name": "defWorkHour9"
+        },
+        {
+          "name": "defWorkHour8"
+        },
+        {
+          "name": "defWorkHour23"
+        },
+        {
+          "name": "defWorkHour22"
+        },
+        {
+          "name": "defWorkHour21"
+        },
+        {
+          "name": "defWorkHour20"
+        },
+        {
+          "name": "defWorkHour19"
+        },
+        {
+          "name": "defWorkHour18"
+        },
+        {
+          "name": "defWorkHour17"
+        },
+        {
+          "name": "defWorkHour16"
+        }
+      ],
+      "description": "预约循环模式周一运行设置"
+    },
+    {
+      "name": "grSetCycResnTue",
+      "variants": [
+        {
+          "name": "defRestHour7"
+        },
+        {
+          "name": "defRestHour6"
+        },
+        {
+          "name": "defRestHour5"
+        },
+        {
+          "name": "defRestHour4"
+        },
+        {
+          "name": "defRestHour3"
+        },
+        {
+          "name": "defRestHour2"
+        },
+        {
+          "name": "defRestHour1"
+        },
+        {
+          "name": "defRestHour0"
+        },
+        {
+          "name": "defRestHour15"
+        },
+        {
+          "name": "defRestHour14"
+        },
+        {
+          "name": "defRestHour13"
+        },
+        {
+          "name": "defRestHour12"
+        },
+        {
+          "name": "defRestHour11"
+        },
+        {
+          "name": "defRestHour10"
+        },
+        {
+          "name": "defRestHour9"
+        },
+        {
+          "name": "defRestHour8"
+        },
+        {
+          "name": "defRestHour23"
+        },
+        {
+          "name": "defRestHour22"
+        },
+        {
+          "name": "defRestHour21"
+        },
+        {
+          "name": "defRestHour20"
+        },
+        {
+          "name": "defRestHour19"
+        },
+        {
+          "name": "defRestHour18"
+        },
+        {
+          "name": "defRestHour17"
+        },
+        {
+          "name": "defRestHour16"
+        }
+      ],
+      "description": "预约循环模式周二运行设置"
+    },
+    {
+      "name": "grSetCycResnWed",
+      "variants": [
+        {
+          "name": "workHour7"
+        },
+        {
+          "name": "workHour6"
+        },
+        {
+          "name": "workHour5"
+        },
+        {
+          "name": "workHour4"
+        },
+        {
+          "name": "workHour3"
+        },
+        {
+          "name": "workHour2"
+        },
+        {
+          "name": "workHour1"
+        },
+        {
+          "name": "workHour0"
+        },
+        {
+          "name": "workHour15"
+        },
+        {
+          "name": "workHour14"
+        },
+        {
+          "name": "workHour13"
+        },
+        {
+          "name": "workHour12"
+        },
+        {
+          "name": "workHour11"
+        },
+        {
+          "name": "workHour10"
+        },
+        {
+          "name": "workHour9"
+        },
+        {
+          "name": "workHour8"
+        },
+        {
+          "name": "workHour23"
+        },
+        {
+          "name": "workHour22"
+        },
+        {
+          "name": "workHour21"
+        },
+        {
+          "name": "workHour20"
+        },
+        {
+          "name": "workHour19"
+        },
+        {
+          "name": "workHour18"
+        },
+        {
+          "name": "workHour17"
+        },
+        {
+          "name": "workHour16"
+        }
+      ],
+      "description": "预约循环模式周三运行设置"
+    },
+    {
+      "name": "grSetCycResnThu",
+      "variants": [
+        {
+          "name": "restHour7"
+        },
+        {
+          "name": "restHour6"
+        },
+        {
+          "name": "restHour5"
+        },
+        {
+          "name": "restHour4"
+        },
+        {
+          "name": "restHour3"
+        },
+        {
+          "name": "restHour2"
+        },
+        {
+          "name": "restHour1"
+        },
+        {
+          "name": "restHour0"
+        },
+        {
+          "name": "restHour15"
+        },
+        {
+          "name": "restHour14"
+        },
+        {
+          "name": "restHour13"
+        },
+        {
+          "name": "restHour12"
+        },
+        {
+          "name": "restHour11"
+        },
+        {
+          "name": "restHour10"
+        },
+        {
+          "name": "restHour9"
+        },
+        {
+          "name": "restHour8"
+        },
+        {
+          "name": "restHour23"
+        },
+        {
+          "name": "restHour22"
+        },
+        {
+          "name": "restHour21"
+        },
+        {
+          "name": "restHour20"
+        },
+        {
+          "name": "restHour19"
+        },
+        {
+          "name": "restHour18"
+        },
+        {
+          "name": "restHour17"
+        },
+        {
+          "name": "restHour16"
+        }
+      ],
+      "description": "预约循环模式周四运行设置"
+    },
+    {
+      "name": "grSetCycResnFri",
+      "variants": [
+        {
+          "name": "oyWorkHour7"
+        },
+        {
+          "name": "oyWorkHour6"
+        },
+        {
+          "name": "oyWorkHour5"
+        },
+        {
+          "name": "oyWorkHour4"
+        },
+        {
+          "name": "oyWorkHour3"
+        },
+        {
+          "name": "oyWorkHour2"
+        },
+        {
+          "name": "oyWorkHour1"
+        },
+        {
+          "name": "oyWorkHour0"
+        },
+        {
+          "name": "oyWorkHour15"
+        },
+        {
+          "name": "oyWorkHour14"
+        },
+        {
+          "name": "oyWorkHour13"
+        },
+        {
+          "name": "oyWorkHour12"
+        },
+        {
+          "name": "oyWorkHour11"
+        },
+        {
+          "name": "oyWorkHour10"
+        },
+        {
+          "name": "oyWorkHour9"
+        },
+        {
+          "name": "oyWorkHour8"
+        },
+        {
+          "name": "oyWorkHour23"
+        },
+        {
+          "name": "oyWorkHour22"
+        },
+        {
+          "name": "oyWorkHour21"
+        },
+        {
+          "name": "oyWorkHour20"
+        },
+        {
+          "name": "oyWorkHour19"
+        },
+        {
+          "name": "oyWorkHour18"
+        },
+        {
+          "name": "oyWorkHour17"
+        },
+        {
+          "name": "oyWorkHour16"
+        }
+      ],
+      "description": "预约循环模式周五运行设置"
+    },
+    {
+      "name": "grSetCycResnSat",
+      "variants": [
+        {
+          "name": "oyRestHour7"
+        },
+        {
+          "name": "oyRestHour6"
+        },
+        {
+          "name": "oyRestHour5"
+        },
+        {
+          "name": "oyRestHour4"
+        },
+        {
+          "name": "oyRestHour3"
+        },
+        {
+          "name": "oyRestHour2"
+        },
+        {
+          "name": "oyRestHour1"
+        },
+        {
+          "name": "oyRestHour0"
+        },
+        {
+          "name": "oyRestHour15"
+        },
+        {
+          "name": "oyRestHour14"
+        },
+        {
+          "name": "oyRestHour13"
+        },
+        {
+          "name": "oyRestHour12"
+        },
+        {
+          "name": "oyRestHour11"
+        },
+        {
+          "name": "oyRestHour10"
+        },
+        {
+          "name": "oyRestHour9"
+        },
+        {
+          "name": "oyRestHour8"
+        },
+        {
+          "name": "oyRestHour23"
+        },
+        {
+          "name": "oyRestHour22"
+        },
+        {
+          "name": "oyRestHour21"
+        },
+        {
+          "name": "oyRestHour20"
+        },
+        {
+          "name": "oyRestHour19"
+        },
+        {
+          "name": "oyRestHour18"
+        },
+        {
+          "name": "oyRestHour17"
+        },
+        {
+          "name": "oyRestHour16"
+        }
+      ],
+      "description": "预约循环模式周六运行设置"
+    },
+    {
+      "name": "grSetCycResnSun",
+      "variants": [
+        {
+          "name": "allWorkHour7"
+        },
+        {
+          "name": "allWorkHour6"
+        },
+        {
+          "name": "allWorkHour5"
+        },
+        {
+          "name": "allWorkHour4"
+        },
+        {
+          "name": "allWorkHour3"
+        },
+        {
+          "name": "allWorkHour2"
+        },
+        {
+          "name": "allWorkHour1"
+        },
+        {
+          "name": "allWorkHour0"
+        },
+        {
+          "name": "allWorkHour15"
+        },
+        {
+          "name": "allWorkHour14"
+        },
+        {
+          "name": "allWorkHour13"
+        },
+        {
+          "name": "allWorkHour12"
+        },
+        {
+          "name": "allWorkHour11"
+        },
+        {
+          "name": "allWorkHour10"
+        },
+        {
+          "name": "allWorkHour9"
+        },
+        {
+          "name": "allWorkHour8"
+        },
+        {
+          "name": "allWorkHour23"
+        },
+        {
+          "name": "allWorkHour22"
+        },
+        {
+          "name": "allWorkHour21"
+        },
+        {
+          "name": "allWorkHour20"
+        },
+        {
+          "name": "allWorkHour19"
+        },
+        {
+          "name": "allWorkHour18"
+        },
+        {
+          "name": "allWorkHour17"
+        },
+        {
+          "name": "allWorkHour16"
+        }
+      ],
+      "description": "预约循环模式周日运行设置"
+    },
+    {
+      "name": "grAltitudeAdapt",
+      "variants": [
+        {
+          "name": "targetRatedPower"
+        },
+        {
+          "name": "targetCurveID"
+        }
+      ],
+      "description": "海拔自适应设置"
+    },
+    {
+      "name": "grVoiceSetScour",
+      "variants": [
+        {
+          "name": "voiceCommandNumber"
+        },
+        {
+          "name": "onOffStatus"
+        },
+        {
+          "name": "scourState"
+        },
+        {
+          "name": "scourTargetTemp"
+        }
+      ],
+      "description": "语音控制组命令"
+    },
+    {
+      "name": "grSetUserScene",
+      "variants": [
+        {
+          "name": "voiceCommandNumber"
+        },
+        {
+          "name": "onOffStatus"
+        },
+        {
+          "name": "scourState"
+        },
+        {
+          "name": "scourTargetTemp"
+        },
+        {
+          "name": "zeroColdWaterStatus"
+        },
+        {
+          "name": "waterfallMode"
+        },
+        {
+          "name": "pressurizeMode"
+        }
+      ],
+      "description": "语音WIFI使用场景设置"
+    }
+  ],
+  "Alarm": [
+    {
+      "name": "alarmCancel",
+      "description": "告警解除"
+    },
+    {
+      "name": "ignitionFailAlarm",
+      "description": "疑似火焰,点不着火"
+    },
+    {
+      "name": "flameoutAlarm",
+      "description": "中途熄火"
+    },
+    {
+      "name": "fanErr",
+      "description": "风机故障"
+    },
+    {
+      "name": "overHeatAlarm",
+      "description": "超温保护85℃"
+    },
+    {
+      "name": "TempSensorErr",
+      "description": "温度传感器故障"
+    },
+    {
+      "name": "dryHeatingAlarm",
+      "description": "干烧过热保护88℃"
+    },
+    {
+      "name": "displayBoardCommunicationErr",
+      "description": "通信故障"
+    },
+    {
+      "name": "pcCommunicationErr",
+      "description": "电力载波通讯故障"
+    },
+    {
+      "name": "dialSwitchErr",
+      "description": "拨码开关故障"
+    },
+    {
+      "name": "memoryChipErr",
+      "description": "记忆芯片故障"
+    },
+    {
+      "name": "exhaustPlugErr",
+      "description": "风堵故障"
+    },
+    {
+      "name": "backwaterTempSensorErr",
+      "description": "回水温度传感器故障"
+    },
+    {
+      "name": "waterPumpErr",
+      "description": "水泵故障"
+    },
+    {
+      "name": "windPressureSwitchErr",
+      "description": "风压开关故障"
+    },
+    {
+      "name": "gasDensityOverHighAlarm",
+      "description": "报警器气体浓度超标报警"
+    },
+    {
+      "name": "alarmSensorErr",
+      "description": "报警器传感器故障"
+    },
+    {
+      "name": "waterServoErr",
+      "description": "水伺服故障"
+    },
+    {
+      "name": "ch4ExceedAlarm",
+      "description": "CH4浓度超标报警"
+    },
+    {
+      "name": "ch4SensorErr",
+      "description": "报警器CH4传感器故障"
+    },
+    {
+      "name": "alarmCommunicationErr",
+      "description": "报警器通讯故障"
+    },
+    {
+      "name": "volumeCodeErr",
+      "description": "升数拨码故障"
+    },
+    {
+      "name": "drainPipeBlockAlarm",
+      "description": "冷凝水排水管堵塞"
+    },
+    {
+      "name": "plcCommErr",
+      "description": "PLC通讯故障"
+    },
+    {
+      "name": "valveErr",
+      "description": "阀故障"
+    },
+    {
+      "name": "clockChipErr",
+      "description": "时钟芯片故障"
+    },
+    {
+      "name": "wifiCommunicationErr",
+      "description": "Wifi模块通讯故障"
+    },
+    {
+      "name": "circPumpAntifreezingErr",
+      "description": "循环泵防冻故障"
+    }
+  ],
+  "InvalidInfo": []
+}
