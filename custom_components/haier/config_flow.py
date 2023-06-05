@@ -2,10 +2,10 @@ import logging
 from typing import Any, Dict
 
 import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.data_entry_flow import FlowResult
+
 from .const import DOMAIN
 from .haier import HaierClient, HaierClientException
 

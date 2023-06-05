@@ -20,7 +20,7 @@
       },
       "description": "出水温度",
       "defaultValue": null,
-      "disable": true
+      "disable": false
     },
     {
       "name": "inWaterTemp",
