@@ -24,12 +24,9 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 # 校验账号密码是否正确
-                session = await HaierClient.get_session(user_input['username'], user_input['password'])
+                await HaierClient.get_session(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
 
-                data = user_input
-                data['token'] = session.get_token()
-
-                return self.async_create_entry(title="haier", data=data)
+                return self.async_create_entry(title="haier", data=user_input)
             except HaierClientException as e:
                 _LOGGER.warning(str(e))
                 errors['base'] = 'auth_error'
