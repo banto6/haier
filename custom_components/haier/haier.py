@@ -1,10 +1,13 @@
 import hashlib
 import json
+import logging
 import random
 import time
 from urllib.parse import urlparse
 
 import aiohttp
+
+_LOGGER = logging.getLogger(__name__)
 
 CLIENT_ID = 'upluszhushou'
 CLIENT_SECRET = 'eZOQScs1pjXyzs'
@@ -105,6 +108,9 @@ class HaierClient:
         async with aiohttp.ClientSession() as http_client:
             async with http_client.get(url=url) as response:
                 content = await response.json(content_type=None)
+
+                if 'data' not in content or 'url' not in content['data']:
+                    _LOGGER.error('获取配置信息失败, wifi_type: {}, response: {}'.format(wifi_type, json.dumps(content)))
 
                 async with http_client.get(url=content['data']['url']) as config_resp:
                     return await config_resp.json(content_type=None)
