@@ -111,6 +111,7 @@ class HaierClient:
 
                 if 'data' not in content or 'url' not in content['data']:
                     _LOGGER.error('获取配置信息失败, wifi_type: {}, response: {}'.format(wifi_type, json.dumps(content)))
+                    raise HaierClientException('获取配置文件失败')
 
                 async with http_client.get(url=content['data']['url']) as config_resp:
                     return await config_resp.json(content_type=None)

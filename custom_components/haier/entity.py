@@ -14,12 +14,13 @@ class HaierAbstractEntity(CoordinatorEntity, ABC):
 
     _spec: None
 
-    def __init__(self, coordinator: DeviceCoordinator, spec: str):
+    def __init__(self, coordinator: DeviceCoordinator, spec: dict):
         super().__init__(coordinator, context=coordinator.device_id)
         self._attr_unique_id = '{}_{}'.format(coordinator.device_id, spec['key']).lower()
+        self.entity_id = '{}.{}'.format(coordinator.device_id, spec['key']).lower()
         _LOGGER.debug('unique_id: {}'.format(self._attr_unique_id))
 
-        self._attr_name = spec['key']
+        self._attr_name = spec['display_name']
         self._attr_device_info = coordinator.device
         self._spec = spec
         self._update_value()

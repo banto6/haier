@@ -1,7 +1,6 @@
 import logging
 from datetime import timedelta
 
-from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -55,13 +54,45 @@ class DeviceCoordinator(DataUpdateCoordinator):
             if config_property['writable']:
                 continue
 
+            if config_property['type'] == 'bool':
+                continue
+
+            formatter = {}
+            if config_property['type'] in ['enum']:
+                for item in config_property['variants']:
+                    formatter[str(item['stdValue'])] = item['description']
+
             sensors.append({
                 'key': config_property['name'],
-                'device_class': SensorDeviceClass.TEMPERATURE,
-                'native_unit_of_measurement': ''
+                'display_name': config_property['description'],
+                # 'device_class': SensorDeviceClass.TEMPERATURE,
+                # 'native_unit_of_measurement': ''
+                'value_formatter': formatter
             })
 
         return sensors
+
+    @property
+    def binary_sensors(self):
+        binary_sensors = []
+        for config_property in self._device['config']['Property']:
+            # 跳过已禁用的项目
+            if 'disable' in config_property and config_property['disable']:
+                continue
+
+            # 可写表示可操作，因为不应该归为传感器
+            if config_property['writable']:
+                continue
+
+            if config_property['type'] != 'bool':
+                continue
+
+            binary_sensors.append({
+                'key': config_property['name'],
+                'display_name': config_property['description']
+            })
+
+        return binary_sensors
 
     @property
     def numbers(self):
@@ -75,6 +106,7 @@ class DeviceCoordinator(DataUpdateCoordinator):
             if config_property['writable'] and config_property['type'] in ['int', 'double']:
                 numbers.append({
                     'key': config_property['name'],
+                    'display_name': config_property['description'],
                     'minValue': config_property['variants']['minValue'],
                     'maxValue': config_property['variants']['maxValue'],
                     'step': config_property['variants']['step'],
@@ -94,11 +126,28 @@ class DeviceCoordinator(DataUpdateCoordinator):
             if config_property['writable'] and config_property['type'] in ['enum']:
                 selects.append({
                     'key': config_property['name'],
+                    'display_name': config_property['description'],
                     'options': [{'value': item['stdValue'], 'label': item['description']} for item in
                                 config_property['variants']]
                 })
 
         return selects
+
+    @property
+    def switch(self):
+        switch = []
+        for config_property in self._device['config']['Property']:
+            # 跳过已禁用的项目
+            if 'disable' in config_property and config_property['disable']:
+                continue
+
+            if config_property['writable'] and config_property['type'] in ['bool']:
+                switch.append({
+                    'key': config_property['name'],
+                    'display_name': config_property['description']
+                })
+
+        return switch
 
     async def _async_update_data(self):
         return await self._client.get_last_report_status_by_device(self._device['deviceId'])

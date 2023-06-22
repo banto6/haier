@@ -1,10 +1,10 @@
-import json
 import logging
 import os
 from typing import List
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers.typing import HomeAssistantType
 
@@ -15,19 +15,21 @@ from .haier import HaierClient, Session
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {})
 
-    coordinators = []
-
     client = HaierClient(Session({'uhome_access_token': await get_token(hass, entry, True)}))
-    devices = await client.get_devices()
 
+    devices = await client.get_devices()
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
 
+    coordinators = []
     for device in devices:
-        coordinator = await new_device_coordinator(hass, client, device)
-        coordinators.append(coordinator)
+        try:
+            coordinator = await new_device_coordinator(hass, client, device)
+            coordinators.append(coordinator)
+        except Exception:
+            _LOGGER.exception('设备[{}]初始化失败', device['deviceId'])
 
     hass.data[DOMAIN]['coordinators'] = coordinators
 
@@ -44,14 +46,14 @@ async def new_device_coordinator(hass, client: HaierClient, device):
 
     device_profile = os.path.dirname(__file__) + '/device_profiles/' + device['wifiType'] + '.json'
     _LOGGER.debug('device_profile: {}'.format(device_profile))
-    if os.path.exists(device_profile):
-        with open(device_profile, 'r') as fp:
-            device['config'] = json.load(fp)
-
-        _LOGGER.debug('设备[{}]已使用本地描述文件'.format(device['deviceId']))
-    else:
-        device['config'] = await client.get_hardware_config(device['wifiType'])
-        _LOGGER.debug('设备[{}]已使用云端描述文件'.format(device['deviceId']))
+    # if os.path.exists(device_profile):
+    #     with open(device_profile, 'r') as fp:
+    #         device['config'] = json.load(fp)
+    #
+    #     _LOGGER.debug('设备[{}]已使用本地描述文件'.format(device['deviceId']))
+    # else:
+    device['config'] = await client.get_hardware_config(device['wifiType'])
+        # _LOGGER.debug('设备[{}]已使用云端描述文件'.format(device['deviceId']))
 
     coordinator = DeviceCoordinator(hass, client, device)
     await coordinator.async_config_entry_first_refresh()

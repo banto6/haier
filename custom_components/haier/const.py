@@ -4,5 +4,7 @@ DOMAIN = 'haier'
 PLATFORMS = [
     'select',
     'number',
-    'sensor'
+    'sensor',
+    'binary_sensor',
+    'switch'
 ]
