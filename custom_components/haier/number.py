@@ -25,7 +25,11 @@ class HaierNumber(HaierAbstractEntity, NumberEntity):
         self._attr_native_min_value = spec['minValue']
         self._attr_native_max_value = spec['maxValue']
         self._attr_native_step = spec['step']
-        self._attr_device_class = NumberDeviceClass.TEMPERATURE
+
+        device_class, unit = self._speculation_device_class()
+        if device_class is not None:
+            self._attr_device_class = device_class
+            self._attr_native_unit_of_measurement = unit
 
     def _update_value(self):
         self._attr_native_value = self.coordinator.data[self._spec['key']]
@@ -34,5 +38,11 @@ class HaierNumber(HaierAbstractEntity, NumberEntity):
         self._send_command({
             self._spec['key']: value
         })
+
+    def _speculation_device_class(self):
+        if self._spec['unit'] in ['℃']:
+            return NumberDeviceClass.TEMPERATURE, '°C'
+
+        return None, None
 
 

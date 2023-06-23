@@ -65,8 +65,7 @@ class DeviceCoordinator(DataUpdateCoordinator):
             sensors.append({
                 'key': config_property['name'],
                 'display_name': config_property['description'],
-                # 'device_class': SensorDeviceClass.TEMPERATURE,
-                # 'native_unit_of_measurement': ''
+                'unit': config_property['variants']['unit'] if 'unit' in config_property['variants'] else None,
                 'value_formatter': formatter
             })
 
@@ -110,6 +109,7 @@ class DeviceCoordinator(DataUpdateCoordinator):
                     'minValue': config_property['variants']['minValue'],
                     'maxValue': config_property['variants']['maxValue'],
                     'step': config_property['variants']['step'],
+                    'unit': config_property['variants']['unit'] if 'unit' in config_property['variants'] else None,
                 })
 
         return numbers
