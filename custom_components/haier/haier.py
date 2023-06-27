@@ -3,6 +3,7 @@ import json
 import logging
 import random
 import time
+from datetime import datetime
 from urllib.parse import urlparse
 
 import aiohttp
@@ -27,25 +28,54 @@ class HaierClientException(Exception):
     pass
 
 
-class Session:
-
-    def __init__(self, session):
-        self._session = session
-
-    def get_token(self):
-        return self._session['uhome_access_token']
-
-
 class HaierClient:
 
-    def __init__(self, session: Session):
-        self._session = session
+    _token: str = None
+
+    _token_created_at: datetime = None
+
+    def __init__(self, username: str, password: str):
+        self._username = username
+        self._password = password
+
+    async def try_login(self):
+        data = {
+            'client_id': 'upluszhushou',
+            'client_secret': 'eZOQScs1pjXyzs',
+            'grant_type': 'password',
+            'connection': 'basic_password',
+            'username': self._username,
+            'password': self._password,
+            'type_uhome': 'type_uhome_common_token',
+            'uhome_client_id': UHONE_CLIENT_ID,
+            'uhome_app_id': APP_ID,
+            'uhome_sign': HaierClient._binary_to_hex_string(
+                hashlib.sha256((APP_ID + APP_KEY + UHONE_CLIENT_ID).encode('utf-8')).digest()
+            )
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url=TOKEN_API, data=data) as response:
+                content = await response.json()
+
+                if 'error' in content:
+                    raise HaierClientException(content['error'])
+
+                self._token = content['uhome_access_token']
+                self._token_created_at = datetime.now()
+
+    async def get_token(self):
+        # 未登录或9天后自动重新登录
+        if self._token is None or (datetime.now() - self._token_created_at).days >= 9:
+            await self.try_login()
+
+        return self._token
 
     async def get_devices(self):
         """
         获取设备列表
         """
-        headers = self._generate_common_headers(GET_DEVICES_API)
+        headers = await self._generate_common_headers(GET_DEVICES_API)
         async with aiohttp.ClientSession() as http_client:
             async with http_client.get(url=GET_DEVICES_API, headers=headers) as response:
                 content = await response.json(content_type=None)
@@ -58,7 +88,7 @@ class HaierClient:
         获取设备网络质量
         """
         url = GET_DEVICE_NET_QUALITY_API.format(device_id)
-        headers = self._generate_common_headers(url)
+        headers = await self._generate_common_headers(url)
 
         async with aiohttp.ClientSession() as http_client:
             async with http_client.get(url=url, headers=headers) as response:
@@ -72,7 +102,7 @@ class HaierClient:
         获取设备最新状态
         """
         url = GET_DEVICE_LAST_REPORT_STATUS_API.format(device_id)
-        headers = self._generate_common_headers(url)
+        headers = await self._generate_common_headers(url)
 
         async with aiohttp.ClientSession() as http_client:
             async with http_client.get(url=url, headers=headers) as response:
@@ -95,7 +125,7 @@ class HaierClient:
             }]
         }
 
-        headers = self._generate_common_headers(url, json.dumps(payload))
+        headers = await self._generate_common_headers(url, json.dumps(payload))
 
         async with aiohttp.ClientSession() as http_client:
             async with http_client.post(url=url, headers=headers, json=payload) as response:
@@ -116,33 +146,7 @@ class HaierClient:
                 async with http_client.get(url=content['data']['url']) as config_resp:
                     return await config_resp.json(content_type=None)
 
-    @staticmethod
-    async def get_session(username: str, password: str):
-        data = {
-            'client_id': 'upluszhushou',
-            'client_secret': 'eZOQScs1pjXyzs',
-            'grant_type': 'password',
-            'connection': 'basic_password',
-            'username': username,
-            'password': password,
-            'type_uhome': 'type_uhome_common_token',
-            'uhome_client_id': UHONE_CLIENT_ID,
-            'uhome_app_id': APP_ID,
-            'uhome_sign': HaierClient._binary_to_hex_string(
-                hashlib.sha256((APP_ID + APP_KEY + UHONE_CLIENT_ID).encode('utf-8')).digest()
-            )
-        }
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url=TOKEN_API, data=data) as response:
-                content = await response.json()
-
-                if 'error' in content:
-                    raise HaierClientException(content['error'])
-
-                return Session(content)
-
-    def _generate_common_headers(self, api, body=''):
+    async def _generate_common_headers(self, api, body=''):
         timestamp = str(int(time.time() * 1000))
         # 报文流水(客户端唯一)客户端交易流水号。20位,
         # 前14位时间戳（格式：yyyyMMddHHmmss）,
@@ -150,7 +154,7 @@ class HaierClient:
         sequence_id = time.strftime('%Y%m%d%H%M%S') + str(random.randint(100000, 999999))
 
         return {
-            'accessToken': self._session.get_token(),
+            'accessToken': await self.get_token(),
             'appId': APP_ID,
             'appKey': APP_KEY,
             'appVersion': '1.0',

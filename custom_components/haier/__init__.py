@@ -5,12 +5,11 @@ from typing import List
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.storage import Store
 from homeassistant.helpers.typing import HomeAssistantType
 
 from .const import PLATFORMS, DOMAIN
 from .coordinator import DeviceCoordinator
-from .haier import HaierClient, Session
+from .haier import HaierClient
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,7 +17,11 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {})
 
-    client = HaierClient(Session({'uhome_access_token': await get_token(hass, entry, True)}))
+    # if entry.data:
+    #     _LOGGER.info('entry data:')
+    #     _LOGGER.info(entry.data)
+
+    client = HaierClient(entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD])
 
     devices = await client.get_devices()
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
@@ -75,21 +78,6 @@ async def async_register_entity(hass: HomeAssistantType, entry: ConfigEntry, asy
             entities.append(platform(coordinator, spec))
 
     async_add_entities(entities)
-
-
-async def get_token(hass: HomeAssistantType, entry: ConfigEntry, force_refresh=False):
-    store = Store(hass, 1, 'haier/{}/token'.format(entry.data[CONF_USERNAME]))
-    token = await store.async_load() or None
-
-    if token is None or force_refresh:
-        session = await HaierClient.get_session(entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD])
-        token = session.get_token()
-
-        _LOGGER.debug('已获取到新token: {}'.format(token))
-
-        await store.async_save(token)
-
-    return token
 
 
 
