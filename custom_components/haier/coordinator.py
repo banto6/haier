@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import timedelta
 
@@ -150,4 +151,8 @@ class DeviceCoordinator(DataUpdateCoordinator):
         return switch
 
     async def _async_update_data(self):
-        return await self._client.get_last_report_status_by_device(self._device['deviceId'])
+        data = await self._client.get_last_report_status_by_device(self._device['deviceId'])
+
+        _LOGGER.debug('设备[{}]已获取到最新状态数据: {}'.format(self._device['deviceId'], json.dumps(data)))
+
+        return data

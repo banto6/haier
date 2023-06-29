@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from typing import List
@@ -32,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             coordinator = await new_device_coordinator(hass, client, device)
             coordinators.append(coordinator)
         except Exception:
-            _LOGGER.exception('设备[{}]初始化失败', device['deviceId'])
+            _LOGGER.exception('设备[{}]初始化失败'.format(device['deviceId']))
 
     hass.data[DOMAIN]['coordinators'] = coordinators
 
@@ -45,10 +46,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 async def new_device_coordinator(hass, client: HaierClient, device):
+    _LOGGER.debug('Device Info: {}'.format(json.dumps(device)))
+
     device['net'] = await client.get_net_quality_by_device(device['deviceId'])
 
-    device_profile = os.path.dirname(__file__) + '/device_profiles/' + device['wifiType'] + '.json'
-    _LOGGER.debug('device_profile: {}'.format(device_profile))
+    # device_profile = os.path.dirname(__file__) + '/device_profiles/' + device['wifiType'] + '.json'
+    # _LOGGER.debug('device_profile: {}'.format(device_profile))
     # if os.path.exists(device_profile):
     #     with open(device_profile, 'r') as fp:
     #         device['config'] = json.load(fp)
