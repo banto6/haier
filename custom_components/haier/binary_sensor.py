@@ -7,6 +7,7 @@ from homeassistant.helpers.typing import HomeAssistantType
 from . import async_register_entity
 from .coordinator import DeviceCoordinator
 from .entity import HaierAbstractEntity
+from .helpers import try_read_as_bool
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,19 +26,10 @@ class HaierBinarySensor(HaierAbstractEntity, BinarySensorEntity):
         self._attr_device_class = BinarySensorDeviceClass.WINDOW
 
     def _update_value(self):
-        value = self.coordinator.data[self._spec['key']]
-
-        converted_value = None
-        if isinstance(value, bool):
-            converted_value = value
-
-        if isinstance(value, str):
-            converted_value = value == 'true'
-
-        if converted_value is not None:
-            self._attr_is_on = converted_value
-        else:
-            _LOGGER.warning('无法识别值[{}]'.format(value))
+        try:
+            self._attr_is_on = try_read_as_bool(self.coordinator.data[self._spec['key']])
+        except ValueError:
+            _LOGGER.exception('entity [{}] read value failed'.format(self._attr_unique_id))
             self._attr_available = False
 
 

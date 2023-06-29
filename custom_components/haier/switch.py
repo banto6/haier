@@ -8,6 +8,7 @@ from homeassistant.helpers.typing import HomeAssistantType
 from . import async_register_entity
 from .coordinator import DeviceCoordinator
 from .entity import HaierAbstractEntity
+from .helpers import try_read_as_bool
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +27,11 @@ class HaierSwitch(HaierAbstractEntity, SwitchEntity):
         self.__attr_device_class = SwitchDeviceClass.SWITCH
 
     def _update_value(self):
-        self._attr_is_on = self.coordinator.data[self._spec['key']]
+        try:
+            self._attr_is_on = try_read_as_bool(self.coordinator.data[self._spec['key']])
+        except ValueError:
+            _LOGGER.exception('entity [{}] read value failed'.format(self._attr_unique_id))
+            self._attr_available = False
 
     def turn_on(self, **kwargs: Any) -> None:
         self._send_command({
