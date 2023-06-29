@@ -2,3 +2,5 @@
 __pycache__/
 venv
 push_test_server.sh
+custom_components/haier/device_profiles
+custom_components/haier/virtual_devices

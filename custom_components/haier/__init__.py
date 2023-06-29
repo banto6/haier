@@ -1,3 +1,4 @@
+import glob
 import json
 import logging
 import os
@@ -24,7 +25,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     client = HaierClient(entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD])
 
-    devices = await client.get_devices()
+    devices = (await client.get_devices()) + get_virtual_devices()
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
 
     coordinators = []
@@ -45,10 +46,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
+def get_virtual_devices():
+    target_folder = os.path.dirname(__file__) + '/virtual_devices'
+    if not os.path.exists(target_folder):
+        return []
+
+    devices = []
+    for file in glob.glob(target_folder + '/*.json'):
+        with open(file, 'r') as fp:
+            device = json.load(fp)
+            device['virtual'] = True
+            devices.append(device)
+
+    return devices
+
+
 async def new_device_coordinator(hass, client: HaierClient, device):
     _LOGGER.debug('Device Info: {}'.format(json.dumps(device)))
 
-    device['net'] = await client.get_net_quality_by_device(device['deviceId'])
+    if 'virtual' not in device.keys():
+        device['net'] = await client.get_net_quality_by_device(device['deviceId'])
 
     # device_profile = os.path.dirname(__file__) + '/device_profiles/' + device['wifiType'] + '.json'
     # _LOGGER.debug('device_profile: {}'.format(device_profile))
