@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from homeassistant.core import callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from . import DOMAIN
 from .coordinator import DeviceCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -15,13 +16,12 @@ class HaierAbstractEntity(CoordinatorEntity, ABC):
     _spec: None
 
     def __init__(self, coordinator: DeviceCoordinator, spec: dict):
-        super().__init__(coordinator, context=coordinator.device_id)
-        self._attr_unique_id = '{}_{}'.format(coordinator.device_id, spec['key']).lower()
-        self.entity_id = '{}.{}'.format(coordinator.device_id, spec['key']).lower()
-        _LOGGER.debug('unique_id: {}'.format(self._attr_unique_id))
+        super().__init__(coordinator, context=coordinator.device.id)
+        self._attr_unique_id = '{}.{}_{}'.format(DOMAIN, coordinator.device.id, spec['key']).lower()
+        self.entity_id = self._attr_unique_id
 
         self._attr_name = spec['display_name']
-        self._attr_device_info = coordinator.device
+        self._attr_device_info = coordinator.device_info
         self._spec = spec
         self._update_value()
 

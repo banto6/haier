@@ -1,0 +1,58 @@
+{
+    "config": {
+        "error": {
+            "auth_error": "认证失败"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "username": "用户名",
+                    "password": "密码"
+                },
+                "description": "配置海尔智家账户",
+                "title": "配置账户信息"
+            }
+        }
+    },
+    "options": {
+        "error": {
+            "auth_error": "认证失败"
+        },
+        "step": {
+            "init": {
+                "menu_options": {
+                    "account": "更新账户",
+                    "device": "过滤设备",
+                    "entity_device_selector": "过滤实体"
+                }
+            },
+            "account": {
+                "data": {
+                    "username": "用户名",
+                    "password": "密码"
+                },
+                "description": "更新海尔智家账户",
+                "title": "更新账户信息"
+            },
+            "device": {
+                "title": "过滤设备",
+                "description": "过滤方式为Exclude时，设备列表中已勾选的设备将不会接入；过滤方式为Include时则只接入设备列表中已勾选的设备",
+                "data": {
+                    "filter_method": "过滤方式",
+                    "devices": "设备列表"
+                }
+            },
+            "entity_device_selector": {
+                "data": {
+                    "target_device": "目标设备"
+                }
+            },
+            "entity_filter": {
+                "data": {
+                    "entity_filter_method": "过滤方式",
+                    "entities": "实体列表"
+                }
+            }
+        }
+    }
+}

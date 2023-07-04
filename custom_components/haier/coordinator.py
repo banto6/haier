@@ -1,52 +1,55 @@
 import json
 import logging
+import os
 from datetime import timedelta
 
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import DOMAIN
-from .haier import HaierClient
+from .haier import HaierClient, HaierDevice
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class DeviceCoordinator(DataUpdateCoordinator):
 
-    def __init__(self, hass, client: HaierClient, device):
+    def __init__(self, hass, client: HaierClient, device: HaierDevice, sw_version, specs):
         super().__init__(
             hass,
             _LOGGER,
-            name='Haier Device [' + device['deviceId'] + ']',
+            name='Haier Device [' + device.id + ']',
             update_interval=timedelta(seconds=15),
         )
 
         self._client = client
         self._device = device
         self._device_info = DeviceInfo(
-            identifiers={(DOMAIN, device['deviceId'].lower())},
-            name=device['deviceName'],
-            manufacturer='haier',
-            model=device['productNameT'],
-            sw_version=device['net']['hardwareVers']
+            identifiers={(DOMAIN, device.id.lower())},
+            name=device.name,
+            manufacturer='海尔',
+            model=device.product_name,
+            sw_version=sw_version
         )
+
+        self._specs = specs
 
     @property
     def client(self):
         return self._client
 
     @property
-    def device_id(self):
-        return self._device['deviceId']
+    def device(self) -> HaierDevice:
+        return self._device
 
     @property
-    def device(self):
+    def device_info(self) -> DeviceInfo:
         return self._device_info
 
     @property
     def sensors(self):
         sensors = []
-        for config_property in self._device['config']['Property']:
+        for config_property in self._specs['Property']:
             # 跳过已禁用的项目
             if 'disable' in config_property and config_property['disable']:
                 continue
@@ -75,7 +78,7 @@ class DeviceCoordinator(DataUpdateCoordinator):
     @property
     def binary_sensors(self):
         binary_sensors = []
-        for config_property in self._device['config']['Property']:
+        for config_property in self._specs['Property']:
             # 跳过已禁用的项目
             if 'disable' in config_property and config_property['disable']:
                 continue
@@ -97,7 +100,7 @@ class DeviceCoordinator(DataUpdateCoordinator):
     @property
     def numbers(self):
         numbers = []
-        for config_property in self._device['config']['Property']:
+        for config_property in self._specs['Property']:
             # 跳过已禁用的项目
             if 'disable' in config_property and config_property['disable']:
                 continue
@@ -118,7 +121,7 @@ class DeviceCoordinator(DataUpdateCoordinator):
     @property
     def selects(self):
         selects = []
-        for config_property in self._device['config']['Property']:
+        for config_property in self._specs['Property']:
             # 跳过已禁用的项目
             if 'disable' in config_property and config_property['disable']:
                 continue
@@ -137,7 +140,7 @@ class DeviceCoordinator(DataUpdateCoordinator):
     @property
     def switch(self):
         switch = []
-        for config_property in self._device['config']['Property']:
+        for config_property in self._specs['Property']:
             # 跳过已禁用的项目
             if 'disable' in config_property and config_property['disable']:
                 continue
@@ -151,11 +154,12 @@ class DeviceCoordinator(DataUpdateCoordinator):
         return switch
 
     async def _async_update_data(self):
-        if 'virtual' in self._device.keys():
-            return self._device['data']
+        if self.device.is_virtual:
+            with open(os.path.dirname(__file__) + '/virtual_devices/{}.json'.format(self.device.id)) as fp:
+                return json.load(fp)['data']
 
-        data = await self._client.get_last_report_status_by_device(self._device['deviceId'])
+        data = await self._client.get_last_report_status_by_device(self._device.id)
 
-        _LOGGER.debug('设备[{}]已获取到最新状态数据: {}'.format(self._device['deviceId'], json.dumps(data)))
+        _LOGGER.debug('设备[{}]已获取到最新状态数据: {}'.format(self._device.id, json.dumps(data)))
 
         return data

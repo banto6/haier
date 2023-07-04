@@ -4,6 +4,7 @@ import logging
 import random
 import time
 from datetime import datetime
+from typing import List
 from urllib.parse import urlparse
 
 import aiohttp
@@ -28,8 +29,43 @@ class HaierClientException(Exception):
     pass
 
 
-class HaierClient:
+class HaierDevice:
 
+    _raw_data: dict = None
+
+    def __init__(self, raw: dict):
+        self._raw_data = raw
+
+    @property
+    def id(self):
+        return self._raw_data['deviceId']
+
+    @property
+    def name(self):
+        return self._raw_data['deviceName']
+
+    @property
+    def type(self):
+        return self._raw_data['deviceType']
+
+    @property
+    def product_code(self):
+        return self._raw_data['productCodeT']
+
+    @property
+    def product_name(self):
+        return self._raw_data['productNameT']
+
+    @property
+    def wifi_type(self):
+        return self._raw_data['wifiType']
+
+    @property
+    def is_virtual(self):
+        return 'virtual' in self._raw_data and self._raw_data['virtual']
+
+
+class HaierClient:
     _token: str = None
 
     _token_created_at: datetime = None
@@ -71,7 +107,7 @@ class HaierClient:
 
         return self._token
 
-    async def get_devices(self):
+    async def get_devices(self) -> List[HaierDevice]:
         """
         获取设备列表
         """
@@ -81,7 +117,7 @@ class HaierClient:
                 content = await response.json(content_type=None)
                 self._assert_response_successful(content)
 
-                return content['deviceinfos']
+                return [HaierDevice(raw) for raw in content['deviceinfos']]
 
     async def get_net_quality_by_device(self, device_id: str):
         """
@@ -139,8 +175,9 @@ class HaierClient:
             async with http_client.get(url=url) as response:
                 content = await response.json(content_type=None)
 
-                if 'data' not in content or 'url' not in content['data']:
-                    _LOGGER.error('获取配置信息失败, wifi_type: {}, response: {}'.format(wifi_type, json.dumps(content)))
+                if 'data' not in content or content['data'] is None or 'url' not in content['data']:
+                    _LOGGER.error(
+                        '获取配置信息失败, wifi_type: {}, response: {}'.format(wifi_type, json.dumps(content)))
                     raise HaierClientException('获取配置文件失败')
 
                 async with http_client.get(url=content['data']['url']) as config_resp:
