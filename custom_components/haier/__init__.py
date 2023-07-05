@@ -9,7 +9,7 @@ from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import HomeAssistantType
 
-from .const import PLATFORMS, DOMAIN
+from .const import PLATFORMS, DOMAIN, CONF_ACCOUNT, CONF_DEVICE_FILTER, CONF_FILTER_TYPE, CONF_TARGET_DEVICES
 from .coordinator import DeviceCoordinator
 from .haier import HaierClient, HaierClientException, HaierDevice
 
@@ -19,18 +19,18 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {})
 
-    # _LOGGER.info(entry.options)
-    # _LOGGER.info(entry.data)
-
-    client = HaierClient(entry.data[CONF_USERNAME], entry.data[CONF_PASSWORD])
+    client = HaierClient(entry.data[CONF_ACCOUNT][CONF_USERNAME], entry.data[CONF_ACCOUNT][CONF_PASSWORD])
     await client.try_login()
 
     devices = (await client.get_devices()) + get_virtual_devices()
     hass.data[DOMAIN]['devices'] = devices
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
 
+    filtered_devices = get_filtered_devices(entry, devices)
+    _LOGGER.debug('经过过滤后共获取到{}个设备'.format(len(filtered_devices)))
+
     coordinators = []
-    for device in devices:
+    for device in filtered_devices:
         try:
             sw_version = 'N/A'
             if not device.is_virtual:
@@ -50,7 +50,52 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
 
+    entry.async_on_unload(entry.add_update_listener(entry_update_listener))
+
     return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
+    for platform in PLATFORMS:
+        if not await hass.config_entries.async_forward_entry_unload(entry, platform):
+            return False
+
+    hass.data[DOMAIN] = {}
+
+    return True
+
+
+async def entry_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Handle options update."""
+    _LOGGER.debug('reload.....')
+    await hass.config_entries.async_reload(entry.entry_id)
+
+
+async def async_migrate_entry(hass, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    _LOGGER.info("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+        config_entry.version = 2
+        hass.config_entries.async_update_entry(config_entry, data={
+            CONF_ACCOUNT: dict(config_entry.data)
+        })
+
+    _LOGGER.info("Migration to version %s successful", config_entry.version)
+
+    return True
+
+
+def get_filtered_devices(entry: ConfigEntry, devices: List[HaierDevice]) -> List[HaierDevice]:
+    cfg = entry.data.get(CONF_DEVICE_FILTER, {})
+    if not cfg:
+        _LOGGER.debug('未配置设备过滤规则')
+        return devices
+
+    if cfg[CONF_FILTER_TYPE] == 'exclude':
+        return [device for device in devices if device.id not in cfg[CONF_TARGET_DEVICES]]
+    else:
+        return [device for device in devices if device.id in cfg[CONF_TARGET_DEVICES]]
 
 
 def get_virtual_devices() -> List[HaierDevice]:
@@ -82,6 +127,3 @@ async def async_register_entity(hass: HomeAssistantType, entry: ConfigEntry, asy
             entities.append(platform(coordinator, spec))
 
     async_add_entities(entities)
-
-
-
