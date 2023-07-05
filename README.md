@@ -11,6 +11,8 @@
 
 配置 > 设备与服务 >  集成 >  添加集成 > 搜索`haier`
 
+或者点击: [![添加集成](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start?domain=haier)
+
 ## 已测试设备
 
 #### 热水器
