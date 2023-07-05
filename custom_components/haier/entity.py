@@ -37,7 +37,7 @@ class HaierAbstractEntity(CoordinatorEntity, ABC):
         :return:
         """
         async def execute():
-            await self.coordinator.client.send_command(self.coordinator.device_id, args)
+            await self.coordinator.client.send_command(self.coordinator.device.id, args)
             self._update_value()
             self.async_write_ha_state()
 
