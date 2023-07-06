@@ -23,7 +23,6 @@ class HaierBinarySensor(HaierAbstractEntity, BinarySensorEntity):
 
     def __init__(self, coordinator: DeviceCoordinator, spec: dict):
         super().__init__(coordinator, spec)
-        self._attr_device_class = BinarySensorDeviceClass.WINDOW
 
     def _update_value(self):
         try:
