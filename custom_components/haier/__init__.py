@@ -34,6 +34,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     coordinators = []
     for device in filtered_devices:
+        _LOGGER.debug('Device Info: {}'.format(device.__dict__))
         try:
             sw_version = 'N/A'
             if not device.is_virtual:
@@ -143,11 +144,12 @@ async def async_register_entity(hass: HomeAssistantType, entry: ConfigEntry, asy
                 _LOGGER.warning('{} not found in the data source'.format(spec['key']))
                 continue
 
-            if cfg[CONF_FILTER_TYPE] == 'exclude' and spec['key'] in cfg[CONF_TARGET_ENTITIES]:
-                continue
+            if cfg is not None:
+                if cfg[CONF_FILTER_TYPE] == 'exclude' and spec['key'] in cfg[CONF_TARGET_ENTITIES]:
+                    continue
 
-            if cfg[CONF_FILTER_TYPE] == 'include' and spec['key'] not in cfg[CONF_TARGET_ENTITIES]:
-                continue
+                if cfg[CONF_FILTER_TYPE] == 'include' and spec['key'] not in cfg[CONF_TARGET_ENTITIES]:
+                    continue
 
             entities.append(platform(coordinator, spec))
 
