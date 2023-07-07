@@ -2,7 +2,6 @@
 
 本插件可将海尔智家中的设备接入HomeAssistant，理论上支持所有设备。
 
-⚠️  **目前还处于开发中，建议先在测试环境测试后使用。**
 
 ## 安装
 下载并复制`custom_components/haier`文件夹到HomeAssistant根目录下的`custom_components`文件夹即可完成安装
