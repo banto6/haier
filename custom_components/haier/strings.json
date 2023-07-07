@@ -1,17 +1,64 @@
 {
-  "config": {
-    "error": {
-      "auth_error": "Authentication failed"
-    },
-    "step": {
-      "user": {
-        "data": {
-          "username": "Username",
-          "password": "Password"
+    "config": {
+        "error": {
+            "auth_error": "Authentication failed"
         },
-        "description": "Enter your Haier Account.",
-        "title": "Authentication"
-      }
+        "step": {
+            "user": {
+                "data": {
+                    "username": "Username",
+                    "password": "Password",
+                    "default_load_all_entity": "Default load all entity"
+                },
+                "description": "Enter your Haier Account.",
+                "title": "Configure account information"
+            }
+        }
+    },
+    "options": {
+        "error": {
+            "auth_error": "Authentication failed"
+        },
+        "step": {
+            "init": {
+                "menu_options": {
+                    "account": "Update account",
+                    "device": "Device Filter",
+                    "entity_device_selector": "Entity Filter"
+                }
+            },
+            "account": {
+                "title": "Account information",
+                "data": {
+                    "username": "Username",
+                    "password": "Password",
+                    "default_load_all_entity": "Default load all entity"
+                }
+            },
+            "device": {
+                "title": "Device Filter",
+                "description": "过滤方式为Exclude时，设备列表中已勾选的设备将不会接入；过滤方式为Include时则只接入设备列表中已勾选的设备",
+                "data": {
+                    "filter_method": "Filter method",
+                    "target_devices": "Device List"
+                }
+            },
+            "entity_device_selector": {
+                "title": "Select Device",
+                "description": "Please select the device to be operated",
+                "data": {
+                    "target_device": "Target Device"
+                }
+            },
+            "entity_filter": {
+                "title": "Entity Filter",
+                "description": "过滤方式为Exclude时，设备列表中已勾选的设备将不会接入；过滤方式为Include时则只接入设备列表中已勾选的设备",
+                "data": {
+                    "device_id": "Target device（do not modify）",
+                    "filter_method": "Filter method",
+                    "target_entities": "Entities"
+                }
+            }
+        }
     }
-  }
 }

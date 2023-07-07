@@ -9,7 +9,8 @@ from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import HomeAssistantType
 
-from .const import PLATFORMS, DOMAIN, CONF_ACCOUNT, CONF_DEVICE_FILTER, CONF_FILTER_TYPE, CONF_TARGET_DEVICES
+from .const import PLATFORMS, DOMAIN, CONF_ACCOUNT, CONF_DEVICE_FILTER, CONF_FILTER_TYPE, CONF_TARGET_DEVICES, \
+    CONF_ENTITY_FILTER, CONF_DEVICE_ID, CONF_DEFAULT_LOAD_ALL_ENTITY, CONF_TARGET_ENTITIES
 from .coordinator import DeviceCoordinator
 from .haier import HaierClient, HaierClientException, HaierDevice
 
@@ -20,6 +21,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {})
 
     client = HaierClient(entry.data[CONF_ACCOUNT][CONF_USERNAME], entry.data[CONF_ACCOUNT][CONF_PASSWORD])
+    hass.data[DOMAIN]['client'] = client
+
     await client.try_login()
 
     devices = (await client.get_devices()) + get_virtual_devices()
@@ -113,15 +116,37 @@ def get_virtual_devices() -> List[HaierDevice]:
     return devices
 
 
+def get_entity_filter_cfg_by_device(entry: ConfigEntry, device_id: str) -> dict|None:
+    cfg = entry.data.get(CONF_ENTITY_FILTER, [])
+    for item in cfg:
+        if item[CONF_DEVICE_ID] == device_id:
+            return item
+    else:
+        return None
+
+
 async def async_register_entity(hass: HomeAssistantType, entry: ConfigEntry, async_add_entities, platform,
                                 spec_attr) -> None:
     coordinators: List[DeviceCoordinator] = hass.data[DOMAIN]['coordinators']
-    entities = []
 
+    default_load_all_entity = entry.data.get(CONF_ACCOUNT, {}).get(CONF_DEFAULT_LOAD_ALL_ENTITY, True)
+
+    entities = []
     for coordinator in coordinators:
+        cfg = get_entity_filter_cfg_by_device(entry, coordinator.device.id)
+        if cfg is None:
+            if not default_load_all_entity:
+                continue
+
         for spec in getattr(coordinator, spec_attr):
             if spec['key'] not in coordinator.data.keys():
                 _LOGGER.warning('{} not found in the data source'.format(spec['key']))
+                continue
+
+            if cfg[CONF_FILTER_TYPE] == 'exclude' and spec['key'] in cfg[CONF_TARGET_ENTITIES]:
+                continue
+
+            if cfg[CONF_FILTER_TYPE] == 'include' and spec['key'] not in cfg[CONF_TARGET_ENTITIES]:
                 continue
 
             entities.append(platform(coordinator, spec))

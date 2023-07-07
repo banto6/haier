@@ -5,12 +5,13 @@
         },
         "step": {
             "user": {
+                "title": "账号设置",
+                "description": "配置海尔智家账户",
                 "data": {
                     "username": "用户名",
-                    "password": "密码"
-                },
-                "description": "配置海尔智家账户",
-                "title": "配置账户信息"
+                    "password": "密码",
+                    "default_load_all_entity": "默认加载所有实体"
+                }
             }
         }
     },
@@ -22,35 +23,40 @@
             "init": {
                 "menu_options": {
                     "account": "更新账户",
-                    "device": "过滤设备",
-                    "entity_device_selector": "过滤实体"
+                    "device": "设备筛选",
+                    "entity_device_selector": "实体筛选"
                 }
             },
             "account": {
+                "title": "账号设置",
                 "data": {
                     "username": "用户名",
-                    "password": "密码"
-                },
-                "description": "更新海尔智家账户",
-                "title": "更新账户信息"
+                    "password": "密码",
+                    "default_load_all_entity": "默认加载所有实体"
+                }
             },
             "device": {
-                "title": "过滤设备",
-                "description": "过滤方式为Exclude时，设备列表中已勾选的设备将不会接入；过滤方式为Include时则只接入设备列表中已勾选的设备",
+                "title": "设备筛选",
+                "description": "筛选方式为Exclude时，设备列表中已勾选的设备将不会接入；筛选方式为Include时则只接入设备列表中已勾选的设备",
                 "data": {
-                    "filter_method": "过滤方式",
-                    "devices": "设备列表"
+                    "filter_method": "筛选方式",
+                    "target_devices": "设备列表"
                 }
             },
             "entity_device_selector": {
+                "title": "设备选择",
+                "description": "请选择需要操作的设备",
                 "data": {
                     "target_device": "目标设备"
                 }
             },
             "entity_filter": {
+                "title": "实体筛选",
+                "description": "筛选方式为Exclude时，实体列表中已勾选的实体将不会接入；筛选方式为Include时则只接入实体列表中已勾选的实体",
                 "data": {
-                    "entity_filter_method": "过滤方式",
-                    "entities": "实体列表"
+                    "device_id": "目标设备（请勿修改）",
+                    "filter_type": "筛选方式",
+                    "target_entities": "实体列表"
                 }
             }
         }
