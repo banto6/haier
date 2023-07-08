@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: 运行报错/设备识别或操控异常
 title: ''
 labels: ''
 assignees: ''
