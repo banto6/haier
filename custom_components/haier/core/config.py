@@ -128,7 +128,7 @@ class EntityFilterConfig:
             return FILTER_TYPE_EXCLUDE if self._account_cfg.default_load_all_entity else FILTER_TYPE_INCLUDE
 
     def set_target_entities(self, device_id: str, entities: List[str]):
-        if isinstance(entities, list):
+        if not isinstance(entities, list):
             raise ValueError()
 
         for index, item in enumerate(self._cfg):
