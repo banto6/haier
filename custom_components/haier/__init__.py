@@ -5,13 +5,13 @@ import os
 from typing import List
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.typing import HomeAssistantType
 
-from .const import PLATFORMS, DOMAIN, CONF_ACCOUNT, CONF_DEVICE_FILTER, CONF_FILTER_TYPE, CONF_TARGET_DEVICES, \
-    CONF_ENTITY_FILTER, CONF_DEVICE_ID, CONF_DEFAULT_LOAD_ALL_ENTITY, CONF_TARGET_ENTITIES
+from .const import DOMAIN, SUPPORTED_PLATFORMS, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
 from .coordinator import DeviceCoordinator
+from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
 from .haier import HaierClient, HaierClientException, HaierDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -20,7 +20,8 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {})
 
-    client = HaierClient(entry.data[CONF_ACCOUNT][CONF_USERNAME], entry.data[CONF_ACCOUNT][CONF_PASSWORD])
+    account_cfg = AccountConfig(hass, entry)
+    client = HaierClient(account_cfg.username, account_cfg.password)
     hass.data[DOMAIN]['client'] = client
 
     await client.try_login()
@@ -29,7 +30,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN]['devices'] = devices
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
 
-    filtered_devices = get_filtered_devices(entry, devices)
+    filtered_devices = get_filtered_devices(hass, entry, devices)
     _LOGGER.debug('经过过滤后共获取到{}个设备'.format(len(filtered_devices)))
 
     coordinators = []
@@ -49,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     hass.data[DOMAIN]['coordinators'] = coordinators
 
-    for platform in PLATFORMS:
+    for platform in SUPPORTED_PLATFORMS:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, platform)
         )
@@ -60,7 +61,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    for platform in PLATFORMS:
+    for platform in SUPPORTED_PLATFORMS:
         if not await hass.config_entries.async_forward_entry_unload(entry, platform):
             return False
 
@@ -70,19 +71,17 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 async def entry_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Handle options update."""
     _LOGGER.debug('reload.....')
     await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_migrate_entry(hass, config_entry: ConfigEntry):
-    """Migrate old entry."""
     _LOGGER.info("Migrating from version %s", config_entry.version)
 
     if config_entry.version == 1:
         config_entry.version = 2
         hass.config_entries.async_update_entry(config_entry, data={
-            CONF_ACCOUNT: dict(config_entry.data)
+            'account': dict(config_entry.data)
         })
 
     _LOGGER.info("Migration to version %s successful", config_entry.version)
@@ -90,16 +89,13 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     return True
 
 
-def get_filtered_devices(entry: ConfigEntry, devices: List[HaierDevice]) -> List[HaierDevice]:
-    cfg = entry.data.get(CONF_DEVICE_FILTER, {})
-    if not cfg:
-        _LOGGER.debug('未配置设备过滤规则')
-        return devices
+def get_filtered_devices(hass, entry: ConfigEntry, devices: List[HaierDevice]) -> List[HaierDevice]:
+    cfg = DeviceFilterConfig(hass, entry)
 
-    if cfg[CONF_FILTER_TYPE] == 'exclude':
-        return [device for device in devices if device.id not in cfg[CONF_TARGET_DEVICES]]
+    if cfg.filter_type == FILTER_TYPE_EXCLUDE:
+        return [device for device in devices if device.id not in cfg.target_devices]
     else:
-        return [device for device in devices if device.id in cfg[CONF_TARGET_DEVICES]]
+        return [device for device in devices if device.id in cfg.target_devices]
 
 
 def get_virtual_devices() -> List[HaierDevice]:
@@ -117,39 +113,27 @@ def get_virtual_devices() -> List[HaierDevice]:
     return devices
 
 
-def get_entity_filter_cfg_by_device(entry: ConfigEntry, device_id: str) -> dict|None:
-    cfg = entry.data.get(CONF_ENTITY_FILTER, [])
-    for item in cfg:
-        if item[CONF_DEVICE_ID] == device_id:
-            return item
-    else:
-        return None
-
-
 async def async_register_entity(hass: HomeAssistantType, entry: ConfigEntry, async_add_entities, platform,
                                 spec_attr) -> None:
     coordinators: List[DeviceCoordinator] = hass.data[DOMAIN]['coordinators']
 
-    default_load_all_entity = entry.data.get(CONF_ACCOUNT, {}).get(CONF_DEFAULT_LOAD_ALL_ENTITY, True)
+    cfg = EntityFilterConfig(hass, entry)
 
     entities = []
     for coordinator in coordinators:
-        cfg = get_entity_filter_cfg_by_device(entry, coordinator.device.id)
-        if cfg is None:
-            if not default_load_all_entity:
-                continue
+        filter_type = cfg.get_filter_type(coordinator.device.id)
+        target_entities = cfg.get_target_entities(coordinator.device.id)
 
         for spec in getattr(coordinator, spec_attr):
             if spec['key'] not in coordinator.data.keys():
                 _LOGGER.warning('{} not found in the data source'.format(spec['key']))
                 continue
 
-            if cfg is not None:
-                if cfg[CONF_FILTER_TYPE] == 'exclude' and spec['key'] in cfg[CONF_TARGET_ENTITIES]:
-                    continue
+            if filter_type == FILTER_TYPE_EXCLUDE and spec['key'] in target_entities:
+                continue
 
-                if cfg[CONF_FILTER_TYPE] == 'include' and spec['key'] not in cfg[CONF_TARGET_ENTITIES]:
-                    continue
+            if filter_type == FILTER_TYPE_INCLUDE and spec['key'] not in target_entities:
+                continue
 
             entities.append(platform(coordinator, spec))
 

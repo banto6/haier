@@ -1,5 +1,4 @@
 import logging
-import time
 from typing import Any, Dict
 
 import voluptuous as vol
@@ -9,8 +8,8 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.config_validation import multi_select
 
-from .const import DOMAIN, CONF_ACCOUNT, CONF_DEVICE_FILTER, CONF_FILTER_TYPE, CONF_TARGET_DEVICES, \
-    CONF_TARGET_ENTITIES, CONF_ENTITY_FILTER, CONF_DEVICE_ID, CONF_DEFAULT_LOAD_ALL_ENTITY
+from .const import DOMAIN, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
+from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
 from .haier import HaierClient, HaierClientException
 
 _LOGGER = logging.getLogger(__name__)
@@ -19,12 +18,8 @@ _LOGGER = logging.getLogger(__name__)
 class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 2
 
-    async def async_step_user(
-            self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Handle a flow initiated by the user."""
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         errors: Dict[str, str] = {}
-
         if user_input is not None:
             try:
                 # 校验账号密码是否正确
@@ -32,7 +27,7 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 await client.try_login()
 
                 return self.async_create_entry(title="Haier - {}".format(user_input[CONF_USERNAME]), data={
-                    CONF_ACCOUNT: user_input
+                    'account': user_input
                 })
             except HaierClientException as e:
                 _LOGGER.warning(str(e))
@@ -44,7 +39,7 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(CONF_USERNAME): str,
                     vol.Required(CONF_PASSWORD): str,
-                    vol.Required(CONF_DEFAULT_LOAD_ALL_ENTITY, default=True): bool,
+                    vol.Required('default_load_all_entity', default=True): bool,
                 }
             ),
             errors=errors
@@ -52,10 +47,7 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(
-            config_entry: config_entries.ConfigEntry,
-    ) -> config_entries.OptionsFlow:
-        """Create the options flow."""
+    def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> config_entries.OptionsFlow:
         return OptionsFlowHandler(config_entry)
 
 
@@ -64,13 +56,25 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self.config_entry = config_entry
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """
+        功能菜单
+        :param user_input:
+        :return:
+        """
         return self.async_show_menu(
             step_id="init",
             menu_options=['account', 'device', 'entity_device_selector']
         )
 
     async def async_step_account(self,  user_input: dict[str, Any] | None = None) -> FlowResult:
+        """
+        账号设置
+        :param user_input:
+        :return:
+        """
         errors: Dict[str, str] = {}
+
+        cfg = AccountConfig(self.hass, self.config_entry)
 
         if user_input is not None:
             # 校验账号密码是否正确
@@ -78,42 +82,40 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             try:
                 await client.try_login()
 
-                self.hass.config_entries.async_update_entry(
-                    self.config_entry,
-                    title='Haier - {}'.format(user_input[CONF_USERNAME]),
-                    data={
-                        **self.config_entry.data,
-                        CONF_ACCOUNT: user_input
-                    }
-                )
+                cfg.username = user_input[CONF_USERNAME]
+                cfg.password = user_input[CONF_PASSWORD]
+                cfg.default_load_all_entity = user_input['default_load_all_entity']
+                cfg.save()
 
                 return self.async_create_entry(title='', data={})
             except HaierClientException as e:
                 _LOGGER.warning(str(e))
                 errors['base'] = 'auth_error'
 
-        cfg = self.config_entry.data.get(CONF_ACCOUNT, {})
         return self.async_show_form(
             step_id="account",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_USERNAME, default=cfg.get(CONF_USERNAME, '')): str,
-                    vol.Required(CONF_PASSWORD, default=cfg.get(CONF_PASSWORD, '')): str,
-                    vol.Required(CONF_DEFAULT_LOAD_ALL_ENTITY, default=cfg.get(CONF_DEFAULT_LOAD_ALL_ENTITY, False)): bool,
+                    vol.Required(CONF_USERNAME, default=cfg.username): str,
+                    vol.Required(CONF_PASSWORD, default=cfg.password): str,
+                    vol.Required('default_load_all_entity', default=cfg.default_load_all_entity): bool,
                 }
             ),
             errors=errors
         )
 
     async def async_step_device(self,  user_input: dict[str, Any] | None = None) -> FlowResult:
+        """
+        筛选设备
+        :param user_input:
+        :return:
+        """
+        cfg = DeviceFilterConfig(self.hass, self.config_entry)
+
         if user_input is not None:
-            self.hass.config_entries.async_update_entry(
-                self.config_entry,
-                data={
-                    **self.config_entry.data,
-                    CONF_DEVICE_FILTER: user_input
-                },
-            )
+            cfg.set_filter_type(user_input['filter_type'])
+            cfg.set_target_devices(user_input['target_devices'])
+            cfg.save()
 
             return self.async_create_entry(title='', data={})
 
@@ -121,21 +123,25 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         for item in self.hass.data[DOMAIN]['devices']:
             devices[item.id] = item.name
 
-        cfg = self.config_entry.data.get(CONF_DEVICE_FILTER, {})
         return self.async_show_form(
             step_id="device",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_FILTER_TYPE, default=cfg.get(CONF_FILTER_TYPE, 'exclude')): vol.In({
-                        'exclude': 'Exclude',
-                        'include': 'Include',
+                    vol.Required('filter_type', default=cfg.filter_type): vol.In({
+                        FILTER_TYPE_EXCLUDE: 'Exclude',
+                        FILTER_TYPE_INCLUDE: 'Include',
                     }),
-                    vol.Optional(CONF_TARGET_DEVICES, default=cfg.get(CONF_TARGET_DEVICES, [])): multi_select(devices)
+                    vol.Optional('target_devices', default=cfg.target_devices): multi_select(devices)
                 }
             )
         )
 
     async def async_step_entity_device_selector(self,  user_input: dict[str, Any] | None = None) -> FlowResult:
+        """
+        筛选实体（设备选择）
+        :param user_input:
+        :return:
+        """
         if user_input is not None:
             device_id, wifi_type = user_input['target_device'].split('#')
             self.hass.data[DOMAIN]['entity_filter_target_device'] = {
@@ -158,25 +164,17 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         )
 
     async def async_step_entity_filter(self,  user_input: dict[str, Any] | None = None) -> FlowResult:
-        if user_input is not None:
-            values = self.config_entry.data.get(CONF_ENTITY_FILTER, [])
-            for index, value in enumerate(values):
-                if value[CONF_DEVICE_ID] == user_input[CONF_DEVICE_ID]:
-                    values[index] = user_input
-                    break
-            else:
-                values.append(user_input)
+        """
+        筛选实体
+        :param user_input:
+        :return:
+        """
+        cfg = EntityFilterConfig(self.hass, self.config_entry)
 
-            self.hass.config_entries.async_update_entry(
-                self.config_entry,
-                data={
-                    **self.config_entry.data,
-                    CONF_ENTITY_FILTER: values,
-                    # async_update_entry 内部 entry.data != data 无法识别数组内容修改
-                    # 所以额外添加更新时间用于修复配置无法保存的问题，没有实际用途
-                    'entity_filter_updated_at': int(time.time())
-                }
-            )
+        if user_input is not None:
+            cfg.set_filter_type(user_input['device_id'], user_input['filter_type'])
+            cfg.set_target_entities(user_input['device_id'], user_input['target_entities'])
+            cfg.save()
 
             return self.async_create_entry(title='', data={})
 
@@ -189,22 +187,20 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         for spec in spec_resp['Property']:
             entities[spec['name']] = spec['description']
 
-        cfg = {}
-        for item in self.config_entry.data.get(CONF_ENTITY_FILTER, []):
-            if item[CONF_DEVICE_ID] == target_device['device_id']:
-                cfg = item
-                break
+        target_device_id = target_device['device_id']
 
         return self.async_show_form(
             step_id="entity_filter",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_DEVICE_ID, default=target_device['device_id']): str,
-                    vol.Required(CONF_FILTER_TYPE, default=cfg.get(CONF_FILTER_TYPE, 'include')): vol.In({
-                        'exclude': 'Exclude',
-                        'include': 'Include',
+                    vol.Required('device_id', default=target_device_id): str,
+                    vol.Required('filter_type', default=cfg.get_filter_type(target_device_id)): vol.In({
+                        FILTER_TYPE_EXCLUDE: 'Exclude',
+                        FILTER_TYPE_INCLUDE: 'Include',
                     }),
-                    vol.Optional(CONF_TARGET_ENTITIES, default=cfg.get(CONF_TARGET_ENTITIES, [])): multi_select(entities)
+                    vol.Optional('target_entities', default=cfg.get_target_entities(target_device_id)): multi_select(
+                        entities
+                    )
                 }
             )
         )
