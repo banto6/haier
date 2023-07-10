@@ -29,7 +29,7 @@ class AccountConfig:
     def save(self):
         self._hass.config_entries.async_update_entry(
             self._config,
-            title='Haier: {}'.format(self.password),
+            title='Haier: {}'.format(self.username),
             data={
                 **self._config.data,
                 'account': {
