@@ -150,6 +150,15 @@ async def async_register_entity(hass: HomeAssistant, entry: ConfigEntry, async_a
             if EntityFilterConfig.is_skip(hass, entry, device.id, attribute.key):
                 continue
 
+            if attribute.key not in coordinator.data:
+                _LOGGER.warning(
+                    'Device {} attribute {} not found in the coordinator'.format(
+                        device.id,
+                        attribute.key
+                    )
+                )
+                continue
+
             entities.append(setup(coordinator, device, attribute))
 
     async_add_entities(entities)
