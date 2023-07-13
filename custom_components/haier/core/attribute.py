@@ -79,7 +79,9 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         return None
 
     def parse_global(self, attributes: List[dict]):
-        pass
+        all_attribute_keys = [attribute['name'] for attribute in attributes]
+        if len(list(set(['targetTemperature', 'operationMode', 'windSpeed']) - set(all_attribute_keys))) == 0:
+            yield self._parse_as_climate(attributes)
 
     @staticmethod
     def _parse_as_sensor(attribute):
@@ -141,3 +143,11 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         }
 
         return HaierAttribute(attribute['name'], attribute['description'], Platform.SWITCH, options)
+
+    @staticmethod
+    def _parse_as_climate(attributes: List[dict]):
+        ext = {
+            'customize': True,
+        }
+
+        return HaierAttribute('climate', 'Climate', Platform.CLIMATE, ext=ext)
