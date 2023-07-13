@@ -63,12 +63,12 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
     def _update_value(self):
         if 'indoorTemperature' in self.coordinator.data:
-            self._attr_current_temperature = self.coordinator.data['indoorTemperature']
+            self._attr_current_temperature = float(self.coordinator.data['indoorTemperature'])
 
         if 'indoorHumidity' in self.coordinator.data:
-            self._attr_current_humidity = self.coordinator.data['indoorHumidity']
+            self._attr_current_humidity = float(self.coordinator.data['indoorHumidity'])
 
-        self._attr_target_temperature = self.coordinator.data['targetTemperature']
+        self._attr_target_temperature = float(self.coordinator.data['targetTemperature'])
 
         if not try_read_as_bool(self.coordinator.data['onOffStatus']):
             # 关机状态
