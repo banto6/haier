@@ -7,48 +7,30 @@ from typing import List
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntry
-from homeassistant.helpers.typing import HomeAssistantType
 
 from .const import DOMAIN, SUPPORTED_PLATFORMS, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
 from .coordinator import DeviceCoordinator
+from .core.attribute import HaierAttribute
+from .core.client import HaierClient
 from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
-from .haier import HaierClient, HaierClientException, HaierDevice
+from .core.device import HaierDevice
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    hass.data.setdefault(DOMAIN, {})
+    hass.data.setdefault(DOMAIN, {
+        'coordinators': {},
+        'devices': []
+    })
 
     account_cfg = AccountConfig(hass, entry)
     client = HaierClient(account_cfg.username, account_cfg.password)
-    hass.data[DOMAIN]['client'] = client
-
     await client.try_login()
 
-    devices = (await client.get_devices()) + get_virtual_devices()
+    devices = await get_available_devices(client)
     hass.data[DOMAIN]['devices'] = devices
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
-
-    filtered_devices = get_filtered_devices(hass, entry, devices)
-    _LOGGER.debug('经过过滤后共获取到{}个设备'.format(len(filtered_devices)))
-
-    coordinators = []
-    for device in filtered_devices:
-        _LOGGER.debug('Device Info: {}'.format(device.__dict__))
-        try:
-            sw_version = 'N/A'
-            if not device.is_virtual:
-                sw_version = (await client.get_net_quality_by_device(device.id))['hardwareVers']
-
-            specs = await client.get_hardware_config(device.wifi_type)
-            coordinator = DeviceCoordinator(hass, client, device, sw_version, specs)
-            await coordinator.async_config_entry_first_refresh()
-            coordinators.append(coordinator)
-        except Exception:
-            _LOGGER.exception('设备[{}]初始化失败'.format(device.id))
-
-    hass.data[DOMAIN]['coordinators'] = coordinators
 
     for platform in SUPPORTED_PLATFORMS:
         hass.async_create_task(
@@ -65,7 +47,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         if not await hass.config_entries.async_forward_entry_unload(entry, platform):
             return False
 
-    hass.data[DOMAIN] = {}
+    del hass.data[DOMAIN]
 
     return True
 
@@ -89,16 +71,48 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     return True
 
 
-def get_filtered_devices(hass, entry: ConfigEntry, devices: List[HaierDevice]) -> List[HaierDevice]:
-    cfg = DeviceFilterConfig(hass, entry)
+async def async_remove_config_entry_device(hass: HomeAssistant, config: ConfigEntry, device: DeviceEntry) -> bool:
+    device_id = list(device.identifiers)[0][1]
 
-    if cfg.filter_type == FILTER_TYPE_EXCLUDE:
-        return [device for device in devices if device.id not in cfg.target_devices]
+    _LOGGER.info('Device [{}] removing...'.format(device_id))
+
+    for device in hass.data[DOMAIN]['devices']:
+        if device.id.lower() == device_id:
+            target_device = device
+            break
     else:
-        return [device for device in devices if device.id in cfg.target_devices]
+        _LOGGER.error('Device [{}] not found'.format(device_id))
+        return False
+
+    cfg = DeviceFilterConfig(hass, config)
+    if cfg.filter_type == FILTER_TYPE_EXCLUDE:
+        cfg.add_device(target_device.id)
+    else:
+        cfg.remove_device(target_device.id)
+
+    cfg.save()
+
+    _LOGGER.info('Device [{}] removed'.format(device_id))
+
+    return True
 
 
-def get_virtual_devices() -> List[HaierDevice]:
+async def get_available_devices(client: HaierClient) -> List[HaierDevice]:
+    # 从账号中获取所有设备
+    devices = await client.get_devices() + await get_virtual_devices(client)
+    # 过滤掉未能获取到attribute的设备
+    available_devices = []
+    for device in devices:
+        attributes = device.attributes
+        if len(attributes) != 0:
+            available_devices.append(device)
+        else:
+            _LOGGER.error('Device [{}] 未获取到可用attribute'.format(device.id))
+
+    return available_devices
+
+
+async def get_virtual_devices(client: HaierClient) -> List[HaierDevice]:
     target_folder = os.path.dirname(__file__) + '/virtual_devices'
     if not os.path.exists(target_folder):
         return []
@@ -108,33 +122,34 @@ def get_virtual_devices() -> List[HaierDevice]:
         with open(file, 'r') as fp:
             device = json.load(fp)
             device['virtual'] = True
-            devices.append(HaierDevice(device))
+            device = HaierDevice(client, device)
+            await device.async_init()
+            devices.append(device)
 
     return devices
 
 
-async def async_register_entity(hass: HomeAssistantType, entry: ConfigEntry, async_add_entities, platform,
-                                spec_attr) -> None:
-    coordinators: List[DeviceCoordinator] = hass.data[DOMAIN]['coordinators']
-
-    cfg = EntityFilterConfig(hass, entry)
-
+async def async_register_entity(hass: HomeAssistant, entry: ConfigEntry, async_add_entities, platform, setup) -> None:
     entities = []
-    for coordinator in coordinators:
-        filter_type = cfg.get_filter_type(coordinator.device.id)
-        target_entities = cfg.get_target_entities(coordinator.device.id)
+    for device in hass.data[DOMAIN]['devices']:
+        if DeviceFilterConfig.is_skip(hass, entry, device.id):
+            continue
 
-        for spec in getattr(coordinator, spec_attr):
-            if spec['key'] not in coordinator.data.keys():
-                _LOGGER.warning('{} not found in the data source'.format(spec['key']))
+        # 初始化coordinator
+        if device.id not in hass.data[DOMAIN]['coordinators']:
+            coordinator = DeviceCoordinator(hass, device)
+            await coordinator.async_config_entry_first_refresh()
+            hass.data[DOMAIN]['coordinators'][device.id] = coordinator
+
+        coordinator = hass.data[DOMAIN]['coordinators'][device.id]
+
+        for attribute in device.attributes:
+            if attribute.platform != platform:
                 continue
 
-            if filter_type == FILTER_TYPE_EXCLUDE and spec['key'] in target_entities:
+            if EntityFilterConfig.is_skip(hass, entry, device.id, attribute.key):
                 continue
 
-            if filter_type == FILTER_TYPE_INCLUDE and spec['key'] not in target_entities:
-                continue
-
-            entities.append(platform(coordinator, spec))
+            entities.append(setup(coordinator, device, attribute))
 
     async_add_entities(entities)

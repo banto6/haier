@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 
 import aiohttp
 
+from .device import HaierDevice
+
 _LOGGER = logging.getLogger(__name__)
 
 CLIENT_ID = 'upluszhushou'
@@ -27,42 +29,6 @@ GET_HARDWARE_CONFIG_API = 'https://standardcfm.haigeek.com/hardwareconfig/file/g
 
 class HaierClientException(Exception):
     pass
-
-
-class HaierDevice:
-
-    _raw_data: dict = None
-
-    def __init__(self, raw: dict):
-        self._raw_data = raw
-
-    @property
-    def id(self):
-        return self._raw_data['deviceId']
-
-    @property
-    def name(self):
-        return self._raw_data['deviceName']
-
-    @property
-    def type(self):
-        return self._raw_data['deviceType']
-
-    @property
-    def product_code(self):
-        return self._raw_data['productCodeT']
-
-    @property
-    def product_name(self):
-        return self._raw_data['productNameT']
-
-    @property
-    def wifi_type(self):
-        return self._raw_data['wifiType']
-
-    @property
-    def is_virtual(self):
-        return 'virtual' in self._raw_data and self._raw_data['virtual']
 
 
 class HaierClient:
@@ -117,7 +83,13 @@ class HaierClient:
                 content = await response.json(content_type=None)
                 self._assert_response_successful(content)
 
-                return [HaierDevice(raw) for raw in content['deviceinfos']]
+                devices = []
+                for raw in content['deviceinfos']:
+                    device = HaierDevice(self, raw)
+                    await device.async_init()
+                    devices.append(device)
+
+                return devices
 
     async def get_net_quality_by_device(self, device_id: str):
         """
@@ -183,7 +155,39 @@ class HaierClient:
                 async with http_client.get(url=content['data']['url']) as config_resp:
                     return await config_resp.json(content_type=None)
 
-    async def _generate_common_headers(self, api, body=''):
+    async def get_device_specs_v2(self, device: HaierDevice) -> List[dict]:
+        """
+        获取设备配置文件
+        :param device:
+        :return:
+        """
+        url = 'https://zj.haier.net/omsappapi/resource/conf/list'
+        payload = {
+            'deviceType': device.type,
+            'model': device.product_name,
+            'prodNo': device.product_code,
+            'resType': 'config',
+            'typeId': device.wifi_type
+        }
+
+        headers = await self._generate_common_headers(url, json.dumps(payload), True)
+
+        async with aiohttp.ClientSession() as http_client:
+            async with http_client.post(url=url, headers=headers, json=payload) as response:
+                content = await response.json(content_type=None)
+
+                if 'data' not in content \
+                        or content['data'] is None \
+                        or 'resource' not in content['data'] \
+                        or not isinstance(content['data']['resource'], list) \
+                        or len(content['data']['resource']) == 0:
+                    _LOGGER.error('Device[{}]获取配置信息失败, response: {}'.format(device.id, json.dumps(content)))
+                    return None
+
+                async with http_client.get(url=content['data']['resource'][0]['resUrl']) as resp:
+                    return json.loads(await resp.text()[64:])['baseInfo']['attributes']
+
+    async def _generate_common_headers(self, api, body='', skip_token=False):
         timestamp = str(int(time.time() * 1000))
         # 报文流水(客户端唯一)客户端交易流水号。20位,
         # 前14位时间戳（格式：yyyyMMddHHmmss）,
@@ -191,14 +195,14 @@ class HaierClient:
         sequence_id = time.strftime('%Y%m%d%H%M%S') + str(random.randint(100000, 999999))
 
         return {
-            'accessToken': await self.get_token(),
+            'accessToken': await self.get_token() if not skip_token else '',
             'appId': APP_ID,
             'appKey': APP_KEY,
             'appVersion': '1.0',
             'clientId': UHONE_CLIENT_ID,
             'language': 'zh-cn',
             'sequenceId': sequence_id,
-            'sign': self._sign(timestamp, body, api),
+            'sign': self._sign(APP_ID, APP_KEY, timestamp, body, api),
             'timestamp': timestamp,
             'timezone': '+8'
         }
@@ -219,11 +223,11 @@ class HaierClient:
         return ret
 
     @staticmethod
-    def _sign(timestamp, body, url):
+    def _sign(app_id, app_key, timestamp, body, url):
         content = urlparse(url).path \
                   + str(body).replace('\t', '').replace('\r', '').replace('\n', '').replace(' ', '') \
-                  + str(APP_ID) \
-                  + str(APP_KEY) \
+                  + str(app_id) \
+                  + str(app_key) \
                   + str(timestamp)
 
         return hashlib.sha256(content.encode('utf-8')).hexdigest()

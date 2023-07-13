@@ -9,8 +9,8 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.config_validation import multi_select
 
 from .const import DOMAIN, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
+from .core.client import HaierClient, HaierClientException
 from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
-from .haier import HaierClient, HaierClientException
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -143,16 +143,12 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         :return:
         """
         if user_input is not None:
-            device_id, wifi_type = user_input['target_device'].split('#')
-            self.hass.data[DOMAIN]['entity_filter_target_device'] = {
-                'device_id': device_id,
-                'wifi_type': wifi_type
-            }
+            self.hass.data[DOMAIN]['entity_filter_target_device'] = user_input['target_device']
             return await self.async_step_entity_filter()
 
         devices = {}
         for item in self.hass.data[DOMAIN]['devices']:
-            devices[item.id + '#' + item.wifi_type] = item.name
+            devices[item.id] = item.name
 
         return self.async_show_form(
             step_id="entity_device_selector",
@@ -178,16 +174,17 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
             return self.async_create_entry(title='', data={})
 
-        target_device = self.hass.data[DOMAIN].pop('entity_filter_target_device', '')
-
-        client: HaierClient = self.hass.data[DOMAIN]['client']
-        spec_resp = await client.get_hardware_config(target_device['wifi_type'])
+        target_device_id = self.hass.data[DOMAIN].pop('entity_filter_target_device', '')
+        for device in self.hass.data[DOMAIN]['devices']:
+            if device.id == target_device_id:
+                target_device = device
+                break
+        else:
+            raise ValueError('Device [{}] not found'.format(target_device_id))
 
         entities = {}
-        for spec in spec_resp['Property']:
-            entities[spec['name']] = spec['description']
-
-        target_device_id = target_device['device_id']
+        for attribute in target_device.attributes:
+            entities[attribute.key] = attribute.display_name
 
         return self.async_show_form(
             step_id="entity_filter",

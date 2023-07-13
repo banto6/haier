@@ -84,6 +84,14 @@ class DeviceFilterConfig:
     def remove_device(self, device: str):
         self._target_devices.remove(device)
 
+    @staticmethod
+    def is_skip(hass: HomeAssistant, config: ConfigEntry, device_id: str) -> bool:
+        cfg = DeviceFilterConfig(hass, config)
+        if cfg.filter_type == FILTER_TYPE_EXCLUDE:
+            return device_id in cfg.target_devices
+        else:
+            return device_id not in cfg.target_devices
+
     def save(self):
         self._hass.config_entries.async_update_entry(
             self._config,
@@ -144,6 +152,18 @@ class EntityFilterConfig:
                 return item['target_entities']
         else:
             return []
+
+    @staticmethod
+    def is_skip(hass: HomeAssistant, config: ConfigEntry, device_id: str, attr: str) -> bool:
+        cfg = EntityFilterConfig(hass, config)
+
+        filter_type = cfg.get_filter_type(device_id)
+        target_entities = cfg.get_target_entities(device_id)
+
+        if filter_type == FILTER_TYPE_EXCLUDE:
+            return attr in target_entities
+        else:
+            return attr not in target_entities
 
     def save(self):
         self._hass.config_entries.async_update_entry(
