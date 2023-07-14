@@ -8,6 +8,7 @@
 - Select
 - Sensor
 - Binary Sensor
+- Climate (Beta)
 
 ## 安装
 下载并复制`custom_components/haier`文件夹到HomeAssistant根目录下的`custom_components`文件夹即可完成安装
