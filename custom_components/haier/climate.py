@@ -111,7 +111,7 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
                 HVACMode.DRY: 2,
                 HVACMode.HEAT: 4,
                 HVACMode.FAN_ONLY: 6
-            }
+            }[hvac_mode]
         })
 
     def set_fan_mode(self, fan_mode: str) -> None:
@@ -121,7 +121,7 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
                 FAN_MEDIUM: 2,
                 FAN_LOW: 3,
                 FAN_AUTO: 5
-            }
+            }[fan_mode]
         })
 
     def set_swing_mode(self, swing_mode: str) -> None:
