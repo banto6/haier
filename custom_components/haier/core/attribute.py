@@ -28,7 +28,7 @@ class HaierAttribute:
         return self._platform
 
     @property
-    def unit(self) -> str | None:
+    def unit(self) -> str:
         """
         获取数据单位
         :return:

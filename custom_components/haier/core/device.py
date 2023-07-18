@@ -57,9 +57,10 @@ class HaierDevice:
     async def async_init(self):
         # 获取sw_version
         if self.is_virtual:
-            self._sw_version = 'N/A'
+            self._sw_version = 'unknown'
         else:
-            self._sw_version = (await self._client.get_net_quality_by_device(self.id))['hardwareVers']
+            net = await self._client.get_net_quality_by_device(self.id)
+            self._sw_version = net['hardwareVers'] if 'hardwareVers' in net else 'unknown'
 
         # 解析Attribute
         # noinspection PyBroadException
@@ -67,7 +68,9 @@ class HaierDevice:
             parser = V1SpecAttributeParser()
             properties = (await self._client.get_hardware_config(self.wifi_type))['Property']
             for item in properties:
-                self._attributes.append(parser.parse_attribute(item))
+                attr = parser.parse_attribute(item)
+                if attr:
+                    self._attributes.append(attr)
 
             iter = parser.parse_global(properties)
             if iter:
