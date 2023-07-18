@@ -99,7 +99,7 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             options['options'] = list(value_comparison_table.values())
             ext['value_comparison_table'] = value_comparison_table
 
-        if 'unit' in attribute['variants']:
+        if isinstance(attribute['variants'], dict) and 'unit' in attribute['variants']:
             if attribute['variants']['unit'] in ['L']:
                 options['device_class'] = SensorDeviceClass.WATER
 
