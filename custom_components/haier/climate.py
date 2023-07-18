@@ -83,17 +83,17 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
                 2: HVACMode.DRY,
                 4: HVACMode.HEAT,
                 6: HVACMode.FAN_ONLY
-            }.get(self.coordinator.data['operationMode'])
+            }.get(int(self.coordinator.data['operationMode']))
 
             self._attr_fan_mode = {
                 1: FAN_HIGH,
                 2: FAN_MEDIUM,
                 3: FAN_LOW,
                 5: FAN_AUTO
-            }.get(self.coordinator.data['windSpeed'])
+            }.get(int(self.coordinator.data['windSpeed']))
 
-            wind_direction_vertical = self.coordinator.data['windDirectionVertical']
-            wind_direction_horizontal = self.coordinator.data['windDirectionHorizontal']
+            wind_direction_vertical = int(self.coordinator.data['windDirectionVertical'])
+            wind_direction_horizontal = int(self.coordinator.data['windDirectionHorizontal'])
             if wind_direction_horizontal != 0 and wind_direction_vertical != 0:
                 self._attr_swing_mode = SWING_BOTH
             else:
