@@ -104,6 +104,13 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
                     self._attr_swing_mode = SWING_VERTICAL
 
     def set_hvac_mode(self, hvac_mode: HVACMode) -> None:
+        # 关机
+        if hvac_mode == HVACMode.OFF:
+            self._send_command({
+                'onOffStatus': False
+            })
+            return
+
         self._send_command({
             'operationMode': {
                 HVACMode.AUTO: 0,
