@@ -111,7 +111,13 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
             })
             return
 
-        cmd = {
+        # 关机状态则先开机
+        if not try_read_as_bool(self.coordinator.data['onOffStatus']):
+            self._send_command({
+                'onOffStatus': True
+            })
+
+        self._send_command({
             'operationMode': {
                 HVACMode.AUTO: 0,
                 HVACMode.COOL: 1,
@@ -119,13 +125,7 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
                 HVACMode.HEAT: 4,
                 HVACMode.FAN_ONLY: 6
             }[hvac_mode]
-        }
-
-        # 关机状态则一起发送开机指标
-        if not try_read_as_bool(self.coordinator.data['onOffStatus']):
-            cmd['onOffStatus'] = True
-
-        self._send_command(cmd)
+        })
 
     def set_fan_mode(self, fan_mode: str) -> None:
         self._send_command({
