@@ -94,14 +94,17 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
             wind_direction_vertical = int(self.coordinator.data['windDirectionVertical'])
             wind_direction_horizontal = int(self.coordinator.data['windDirectionHorizontal'])
-            if wind_direction_horizontal != 0 and wind_direction_vertical != 0:
-                self._attr_swing_mode = SWING_BOTH
+            if wind_direction_horizontal == 0 and wind_direction_vertical == 0:
+                self._attr_swing_mode = SWING_OFF
             else:
-                if wind_direction_horizontal != 0:
-                    self._attr_swing_mode = SWING_HORIZONTAL
+                if wind_direction_horizontal != 0 and wind_direction_vertical != 0:
+                    self._attr_swing_mode = SWING_BOTH
+                else:
+                    if wind_direction_horizontal != 0:
+                        self._attr_swing_mode = SWING_HORIZONTAL
 
-                if wind_direction_vertical != 0:
-                    self._attr_swing_mode = SWING_VERTICAL
+                    if wind_direction_vertical != 0:
+                        self._attr_swing_mode = SWING_VERTICAL
 
     def set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         # 关机
@@ -166,4 +169,3 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
         self._send_command({
             'targetTemperature': kwargs['temperature']
         })
-
