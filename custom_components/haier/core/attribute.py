@@ -93,7 +93,7 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         if attribute['type'] == 'enum':
             value_comparison_table = {}
             for item in attribute['variants']:
-                value_comparison_table[item['stdValue']] = item['description']
+                value_comparison_table[str(item['stdValue'])] = item['description']
 
             options['device_class'] = SensorDeviceClass.ENUM
             options['options'] = list(value_comparison_table.values())
