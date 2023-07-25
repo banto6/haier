@@ -3,6 +3,7 @@ import json
 import logging
 import random
 import time
+from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List
 from urllib.parse import urlparse
@@ -27,18 +28,52 @@ SEND_COMMAND_API = 'https://uws.haier.net/stdudse/v1/sendbatchCmd/{}'
 GET_HARDWARE_CONFIG_API = 'https://standardcfm.haigeek.com/hardwareconfig/file/getFuncModelJsonUrl?typeid={}&servicename=SDK&servicekey=1234567890abcdefghigklmnopqrstuv'
 
 
+class TokenHolder(ABC):
+
+    @abstractmethod
+    async def async_get(self) -> (str, datetime):
+        pass
+
+    @abstractmethod
+    async def async_set(self, token: str, created_at: datetime):
+        pass
+
+
+class MemoryTokenHolder(TokenHolder, ABC):
+
+    def __init__(self, next_token_holder: TokenHolder = None):
+        self._token = None
+        self._created_at = None
+        self._next_token_holder = next_token_holder
+        self._next_token_holder_loaded = False
+
+    async def async_get(self) -> (str, datetime):
+        if self._next_token_holder and not self._next_token_holder_loaded:
+            token, created_at = await self._next_token_holder.async_get()
+            self._token = token
+            self._created_at = created_at
+            self._next_token_holder_loaded = True
+
+        return self._token, self._created_at
+
+    async def async_set(self, token: str, created_at: datetime):
+        self._token = token
+        self._created_at = created_at
+
+        if self._next_token_holder:
+            await self._next_token_holder.async_set(token, created_at)
+
+
 class HaierClientException(Exception):
     pass
 
 
 class HaierClient:
-    _token: str = None
 
-    _token_created_at: datetime = None
-
-    def __init__(self, username: str, password: str):
+    def __init__(self, username: str, password: str, token_holder: TokenHolder = None):
         self._username = username
         self._password = password
+        self._token_holder = MemoryTokenHolder(token_holder)
 
     async def try_login(self):
         data = {
@@ -63,15 +98,15 @@ class HaierClient:
                 if 'error' in content:
                     raise HaierClientException(content['error'])
 
-                self._token = content['uhome_access_token']
-                self._token_created_at = datetime.now()
+                await self._token_holder.async_set(content['uhome_access_token'], datetime.now())
 
     async def get_token(self):
+        token, created_at = await self._token_holder.async_get()
         # 未登录或9天后自动重新登录
-        if self._token is None or (datetime.now() - self._token_created_at).days >= 9:
+        if token is None or (datetime.now() - created_at).days >= 9:
             await self.try_login()
 
-        return self._token
+        return token
 
     async def get_devices(self) -> List[HaierDevice]:
         """

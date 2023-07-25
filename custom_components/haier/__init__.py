@@ -2,20 +2,48 @@ import glob
 import json
 import logging
 import os
+from abc import ABC
+from datetime import datetime
 from typing import List
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntry
+from homeassistant.helpers.storage import Store
 
 from .const import DOMAIN, SUPPORTED_PLATFORMS, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
 from .coordinator import DeviceCoordinator
 from .core.attribute import HaierAttribute
-from .core.client import HaierClient
+from .core.client import HaierClient, TokenHolder
 from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
 from .core.device import HaierDevice
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class HassTokenHolder(TokenHolder, ABC):
+
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry):
+        account_cfg = AccountConfig(hass, entry)
+        self._store = Store(hass, 1, 'haier/{}.token'.format(account_cfg.username))
+
+    async def async_set(self, token: str, created_at: datetime):
+        await self._store.async_save({
+            'token': token,
+            'created_at': datetime.timestamp(created_at)
+        })
+        _LOGGER.debug('token已成功缓存到HomeAssistant中')
+
+    # noinspection PyBroadException
+    async def async_get(self) -> (str, datetime):
+        try:
+            data = await self._store.async_load()
+            _LOGGER.debug('已从HomeAssistant加载到缓存的token')
+
+            return data['token'], datetime.fromtimestamp(data['created_at'])
+        except Exception:
+            _LOGGER.exception('从HomeAssistant中加载token发生异常')
+            return None, None
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -25,8 +53,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     })
 
     account_cfg = AccountConfig(hass, entry)
-    client = HaierClient(account_cfg.username, account_cfg.password)
-    await client.try_login()
+    client = HaierClient(account_cfg.username, account_cfg.password, HassTokenHolder(hass, entry))
 
     devices = await get_available_devices(client)
     hass.data[DOMAIN]['devices'] = devices
