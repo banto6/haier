@@ -3,7 +3,7 @@ from typing import List
 
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.switch import SwitchDeviceClass
-from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE
+from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE, UnitOfVolume, UnitOfEnergy, REVOLUTIONS_PER_MINUTE
 
 
 class HaierAttribute:
@@ -93,19 +93,39 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         if attribute['type'] == 'enum':
             value_comparison_table = {}
             for item in attribute['variants']:
-                value_comparison_table[item['stdValue']] = item['description']
+                value_comparison_table[str(item['stdValue'])] = item['description']
 
             options['device_class'] = SensorDeviceClass.ENUM
             options['options'] = list(value_comparison_table.values())
             ext['value_comparison_table'] = value_comparison_table
 
         if isinstance(attribute['variants'], dict) and 'unit' in attribute['variants']:
-            if attribute['variants']['unit'] in ['L']:
+            if attribute['variants']['unit'] in ['L']:  # 用水量
                 options['device_class'] = SensorDeviceClass.WATER
+                options['native_unit_of_measurement'] = UnitOfVolume.LITERS
 
-            if attribute['variants']['unit'] in ['℃']:
+            elif attribute['variants']['unit'] in ['℃']:  # 温度
                 options['device_class'] = SensorDeviceClass.TEMPERATURE
-                options['unit_of_measurement'] = UnitOfTemperature.CELSIUS
+                options['native_unit_of_measurement'] = UnitOfTemperature.CELSIUS
+
+            elif attribute['variants']['unit'] in ['%'] and '湿度' in attribute['description']:
+                options['device_class'] = SensorDeviceClass.HUMIDITY
+                options['native_unit_of_measurement'] = PERCENTAGE
+
+            elif attribute['variants']['unit'] in ['KWh']:  # 用电量
+                options['device_class'] = SensorDeviceClass.ENERGY
+                options['native_unit_of_measurement'] = UnitOfEnergy.KILO_WATT_HOUR  # kWh
+
+            elif attribute['variants']['unit'] in ['h', 'min', 's']:  # 时间
+                options['device_class'] = SensorDeviceClass.DURATION
+                options['native_unit_of_measurement'] = attribute['variants']['unit']
+
+            elif attribute['variants']['unit'] in ['g', 'kg']:
+                options['device_class'] = SensorDeviceClass.WEIGHT
+                options['native_unit_of_measurement'] = attribute['variants']['unit']
+
+            elif attribute['variants']['unit'] in ['RPM']:  # 转速
+                options['native_unit_of_measurement'] = REVOLUTIONS_PER_MINUTE
 
         return HaierAttribute(attribute['name'], attribute['description'], Platform.SENSOR, options, ext)
 
