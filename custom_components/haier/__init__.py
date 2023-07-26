@@ -38,11 +38,15 @@ class HassTokenHolder(TokenHolder, ABC):
     async def async_get(self) -> (str, datetime):
         try:
             data = await self._store.async_load()
+            if not data:
+                return None, None
+
             _LOGGER.debug('已从HomeAssistant加载到缓存的token')
 
             return data['token'], datetime.fromtimestamp(data['created_at'])
         except Exception:
-            _LOGGER.exception('从HomeAssistant中加载token发生异常')
+            await self._store.async_remove()
+            _LOGGER.warning('从HomeAssistant中加载token发生异常')
             return None, None
 
 

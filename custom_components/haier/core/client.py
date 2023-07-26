@@ -75,7 +75,7 @@ class HaierClient:
         self._password = password
         self._token_holder = MemoryTokenHolder(token_holder)
 
-    async def try_login(self):
+    async def try_login(self) -> str:
         data = {
             'client_id': 'upluszhushou',
             'client_secret': 'eZOQScs1pjXyzs',
@@ -98,13 +98,14 @@ class HaierClient:
                 if 'error' in content:
                     raise HaierClientException(content['error'])
 
-                await self._token_holder.async_set(content['uhome_access_token'], datetime.now())
+                return content['uhome_access_token']
 
     async def get_token(self):
         token, created_at = await self._token_holder.async_get()
         # 未登录或9天后自动重新登录
         if token is None or (datetime.now() - created_at).days >= 9:
-            await self.try_login()
+            token = await self.try_login()
+            await self._token_holder.async_set(token, datetime.now())
 
         return token
 
