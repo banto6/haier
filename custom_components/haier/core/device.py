@@ -36,6 +36,9 @@ class HaierDevice:
 
     @property
     def product_name(self):
+        if 'productNameT' not in self._raw_data:
+            return ''
+
         return self._raw_data['productNameT']
 
     @property

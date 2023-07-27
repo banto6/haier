@@ -121,6 +121,7 @@ class HaierClient:
 
                 devices = []
                 for raw in content['deviceinfos']:
+                    _LOGGER.debug('Device Info: {}'.format(raw))
                     device = HaierDevice(self, raw)
                     await device.async_init()
                     devices.append(device)
