@@ -19,6 +19,7 @@
 
 或者点击: [![添加集成](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start?domain=haier)
 
+已经安装了HACS，可以点击：[![通过HACS添加集成](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=banto6&repository=haier&category=integration)
 
 ## 调试
 在`configuration.yaml`中加入以下配置来打开调试日志。
