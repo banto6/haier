@@ -31,9 +31,6 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
     def __init__(self, coordinator: DeviceCoordinator, device: HaierDevice, attribute: HaierAttribute):
         super().__init__(coordinator, device, attribute)
         self._attr_temperature_unit = TEMP_CELSIUS
-        self._attr_max_temp = 30
-        self._attr_min_temp = 16
-        self._attr_target_temperature_step = 1
         self._attr_hvac_modes = [
             HVACMode.OFF,
             HVACMode.AUTO,
@@ -90,10 +87,10 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
                 2: FAN_MEDIUM,
                 3: FAN_LOW,
                 5: FAN_AUTO
-            }.get(int(self.coordinator.data['windSpeed']))
+            }.get(int(self._get_wind_speed()))
 
-            wind_direction_vertical = int(self.coordinator.data['windDirectionVertical'])
-            wind_direction_horizontal = int(self.coordinator.data['windDirectionHorizontal'])
+            wind_direction_vertical = int(self._get_wind_direction_vertical())
+            wind_direction_horizontal = int(self._get_wind_direction_horizontal())
             if wind_direction_horizontal == 0 and wind_direction_vertical == 0:
                 self._attr_swing_mode = SWING_OFF
             else:
@@ -131,41 +128,69 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
         })
 
     def set_fan_mode(self, fan_mode: str) -> None:
-        self._send_command({
-            'windSpeed': {
-                FAN_HIGH: 1,
-                FAN_MEDIUM: 2,
-                FAN_LOW: 3,
-                FAN_AUTO: 5
-            }[fan_mode]
-        })
+        value = {
+            FAN_HIGH: 1,
+            FAN_MEDIUM: 2,
+            FAN_LOW: 3,
+            FAN_AUTO: 5
+        }[fan_mode]
+
+        if self._attribute.ext['exist_multiple_vents']:
+            self._send_command({
+                'windSpeedL': value,
+                'windSpeedR': value
+            })
+        else:
+            self._send_command({
+                'windSpeed': value
+            })
 
     def set_swing_mode(self, swing_mode: str) -> None:
+        v_h_values = [0, 0]
         if swing_mode == SWING_OFF:
-            self._send_command({
-                'windDirectionVertical': 0,
-                'windDirectionHorizontal': 0
-            })
+            v_h_values = [0, 0]
 
         if swing_mode == SWING_HORIZONTAL:
-            self._send_command({
-                'windDirectionVertical': 0,
-                'windDirectionHorizontal': 7
-            })
+            v_h_values = [0, 7]
 
         if swing_mode == SWING_VERTICAL:
-            self._send_command({
-                'windDirectionVertical': 8,
-                'windDirectionHorizontal': 0
-            })
+            v_h_values = [8, 0]
 
         if swing_mode == SWING_BOTH:
+            v_h_values = [8, 7]
+
+        if self._attribute.ext['exist_multiple_vents']:
             self._send_command({
-                'windDirectionVertical': 8,
-                'windDirectionHorizontal': 7
+                'windDirectionVerticalL': v_h_values[0],
+                'windDirectionVerticalR': v_h_values[0],
+                'windDirectionHorizontalL': v_h_values[1],
+                'windDirectionHorizontalR': v_h_values[1]
+            })
+        else:
+            self._send_command({
+                'windDirectionVertical': v_h_values[0],
+                'windDirectionHorizontal': v_h_values[1]
             })
 
     def set_temperature(self, **kwargs) -> None:
         self._send_command({
             'targetTemperature': kwargs['temperature']
         })
+
+    def _get_wind_speed(self) -> str:
+        if self._attribute.ext['exist_multiple_vents']:
+            return self.coordinator.data['windSpeedL']
+
+        return self.coordinator.data['windSpeed']
+
+    def _get_wind_direction_vertical(self) -> str:
+        if self._attribute.ext['exist_multiple_vents']:
+            return self.coordinator.data['windDirectionVerticalL']
+
+        return self.coordinator.data['windDirectionVertical']
+
+    def _get_wind_direction_horizontal(self) -> str:
+        if self._attribute.ext['exist_multiple_vents']:
+            return self.coordinator.data['windDirectionHorizontalL']
+
+        return self.coordinator.data['windDirectionHorizontal']

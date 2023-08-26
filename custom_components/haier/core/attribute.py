@@ -3,7 +3,8 @@ from typing import List
 
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.switch import SwitchDeviceClass
-from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE, UnitOfVolume, UnitOfEnergy, REVOLUTIONS_PER_MINUTE
+from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE, UnitOfVolume, UnitOfEnergy, \
+    REVOLUTIONS_PER_MINUTE
 
 
 class HaierAttribute:
@@ -80,8 +81,17 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
 
     def parse_global(self, attributes: List[dict]):
         all_attribute_keys = [attribute['name'] for attribute in attributes]
-        if len(list(set(['targetTemperature', 'operationMode', 'windSpeed']) - set(all_attribute_keys))) == 0:
-            yield self._parse_as_climate(attributes)
+
+        # 空调特征字段
+        climate_feature_fields = [
+            ['targetTemperature', 'operationMode', 'windSpeed'],
+            # https://github.com/banto6/haier/issues/53 有空调分左右风区
+            ['targetTemperature', 'operationMode', 'windSpeedL', 'windSpeedR']
+        ]
+        for feature_fields in climate_feature_fields:
+            if len(list(set(feature_fields) - set(all_attribute_keys))) == 0:
+                yield self._parse_as_climate(attributes, feature_fields)
+                break
 
     @staticmethod
     def _parse_as_sensor(attribute):
@@ -165,9 +175,24 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         return HaierAttribute(attribute['name'], attribute['description'], Platform.SWITCH, options)
 
     @staticmethod
-    def _parse_as_climate(attributes: List[dict]):
-        ext = {
-            'customize': True,
+    def _parse_as_climate(attributes: List[dict], feature_fields: List[str]):
+        for attr in attributes:
+            if attr['name'] == 'targetTemperature':
+                target_temperature_attr = attr
+                break
+        else:
+            raise RuntimeError('targetTemperature attr not found')
+
+        options = {
+            'min_temp': target_temperature_attr['variants']['minValue'],
+            'max_temp': target_temperature_attr['variants']['maxValue'],
+            'target_temperature_step': target_temperature_attr['variants']['step']
         }
 
-        return HaierAttribute('climate', 'Climate', Platform.CLIMATE, ext=ext)
+        ext = {
+            'customize': True,
+            # 是否存在多个风口
+            'exist_multiple_vents': 'windSpeedL' in feature_fields
+        }
+
+        return HaierAttribute('climate', 'Climate', Platform.CLIMATE, options, ext)
