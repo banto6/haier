@@ -62,7 +62,7 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
         if 'indoorTemperature' in self.coordinator.data:
             self._attr_current_temperature = float(self.coordinator.data['indoorTemperature'])
 
-        if 'indoorHumidity' in self.coordinator.data:
+        if 'indoorHumidity' in self.coordinator.data and float(self.coordinator.data['indoorHumidity']) != 0:
             self._attr_current_humidity = float(self.coordinator.data['indoorHumidity'])
 
         self._attr_target_temperature = float(self.coordinator.data['targetTemperature'])
