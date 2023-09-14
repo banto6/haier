@@ -92,6 +92,9 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             if len(list(set(feature_fields) - set(all_attribute_keys))) == 0:
                 yield self._parse_as_climate(attributes, feature_fields)
                 break
+        # 燃气热水器
+        if 'outWaterTemp' in all_attribute_keys and 'inWaterTemp' in all_attribute_keys and 'gasPressure' in all_attribute_keys:
+            yield self._parse_as_gas_water_heater(attributes)
 
     @staticmethod
     def _parse_as_sensor(attribute):
@@ -196,3 +199,24 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         }
 
         return HaierAttribute('climate', 'Climate', Platform.CLIMATE, options, ext)
+    
+    @staticmethod
+    def _parse_as_gas_water_heater(attributes: List[dict]):
+        for attr in attributes:
+            if attr['name'] == 'targetTemp':
+                target_temperature_attr = attr
+                break
+        else:
+            raise RuntimeError('targetTemp attr not found')
+
+        options = {
+            'min_temp': target_temperature_attr['variants']['minValue'],
+            'max_temp': target_temperature_attr['variants']['maxValue'],
+            'target_temperature_step': target_temperature_attr['variants']['step']
+        }
+
+        ext = {
+            'customize': True,
+        }
+
+        return HaierAttribute('gas_water_heater', 'GasWaterHeater', Platform.WATER_HEATER, options, ext)
