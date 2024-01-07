@@ -145,8 +145,8 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
     @staticmethod
     def _parse_as_number(attribute):
         options = {
-            'native_min_value': attribute['variants']['minValue'],
-            'native_max_value': attribute['variants']['maxValue'],
+            'native_min_value': float(attribute['variants']['minValue']),
+            'native_max_value': float(attribute['variants']['maxValue']),
             'native_step': attribute['variants']['step']
         }
 
@@ -187,9 +187,9 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             raise RuntimeError('targetTemperature attr not found')
 
         options = {
-            'min_temp': target_temperature_attr['variants']['minValue'],
-            'max_temp': target_temperature_attr['variants']['maxValue'],
-            'target_temperature_step': target_temperature_attr['variants']['step']
+            'min_temp': float(target_temperature_attr['variants']['minValue']),
+            'max_temp': float(target_temperature_attr['variants']['maxValue']),
+            'target_temperature_step': float(target_temperature_attr['variants']['step'])
         }
 
         ext = {
