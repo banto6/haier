@@ -3,7 +3,7 @@ import logging
 from homeassistant.components.climate import ClimateEntity, ClimateEntityFeature, HVACMode, FAN_MIDDLE, FAN_HIGH, \
     FAN_MEDIUM, FAN_LOW, SWING_OFF, SWING_VERTICAL, SWING_HORIZONTAL, SWING_BOTH, FAN_OFF, FAN_AUTO
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import TEMP_CELSIUS, Platform
+from homeassistant.const import UnitOfTemperature, Platform
 from homeassistant.helpers.typing import HomeAssistantType
 
 from . import async_register_entity
@@ -30,7 +30,7 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
     def __init__(self, coordinator: DeviceCoordinator, device: HaierDevice, attribute: HaierAttribute):
         super().__init__(coordinator, device, attribute)
-        self._attr_temperature_unit = TEMP_CELSIUS
+        self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_hvac_modes = [
             HVACMode.OFF,
             HVACMode.AUTO,
