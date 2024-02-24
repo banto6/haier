@@ -16,8 +16,8 @@ _LOGGER = logging.getLogger(__name__)
 
 CLIENT_ID = 'upluszhushou'
 CLIENT_SECRET = 'eZOQScs1pjXyzs'
-APP_ID = 'MB-SYJCSGJYY-0000'
-APP_KEY = '64ad7e690287d740f6ed00924264e3d9'
+APP_ID = 'MB-SHEZJAPPWXXCX-0000'
+APP_KEY = '79ce99cc7f9804663939676031b8a427'
 UHONE_CLIENT_ID = '956877020056553-08002700DC94'
 
 TOKEN_API = 'https://account-api.haier.net/oauth/token'
