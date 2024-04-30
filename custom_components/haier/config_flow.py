@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
+from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_TOKEN
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.config_validation import multi_select
@@ -23,10 +23,10 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 # 校验账号密码是否正确
-                client = HaierClient(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
-                await client.try_login()
+                # client = HaierClient(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
+                # await client.try_login()
 
-                return self.async_create_entry(title="Haier - {}".format(user_input[CONF_USERNAME]), data={
+                return self.async_create_entry(title="Haier - {}".format(user_input[CONF_TOKEN][:6]), data={
                     'account': user_input
                 })
             except HaierClientException as e:
@@ -37,8 +37,7 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_USERNAME): str,
-                    vol.Required(CONF_PASSWORD): str,
+                    vol.Required(CONF_TOKEN): str,
                     vol.Required('default_load_all_entity', default=True): bool,
                 }
             ),
@@ -82,8 +81,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             try:
                 await client.try_login()
 
-                cfg.username = user_input[CONF_USERNAME]
-                cfg.password = user_input[CONF_PASSWORD]
+                cfg.token = user_input[CONF_TOKEN]
                 cfg.default_load_all_entity = user_input['default_load_all_entity']
                 cfg.save()
 
@@ -96,8 +94,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             step_id="account",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_USERNAME, default=cfg.username): str,
-                    vol.Required(CONF_PASSWORD, default=cfg.password): str,
+                    vol.Required(CONF_TOKEN, default=cfg.token): str,
                     vol.Required('default_load_all_entity', default=cfg.default_load_all_entity): bool,
                 }
             ),

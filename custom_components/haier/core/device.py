@@ -9,13 +9,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class HaierDevice:
     _raw_data: dict
-    _sw_version: str
     _attributes: List[HaierAttribute]
 
     def __init__(self, client, raw: dict):
         self._client = client
         self._raw_data = raw
-        self._sw_version = None
         self._attributes = []
 
     @property
@@ -46,34 +44,22 @@ class HaierDevice:
         return self._raw_data['wifiType']
 
     @property
-    def is_virtual(self):
-        return 'virtual' in self._raw_data and self._raw_data['virtual']
-
-    @property
-    def sw_version(self):
-        return self._sw_version
-
-    @property
     def attributes(self) -> List[HaierAttribute]:
         return self._attributes
 
     async def async_init(self):
-        # 获取sw_version
-        if self.is_virtual:
-            self._sw_version = 'unknown'
-        else:
-            net = await self._client.get_net_quality_by_device(self.id)
-            self._sw_version = net['hardwareVers'] if 'hardwareVers' in net else 'unknown'
-
         # 解析Attribute
         # noinspection PyBroadException
         try:
             parser = V1SpecAttributeParser()
-            properties = (await self._client.get_hardware_config(self.wifi_type))['Property']
+            properties = await self._client.get_digital_model(self.id)
             for item in properties:
-                attr = parser.parse_attribute(item)
-                if attr:
-                    self._attributes.append(attr)
+                try:
+                    attr = parser.parse_attribute(item)
+                    if attr:
+                        self._attributes.append(attr)
+                except:
+                    _LOGGER.error("Haier device properties error %s", json.dumps(item))
 
             iter = parser.parse_global(properties)
             if iter:
@@ -81,12 +67,6 @@ class HaierDevice:
                     self._attributes.append(item)
         except Exception:
             _LOGGER.exception('获取attributes失败')
-
-    async def write_attributes(self, values):
-        await self._client.send_command(self.id, values)
-
-    async def read_attributes(self):
-        return await self._client.get_last_report_status_by_device(self.id)
 
     def __str__(self) -> str:
         return json.dumps({

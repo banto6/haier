@@ -11,9 +11,7 @@ class AccountConfig:
     """
     账户配置
     """
-    username: str = None
-
-    password: str = None
+    token: str = None
 
     default_load_all_entity: bool = None
 
@@ -22,19 +20,17 @@ class AccountConfig:
         self._config = config
 
         cfg = config.data.get('account', {})
-        self.username = cfg.get('username', '')
-        self.password = cfg.get('password', '')
+        self.token = cfg.get('token', '')
         self.default_load_all_entity = cfg.get('default_load_all_entity', True)
 
     def save(self):
         self._hass.config_entries.async_update_entry(
             self._config,
-            title='Haier: {}'.format(self.username),
+            title='Haier: {}'.format(self.token[:6]),
             data={
                 **self._config.data,
                 'account': {
-                    'username': self.username,
-                    'password': self.password,
+                    'token': self.token,
                     'default_load_all_entity': self.default_load_all_entity
                 }
             }

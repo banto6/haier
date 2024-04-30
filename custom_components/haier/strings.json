@@ -6,11 +6,10 @@
         "step": {
             "user": {
                 "data": {
-                    "username": "Username",
-                    "password": "Password",
+                    "token": "Token",
                     "default_load_all_entity": "Default load all entity"
                 },
-                "description": "Enter your Haier Account.",
+                "description": "Enter your Haier Token.",
                 "title": "Configure account information"
             }
         }
@@ -30,8 +29,7 @@
             "account": {
                 "title": "Account information",
                 "data": {
-                    "username": "Username",
-                    "password": "Password",
+                    "token": "Token",
                     "default_load_all_entity": "Default load all entity"
                 }
             },
