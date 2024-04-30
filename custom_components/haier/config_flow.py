@@ -96,7 +96,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             step_id="account",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_CLIENT_ID): str,
+                    vol.Required(CONF_CLIENT_ID, default=cfg.client_id): str,
                     vol.Required(CONF_TOKEN, default=cfg.token): str,
                     vol.Required('default_load_all_entity', default=cfg.default_load_all_entity): bool,
                 }
