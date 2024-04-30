@@ -183,6 +183,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         for attribute in target_device.attributes:
             entities[attribute.key] = attribute.display_name
 
+        filtered = [item for item in cfg.get_target_entities(target_device_id) if item in entities]
+
         return self.async_show_form(
             step_id="entity_filter",
             data_schema=vol.Schema(
@@ -192,7 +194,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         FILTER_TYPE_EXCLUDE: 'Exclude',
                         FILTER_TYPE_INCLUDE: 'Include',
                     }),
-                    vol.Optional('target_entities', default=cfg.get_target_entities(target_device_id)): multi_select(
+                    vol.Optional('target_entities', default=filtered): multi_select(
                         entities
                     )
                 }
