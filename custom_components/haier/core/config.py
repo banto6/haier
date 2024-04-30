@@ -11,6 +11,9 @@ class AccountConfig:
     """
     账户配置
     """
+
+    client_id: str = None
+
     token: str = None
 
     default_load_all_entity: bool = None
@@ -20,6 +23,7 @@ class AccountConfig:
         self._config = config
 
         cfg = config.data.get('account', {})
+        self.client_id = cfg.get('client_id', '')
         self.token = cfg.get('token', '')
         self.default_load_all_entity = cfg.get('default_load_all_entity', True)
 
@@ -30,6 +34,7 @@ class AccountConfig:
             data={
                 **self._config.data,
                 'account': {
+                    'client_id': self.client_id,
                     'token': self.token,
                     'default_load_all_entity': self.default_load_all_entity
                 }

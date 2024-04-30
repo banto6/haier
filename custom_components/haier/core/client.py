@@ -22,17 +22,14 @@ _LOGGER = logging.getLogger(__name__)
 APP_ID = 'MB-SHEZJAPPWXXCX-0000'
 APP_KEY = '79ce99cc7f9804663939676031b8a427'
 APP_VERSION = '5.3.0'
-CLIENT_ID = 'iOS17411714395440369'
 
 GET_DEVICES_API = 'https://uws.haier.net/uds/v1/protected/deviceinfos'
 GET_WSS_GW_API = 'https://uws.haier.net/gmsWS/wsag/assign'
 GET_DIGITAL_MODEL_API = 'https://uws.haier.net/shadow/v1/devdigitalmodels'
 
 
-
 def random_str(length: int = 32) -> str:
     return ''.join(random.choice('abcdef1234567890') for _ in range(length))
-
 
 class HaierClientException(Exception):
     pass
@@ -40,7 +37,8 @@ class HaierClientException(Exception):
 
 class HaierClient:
 
-    def __init__(self, hass: HomeAssistant, token: str):
+    def __init__(self, hass: HomeAssistant, client_id: str, token: str):
+        self._client_id = client_id
         self._token = token
         self._hass = hass
         self._session = async_get_clientsession(hass)
@@ -113,7 +111,7 @@ class HaierClient:
         """
         server = await self._get_wss_gateway_url()
 
-        _LOGGER.info("WSSGateway: %s", server)
+        _LOGGER.debug("WSSGateway: %s", server)
 
         # https://docs.aiohttp.org/en/stable/client_quickstart.html#aiohttp-client-websockets
         agClientId = self._token
@@ -137,7 +135,7 @@ class HaierClient:
                     # 监听事件总线来的控制命令
                     async def control_callback(e):
                         await self._send_command(ws, agClientId, e.data['deviceId'], e.data['attributes'])
-                    cancel = self._hass.bus.async_listen(EVENT_DEVICE_CONTROL, control_callback)
+                    cancel_control_listen = self._hass.bus.async_listen(EVENT_DEVICE_CONTROL, control_callback)
 
                     self._hass.bus.fire(EVENT_WSS_GATEWAY_STATUS_CHANGED, {
                         'status': True
@@ -149,7 +147,7 @@ class HaierClient:
                         else:
                             _LOGGER.warning("收到未知类型的消息: {}".format(msg.type))
                 finally:
-                    cancel()
+                    cancel_control_listen()
                     event.set()
                     self._hass.bus.fire(EVENT_WSS_GATEWAY_STATUS_CHANGED, {
                         'status': False
@@ -242,6 +240,7 @@ class HaierClient:
         # }
         attributes = {}
         for attribute in data['attributes']:
+            # 有些attribute没有value字段。。。
             if 'value' not in attribute:
                 continue
 
@@ -288,7 +287,7 @@ class HaierClient:
         :return:
         """
         payload = {
-            'clientId': CLIENT_ID,
+            'clientId': self._client_id,
             'token': self._token
         }
 
@@ -317,7 +316,7 @@ class HaierClient:
             'appId': APP_ID,
             'appKey': APP_KEY,
             'appVersion': APP_VERSION,
-            'clientId': CLIENT_ID,
+            'clientId': self._client_id,
             'sequenceId': sequence_id,
             'sign': self._sign(APP_ID, APP_KEY, timestamp, body, api),
             'timestamp': timestamp,

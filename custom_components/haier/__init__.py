@@ -19,7 +19,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     })
 
     account_cfg = AccountConfig(hass, entry)
-    client = HaierClient(hass, account_cfg.token)
+    client = HaierClient(hass, account_cfg.client_id, account_cfg.token)
     devices = await client.get_devices()
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
 

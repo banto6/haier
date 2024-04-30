@@ -3,13 +3,13 @@ from typing import Any, Dict
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_TOKEN
+from homeassistant.const import CONF_TOKEN, CONF_CLIENT_ID
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.config_validation import multi_select
 
 from .const import DOMAIN, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
-from .core.client import HaierClient, HaierClientException
+from .core.client import HaierClientException
 from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,6 +37,7 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
+                    vol.Required(CONF_CLIENT_ID): str,
                     vol.Required(CONF_TOKEN): str,
                     vol.Required('default_load_all_entity', default=True): bool,
                 }
@@ -81,6 +82,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             try:
                 # await client.try_login()
 
+                cfg.client_id = user_input[CONF_CLIENT_ID]
                 cfg.token = user_input[CONF_TOKEN]
                 cfg.default_load_all_entity = user_input['default_load_all_entity']
                 cfg.save()
@@ -94,6 +96,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             step_id="account",
             data_schema=vol.Schema(
                 {
+                    vol.Required(CONF_CLIENT_ID): str,
                     vol.Required(CONF_TOKEN, default=cfg.token): str,
                     vol.Required('default_load_all_entity', default=cfg.default_load_all_entity): bool,
                 }
