@@ -77,9 +77,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input is not None:
             # 校验账号密码是否正确
-            client = HaierClient(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
+            # client = HaierClient(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
             try:
-                await client.try_login()
+                # await client.try_login()
 
                 cfg.token = user_input[CONF_TOKEN]
                 cfg.default_load_all_entity = user_input['default_load_all_entity']
