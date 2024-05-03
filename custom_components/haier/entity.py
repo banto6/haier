@@ -84,7 +84,7 @@ class HaierAbstractEntity(Entity, ABC):
 
     async def async_will_remove_from_hass(self) -> None:
         if self._cancel_status_listen:
-            self._cancel_data_listen()
+            self._cancel_status_listen()
 
         if self._cancel_status_listen:
             self._cancel_data_listen()
