@@ -63,6 +63,9 @@ class HaierAttributeParser(ABC):
 class V1SpecAttributeParser(HaierAttributeParser, ABC):
 
     def parse_attribute(self, attribute: dict) -> HaierAttribute:
+        if 'value' not in attribute:
+            return None
+
         if not attribute['writable'] and attribute['readable']:
             return self._parse_as_sensor(attribute)
 
@@ -141,7 +144,7 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         #     elif attribute['variants']['unit'] in ['RPM']:  # 转速
         #         options['native_unit_of_measurement'] = REVOLUTIONS_PER_MINUTE
 
-        return HaierAttribute(attribute['name'], attribute['description'], Platform.SENSOR, options, ext)
+        return HaierAttribute(attribute['name'], attribute['desc'], Platform.SENSOR, options, ext)
 
     @staticmethod
     def _parse_as_number(attribute):
