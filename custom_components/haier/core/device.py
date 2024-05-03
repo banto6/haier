@@ -10,11 +10,13 @@ _LOGGER = logging.getLogger(__name__)
 class HaierDevice:
     _raw_data: dict
     _attributes: List[HaierAttribute]
+    _attribute_snapshot_data: dict
 
     def __init__(self, client, raw: dict):
         self._client = client
         self._raw_data = raw
         self._attributes = []
+        self._attribute_snapshot_data = {}
 
     @property
     def id(self):
@@ -47,6 +49,10 @@ class HaierDevice:
     def attributes(self) -> List[HaierAttribute]:
         return self._attributes
 
+    @property
+    def attribute_snapshot_data(self) -> dict:
+        return self._attribute_snapshot_data
+
     async def async_init(self):
         # 解析Attribute
         # noinspection PyBroadException
@@ -59,14 +65,22 @@ class HaierDevice:
                     if attr:
                         self._attributes.append(attr)
                 except:
-                    _LOGGER.error("Haier device properties error %s", json.dumps(item))
+                    _LOGGER.exception("Haier device %s attribute %s parsing error occurred", self.id, item['name'])
 
             iter = parser.parse_global(properties)
             if iter:
                 for item in iter:
                     self._attributes.append(item)
+
+            # 从properties中读取实体值
+            for attribute in properties:
+                if 'value' not in attribute:
+                    continue
+
+                self._attribute_snapshot_data[attribute['name']] = attribute['value']
+
         except Exception:
-            _LOGGER.exception('获取attributes失败')
+            _LOGGER.exception('Haier device %s init failed', self.id)
 
     def __str__(self) -> str:
         return json.dumps({

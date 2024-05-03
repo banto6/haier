@@ -86,23 +86,6 @@ class HaierClient:
 
             return json.loads(content['detailInfo'][deviceId])['attributes']
 
-    async def get_attributes_data(self, deviceId: str) -> dict:
-        """
-        手动获取设备数据
-        :param deviceId:
-        :return:
-        """
-        attributes = await self.get_digital_model(deviceId)
-
-        ret = {}
-        for attribute in attributes:
-            if 'value' not in attribute:
-                continue
-
-            ret[attribute['name']] = attribute['value']
-
-        return ret
-
     async def listen_devices(self, targetDevices: List[HaierDevice]):
         """
 
