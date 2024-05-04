@@ -61,7 +61,7 @@ class HaierAbstractEntity(Entity, ABC):
         # 监听状态
         def status_callback(event):
             self._attr_available = event.data['status']
-            self.async_write_ha_state()
+            self.schedule_update_ha_state()
 
         self._cancel_status_listen = self.hass.bus.async_listen(EVENT_WSS_GATEWAY_STATUS_CHANGED, status_callback)
 
@@ -72,7 +72,7 @@ class HaierAbstractEntity(Entity, ABC):
 
             self._attributes_data = event.data['attributes']
             self._update_value()
-            self.async_write_ha_state()
+            self.schedule_update_ha_state()
 
         self._cancel_data_listen = self.hass.bus.async_listen(EVENT_DEVICE_DATA_CHANGED, data_callback)
 
