@@ -4,7 +4,7 @@ from typing import List
 
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.switch import SwitchDeviceClass
-from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE, UnitOfVolume
+from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE, UnitOfVolume, UnitOfEnergy
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -224,5 +224,8 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
 
         if '用气量' in attribute['desc']:
             return SensorDeviceClass.GAS, UnitOfVolume.CUBIC_METERS
+
+        if '用电量' in attribute['desc']:
+            return SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR
 
         return None, None
