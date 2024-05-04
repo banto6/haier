@@ -85,7 +85,7 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
                 break
 
         # 燃气热水器
-        if 'outWaterTemp' in all_attribute_keys and 'inWaterTemp' in all_attribute_keys and 'gasPressure' in all_attribute_keys:
+        if 'outWaterTemp' in all_attribute_keys and 'targetTemp' in all_attribute_keys and 'totalUseGasL' in all_attribute_keys:
             yield self._parse_as_gas_water_heater(attributes)
 
     @staticmethod
