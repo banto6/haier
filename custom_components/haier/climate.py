@@ -4,7 +4,7 @@ from homeassistant.components.climate import ClimateEntity, ClimateEntityFeature
     FAN_MEDIUM, FAN_LOW, SWING_OFF, SWING_VERTICAL, SWING_HORIZONTAL, SWING_BOTH, FAN_OFF, FAN_AUTO
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfTemperature, Platform
-from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant.core import HomeAssistant
 
 from . import async_register_entity
 from .core.attribute import HaierAttribute
@@ -15,7 +15,7 @@ from .helpers import try_read_as_bool
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry, async_add_entities) -> None:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities) -> None:
     await async_register_entity(
         hass,
         entry,

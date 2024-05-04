@@ -3,7 +3,7 @@ import logging
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant.core import HomeAssistant
 
 from . import async_register_entity
 from .core.attribute import HaierAttribute
@@ -13,7 +13,7 @@ from .entity import HaierAbstractEntity
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry, async_add_entities) -> None:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities) -> None:
     await async_register_entity(
         hass,
         entry,
