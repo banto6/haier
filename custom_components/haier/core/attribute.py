@@ -1,10 +1,12 @@
+import logging
 from abc import abstractmethod, ABC
 from typing import List
 
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.switch import SwitchDeviceClass
-from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE
+from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE, UnitOfVolume
 
+_LOGGER = logging.getLogger(__name__)
 
 class HaierAttribute:
 
@@ -28,20 +30,6 @@ class HaierAttribute:
         return self._platform
 
     @property
-    def unit(self) -> str:
-        """
-        获取数据单位
-        :return:
-        """
-        if '温度' in self.display_name:
-            return UnitOfTemperature.CELSIUS
-
-        if '湿度' in self.display_name:
-            return PERCENTAGE
-
-        return None
-
-    @property
     def options(self) -> dict:
         return self._options
 
@@ -63,6 +51,7 @@ class HaierAttributeParser(ABC):
 class V1SpecAttributeParser(HaierAttributeParser, ABC):
 
     def parse_attribute(self, attribute: dict) -> HaierAttribute:
+        # 没有value的attribute后续无法正常使用，所以需要过滤掉
         if 'value' not in attribute:
             return None
 
@@ -115,34 +104,13 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             options['options'] = list(value_comparison_table.values())
             ext['value_comparison_table'] = value_comparison_table
 
-        # 目前没有unit字段了，暂时注释，看看后面怎么处理吧。
-        # if isinstance(attribute['variants'], dict) and 'unit' in attribute['variants']:
-        #     if attribute['variants']['unit'] in ['L']:  # 用水量
-        #         options['device_class'] = SensorDeviceClass.WATER
-        #         options['native_unit_of_measurement'] = UnitOfVolume.LITERS
-        #
-        #     elif attribute['variants']['unit'] in ['℃']:  # 温度
-        #         options['device_class'] = SensorDeviceClass.TEMPERATURE
-        #         options['native_unit_of_measurement'] = UnitOfTemperature.CELSIUS
-        #
-        #     elif attribute['variants']['unit'] in ['%'] and '湿度' in attribute['description']:
-        #         options['device_class'] = SensorDeviceClass.HUMIDITY
-        #         options['native_unit_of_measurement'] = PERCENTAGE
-        #
-        #     elif attribute['variants']['unit'] in ['KWh']:  # 用电量
-        #         options['device_class'] = SensorDeviceClass.ENERGY
-        #         options['native_unit_of_measurement'] = UnitOfEnergy.KILO_WATT_HOUR  # kWh
-        #
-        #     elif attribute['variants']['unit'] in ['h', 'min', 's']:  # 时间
-        #         options['device_class'] = SensorDeviceClass.DURATION
-        #         options['native_unit_of_measurement'] = attribute['variants']['unit']
-        #
-        #     elif attribute['variants']['unit'] in ['g', 'kg']:
-        #         options['device_class'] = SensorDeviceClass.WEIGHT
-        #         options['native_unit_of_measurement'] = attribute['variants']['unit']
-        #
-        #     elif attribute['variants']['unit'] in ['RPM']:  # 转速
-        #         options['native_unit_of_measurement'] = REVOLUTIONS_PER_MINUTE
+        if attribute['valueRange']['type'] == 'STEP':
+            device_class, unit = V1SpecAttributeParser._guess_device_class_and_unit(attribute)
+            if device_class:
+                options['device_class'] = device_class
+
+            if unit:
+                options['native_unit_of_measurement'] = unit
 
         return HaierAttribute(attribute['name'], attribute['desc'], Platform.SENSOR, options, ext)
 
@@ -154,6 +122,10 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             'native_max_value': float(step['maxValue']),
             'native_step': step['step']
         }
+
+        _, unit = V1SpecAttributeParser._guess_device_class_and_unit(attribute)
+        if unit:
+            options['native_unit_of_measurement'] = unit
 
         return HaierAttribute(attribute['name'], attribute['desc'], Platform.NUMBER, options)
 
@@ -234,3 +206,23 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
                 and len(valueRange['dataList']) == 2
                 and valueRange['dataList'][0]['data'] in ['true', 'false']
                 and valueRange['dataList'][1]['data'] in ['true', 'false'])
+
+    @staticmethod
+    def _guess_device_class_and_unit(attribute) -> (str, str):
+        """
+        猜测device class和unit
+        :return:
+        """
+        if '温度' in attribute['desc']:
+            return SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS
+
+        if '湿度' in attribute['desc']:
+            return SensorDeviceClass.HUMIDITY, PERCENTAGE
+
+        if '用水量' in attribute['desc']:
+            return SensorDeviceClass.WATER, UnitOfVolume.LITERS
+
+        if '用气量' in attribute['desc']:
+            return SensorDeviceClass.GAS, UnitOfVolume.CUBIC_METERS
+
+        return None, None
