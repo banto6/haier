@@ -4,8 +4,6 @@ import logging
 from homeassistant.components.water_heater import (
     WaterHeaterEntity,
     STATE_GAS,
-    STATE_PERFORMANCE,
-    STATE_HEAT_PUMP,
     SUPPORT_AWAY_MODE,
     SUPPORT_TARGET_TEMPERATURE,
     SUPPORT_OPERATION_MODE,
@@ -45,49 +43,28 @@ class HaierWaterHeater(HaierAbstractEntity, WaterHeaterEntity):
         self._attr_supported_features = SUPPORT_FLAGS
         # 默认的0-70温度范围太宽，homekit不支持
         self._attr_min_temp = 35
-        self._attr_max_temp = 65
+        self._attr_max_temp = 50
 
     @property
     def operation_list(self):
         """List of available operation modes."""
-        if 'dualHeaterMode' in self._attributes_data:
-            return [STATE_OFF, STATE_PERFORMANCE,STATE_HEAT_PUMP]
-        else:
-            return [STATE_OFF, STATE_GAS]
+        return [STATE_OFF, STATE_GAS]
 
     def set_temperature(self, **kwargs) -> None:
-        if 'targetTemp' in self._attributes_data:
-            self._send_command({
-                'targetTemp': kwargs['temperature']
-            })
-        elif 'targetTemperature' in self._attributes_data:
-            self._send_command({
-                'targetTemperature': kwargs['temperature']
-            })
+        self._send_command({
+            'targetTemp': kwargs['temperature']
+        })
 
     def _update_value(self):
         if 'outWaterTemp' in self._attributes_data:
             self._attr_current_temperature = float(self._attributes_data['outWaterTemp'])
-        elif 'currentTemperature' in self._attributes_data:
-            self._attr_current_temperature = float(self._attributes_data['currentTemperature'])
 
-        if 'targetTemp' in self._attributes_data:
-            self._attr_target_temperature = float(self._attributes_data['targetTemp'])
-        elif 'targetTemperature' in self._attributes_data:
-            self._attr_target_temperature = float(self._attributes_data['targetTemperature'])
+        self._attr_target_temperature = float(self._attributes_data['targetTemp'])
 
         if not try_read_as_bool(self._attributes_data['onOffStatus']):
             # 关机状态
             self._attr_current_operation = STATE_OFF
             self._attr_is_away_mode_on = True
-        elif 'dualHeaterMode' in self._attributes_data and try_read_as_bool(self._attributes_data['dualHeaterMode']):
-            # 空气能双源速热
-            self._attr_current_operation = STATE_PERFORMANCE
-            self._attr_is_away_mode_on = False
-        elif 'dualHeaterMode' in self._attributes_data and not try_read_as_bool(self._attributes_data['dualHeaterMode']):
-            # 空气能节能模式
-            self._attr_current_operation = STATE_HEAT_PUMP
-            self._attr_is_away_mode_on = False
         else:
             # 开机状态
             self._attr_current_operation = STATE_GAS
@@ -107,27 +84,10 @@ class HaierWaterHeater(HaierAbstractEntity, WaterHeaterEntity):
 
     def set_operation_mode(self, operation_mode):
         """Set operation mode"""
-        if 'dualHeaterMode' in self._attributes_data:
-            if operation_mode == STATE_HEAT_PUMP:
-                self._send_command({
-                    'onOffStatus': True,
-                    'dualHeaterMode': False
-                })
-            elif operation_mode == STATE_PERFORMANCE:
-                self._send_command({
-                    'onOffStatus': True,
-                    'dualHeaterMode': True
-                })
-            else:
-                self._send_command({
-                    'onOffStatus': False
-                })
-            
+        if operation_mode == STATE_GAS:
+            power_state = True
         else:
-            if operation_mode == STATE_GAS:
-                power_state = True
-            else:
-                power_state = False
-            self._send_command({
-                'onOffStatus': power_state
-            })
+            power_state = False
+        self._send_command({
+            'onOffStatus': power_state
+        })

@@ -88,10 +88,6 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         if 'outWaterTemp' in all_attribute_keys and 'targetTemp' in all_attribute_keys and 'totalUseGasL' in all_attribute_keys:
             yield self._parse_as_gas_water_heater(attributes)
 
-        # 空气能热水器
-        if 'targetTemperature' in all_attribute_keys and 'dualHeaterMode' in all_attribute_keys:
-            yield self._parse_as_water_heater(attributes) 
-
     @staticmethod
     def _parse_as_sensor(attribute):
         if V1SpecAttributeParser._is_binary_attribute(attribute):
@@ -202,25 +198,6 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
 
         return HaierAttribute('gas_water_heater', 'GasWaterHeater', Platform.WATER_HEATER, options, ext)
 
-    @staticmethod
-    def _parse_as_water_heater(attributes: List[dict]):
-        for attr in attributes:
-            if attr['name'] == 'targetTemperature':
-                target_temperature_attr = attr
-                break
-        else:
-            raise RuntimeError('targetTemp attr not found')
-
-        options = {
-            'min_temp': target_temperature_attr['valueRange']['dataStep']['minValue'],
-            'max_temp': target_temperature_attr['valueRange']['dataStep']['maxValue'],
-            'target_temperature_step': target_temperature_attr['valueRange']['dataStep']['step']
-        }
-        ext = {
-            'customize': True,
-        }
-
-        return HaierAttribute('water_heater', 'Water Heater', Platform.WATER_HEATER, ext=ext)
     @staticmethod
     def _is_binary_attribute(attribute):
         valueRange = attribute['valueRange']
