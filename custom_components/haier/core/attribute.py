@@ -85,8 +85,15 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
                 break
 
         # 燃气热水器
-        if 'outWaterTemp' in all_attribute_keys and 'targetTemp' in all_attribute_keys and 'totalUseGasL' in all_attribute_keys:
-            yield self._parse_as_gas_water_heater(attributes)
+        if 'targetTemp' in all_attribute_keys and 'totalUseGasL' in all_attribute_keys:
+            yield self._parse_as_water_heater(attributes,True,False)
+        elif 'targetTemperature' in all_attribute_keys and 'currentTemperature' in all_attribute_keys:
+            # 空气能
+            if 'dualHeaterMode' in all_attribute_keys:
+                yield self._parse_as_water_heater(attributes,False,True)
+            # 电热水器
+            else:
+                yield self._parse_as_water_heater(attributes,False,False)
 
     @staticmethod
     def _parse_as_sensor(attribute):
@@ -178,11 +185,16 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         return HaierAttribute('climate', 'Climate', Platform.CLIMATE, options, ext)
 
     @staticmethod
-    def _parse_as_gas_water_heater(attributes: List[dict]):
+    def _parse_as_water_heater(attributes: List[dict], is_gas, is_heat_pump):
         for attr in attributes:
-            if attr['name'] == 'targetTemp':
-                target_temperature_attr = attr
-                break
+            if is_gas:
+                if attr['name'] == 'targetTemp':
+                    target_temperature_attr = attr
+                    break
+            else:
+                if attr['name'] == 'targetTemperature':
+                    target_temperature_attr = attr
+                    break
         else:
             raise RuntimeError('targetTemp attr not found')
 
@@ -194,9 +206,17 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
 
         ext = {
             'customize': True,
+            'is_gas': is_gas,
+            'is_heat_pump': is_heat_pump,
         }
 
-        return HaierAttribute('gas_water_heater', 'GasWaterHeater', Platform.WATER_HEATER, options, ext)
+        return HaierAttribute(
+            'gas_water_heater' if is_gas else 'water_heater',
+            'GasWaterHeater' if is_gas else 'WaterHeater',
+            Platform.WATER_HEATER,
+            options,
+            ext
+            )
 
     @staticmethod
     def _is_binary_attribute(attribute):
