@@ -61,6 +61,8 @@ class HaierGasWaterHeater(HaierAbstractEntity, WaterHeaterEntity):
     def _update_value(self):
         if 'outWaterTemp' in self._attributes_data:
             self._attr_current_temperature = float(self._attributes_data['outWaterTemp'])
+        else:
+            self._attr_current_temperature = float(self._attributes_data['targetTemp'])
 
         self._attr_target_temperature = float(self._attributes_data['targetTemp'])
 
