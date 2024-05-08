@@ -4,12 +4,10 @@ import logging
 from homeassistant.components.water_heater import (
     WaterHeaterEntity,
     STATE_GAS,
-    SUPPORT_AWAY_MODE,
-    SUPPORT_TARGET_TEMPERATURE,
-    SUPPORT_OPERATION_MODE,
+    WaterHeaterEntityFeature,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import STATE_OFF, TEMP_CELSIUS, Platform
+from homeassistant.const import STATE_OFF, UnitOfTemperature, Platform
 from homeassistant.core import HomeAssistant
 
 from . import async_register_entity
@@ -21,7 +19,7 @@ from .helpers import try_read_as_bool
 _LOGGER = logging.getLogger(__name__)
 
 SUPPORT_FLAGS = (
-        SUPPORT_AWAY_MODE | SUPPORT_TARGET_TEMPERATURE | SUPPORT_OPERATION_MODE
+    WaterHeaterEntityFeature.AWAY_MODE | WaterHeaterEntityFeature.TARGET_TEMPERATURE | WaterHeaterEntityFeature.OPERATION_MODE
 )
 
 
@@ -39,7 +37,7 @@ class HaierWaterHeater(HaierAbstractEntity, WaterHeaterEntity):
 
     def __init__(self, device: HaierDevice, attribute: HaierAttribute):
         super().__init__(device, attribute)
-        self._attr_temperature_unit = TEMP_CELSIUS
+        self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_supported_features = SUPPORT_FLAGS
         # 默认的0-70温度范围太宽，homekit不支持
         self._attr_min_temp = 35
