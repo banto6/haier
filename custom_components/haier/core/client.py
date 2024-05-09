@@ -84,6 +84,13 @@ class HaierClient:
             content = await response.json(content_type=None)
             self._assert_response_successful(content)
 
+            if deviceId not in content['detailInfo']:
+                _LOGGER.warning("Device {} get digital model fail. response: {}".format(
+                    deviceId,
+                    json.dumps(content, ensure_ascii=False)
+                ))
+                return []
+
             return json.loads(content['detailInfo'][deviceId])['attributes']
 
     async def listen_devices(self, targetDevices: List[HaierDevice]):
