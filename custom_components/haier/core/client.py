@@ -23,6 +23,7 @@ APP_ID = 'MB-SHEZJAPPWXXCX-0000'
 APP_KEY = '79ce99cc7f9804663939676031b8a427'
 APP_VERSION = '5.3.0'
 
+GET_USER_INFO_API = 'https://account-api.haier.net/v2/haier/userinfo'
 GET_DEVICES_API = 'https://uws.haier.net/uds/v1/protected/deviceinfos'
 GET_WSS_GW_API = 'https://uws.haier.net/gmsWS/wsag/assign'
 GET_DIGITAL_MODEL_API = 'https://uws.haier.net/shadow/v1/devdigitalmodels'
@@ -46,6 +47,25 @@ class HaierClient:
     @property
     def hass(self):
         return self._hass
+
+    async def get_user_info(self) -> dict:
+        """
+        根据token获取用户信息
+        :return:
+        """
+        headers = {
+            'Authorization': f'Bearer {self._token}',
+        }
+        async with self._session.get(url=GET_USER_INFO_API, headers=headers) as response:
+            content = await response.json(content_type=None)
+            if 'error_description' in content:
+                raise HaierClientException('Error getting user info, error: {}'.format(content['error_description']))
+
+            return {
+                'userId': content['userId'],
+                'mobile': content['mobile'],
+                'username': content['username']
+            }
 
     async def get_devices(self) -> List[HaierDevice]:
         """

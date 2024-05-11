@@ -27,10 +27,10 @@ class AccountConfig:
         self.token = cfg.get('token', '')
         self.default_load_all_entity = cfg.get('default_load_all_entity', True)
 
-    def save(self):
+    def save(self, mobile: str = None):
         self._hass.config_entries.async_update_entry(
             self._config,
-            title='Haier: {}'.format(self.token[:6]),
+            title='Haier: {}'.format(mobile) if mobile else self._config.title,
             data={
                 **self._config.data,
                 'account': {

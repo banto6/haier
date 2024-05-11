@@ -30,7 +30,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # 保存设备attribute,方便调试
     for device in devices:
         store = Store(hass, 1, 'haier/device_{}.json'.format(device.id))
-        await store.async_save(json.dumps(await client.get_digital_model(device.id), ensure_ascii=False))
+        attrs = await client.get_digital_model(device.id)
+        await store.async_save(json.dumps({
+            'device': {
+                'name': device.name,
+                'type': device.type,
+                'product_code': device.product_code,
+                'product_name': device.product_name,
+                'wifi_type': device.wifi_type
+            },
+            'attributes': attrs
+        }, ensure_ascii=False))
 
     # 开始监听数据
     hass.async_create_background_task(client.listen_devices(devices), 'haier-websocket')
@@ -56,7 +66,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 async def entry_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    _LOGGER.debug('reload.....')
+    _LOGGER.debug('reload haier integration...')
     await hass.config_entries.async_reload(entry.entry_id)
 
 

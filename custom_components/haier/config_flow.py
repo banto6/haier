@@ -9,7 +9,7 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.config_validation import multi_select
 
 from .const import DOMAIN, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
-from .core.client import HaierClientException
+from .core.client import HaierClientException, HaierClient
 from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
 
 _LOGGER = logging.getLogger(__name__)
@@ -23,10 +23,10 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 # 校验账号密码是否正确
-                # client = HaierClient(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
-                # await client.try_login()
+                client = HaierClient(self.hass, user_input[CONF_CLIENT_ID], user_input[CONF_TOKEN])
+                user_info = await client.get_user_info()
 
-                return self.async_create_entry(title="Haier - {}".format(user_input[CONF_TOKEN][:6]), data={
+                return self.async_create_entry(title="Haier - {}".format(user_info['mobile']), data={
                     'account': user_input
                 })
             except HaierClientException as e:
@@ -78,14 +78,14 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input is not None:
             # 校验账号密码是否正确
-            # client = HaierClient(user_input[CONF_USERNAME], user_input[CONF_PASSWORD])
+            client = HaierClient(self.hass, user_input[CONF_CLIENT_ID], user_input[CONF_TOKEN])
             try:
-                # await client.try_login()
+                user_info = await client.get_user_info()
 
                 cfg.client_id = user_input[CONF_CLIENT_ID]
                 cfg.token = user_input[CONF_TOKEN]
                 cfg.default_load_all_entity = user_input['default_load_all_entity']
-                cfg.save()
+                cfg.save(user_info['mobile'])
 
                 return self.async_create_entry(title='', data={})
             except HaierClientException as e:
