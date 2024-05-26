@@ -14,15 +14,18 @@ import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import EVENT_DEVICE_CONTROL, EVENT_DEVICE_DATA_CHANGED, EVENT_WSS_GATEWAY_STATUS_CHANGED
 from .device import HaierDevice
+from .event import EVENT_DEVICE_CONTROL, EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_STATUS_CHANGED
+from .event import listen_event, fire_event
 
 _LOGGER = logging.getLogger(__name__)
 
-APP_ID = 'MB-SHEZJAPPWXXCX-0000'
-APP_KEY = '79ce99cc7f9804663939676031b8a427'
-APP_VERSION = '5.3.0'
+APP_ID = 'MB-UZHSH-0001'
+APP_KEY = '5dfca8714eb26e3a776e58a8273c8752'
+APP_VERSION = '8.5.1'
+CLIENT_ID = '44CB9A76-5A62-4FC2-9CD9-4BC7D95C645A'
 
+REFRESH_TOKEN_API = 'https://zj.haier.net/api-gw/oauthserver/account/v1/refreshToken'
 GET_USER_INFO_API = 'https://account-api.haier.net/v2/haier/userinfo'
 GET_DEVICES_API = 'https://uws.haier.net/uds/v1/protected/deviceinfos'
 GET_WSS_GW_API = 'https://uws.haier.net/gmsWS/wsag/assign'
@@ -32,14 +35,34 @@ GET_DIGITAL_MODEL_API = 'https://uws.haier.net/shadow/v1/devdigitalmodels'
 def random_str(length: int = 32) -> str:
     return ''.join(random.choice('abcdef1234567890') for _ in range(length))
 
+
+class TokenInfo:
+
+    def __init__(self, token: str, refresh_token: str, expires_in: int):
+        self._token = token
+        self._refresh_token = refresh_token
+        self._expires_in = expires_in
+
+    @property
+    def token(self) -> str:
+        return self._token
+
+    @property
+    def refresh_token(self) -> str:
+        return self._refresh_token
+
+    @property
+    def expires_in(self) -> int:
+        return self._expires_in
+
+
 class HaierClientException(Exception):
     pass
 
 
 class HaierClient:
 
-    def __init__(self, hass: HomeAssistant, client_id: str, token: str):
-        self._client_id = client_id
+    def __init__(self, hass: HomeAssistant, token: str):
         self._token = token
         self._hass = hass
         self._session = async_get_clientsession(hass)
@@ -47,6 +70,27 @@ class HaierClient:
     @property
     def hass(self):
         return self._hass
+
+    async def refresh_token(self, refresh_token: str) -> TokenInfo:
+        """
+        刷新token
+        :return:
+        """
+        payload = {
+            'refreshToken': refresh_token
+        }
+
+        headers = await self._generate_common_headers(REFRESH_TOKEN_API, json.dumps(payload))
+        async with self._session.post(url=REFRESH_TOKEN_API, headers=headers, json=payload) as response:
+            content = await response.json(content_type=None)
+            self._assert_response_successful(content)
+
+            token_info = content['data']['tokenInfo']
+            return TokenInfo(
+                token_info['accountToken'],
+                token_info['refreshToken'],
+                token_info['expiresIn']
+            )
 
     async def get_user_info(self) -> dict:
         """
@@ -113,9 +157,10 @@ class HaierClient:
 
             return json.loads(content['detailInfo'][deviceId])['attributes']
 
-    async def listen_devices(self, targetDevices: List[HaierDevice]):
+    async def listen_devices(self, targetDevices: List[HaierDevice], signal: threading.Event):
         """
 
+        :param signal:
         :param targetDevices: 需要监听数据变化的设备
         :return:
         """
@@ -125,13 +170,17 @@ class HaierClient:
 
         # https://docs.aiohttp.org/en/stable/client_quickstart.html#aiohttp-client-websockets
         agClientId = self._token
-        while True:
-            url = '{}/userag?token={}&agClientId={}'.format(server, self._token, agClientId)
-            async with self._session.ws_connect(url) as ws:
-                try:
+        while not signal.is_set():
+            heartbeat_signal = threading.Event()
+            try:
+                url = '{}/userag?token={}&agClientId={}'.format(server, self._token, agClientId)
+                _LOGGER.info('url: {}'.format(url))
+                async with self._session.ws_connect(url) as ws:
                     # 每60秒发送一次心跳包
-                    event = threading.Event()
-                    self._hass.async_create_background_task(self._send_heartbeat(ws, agClientId, event), 'haier-wss-send_heartbeat')
+                    self._hass.async_create_background_task(
+                        self._send_heartbeat(ws, agClientId, heartbeat_signal),
+                        'haier-wss-heartbeat'
+                    )
 
                     # 订阅设备状态
                     await ws.send_str(json.dumps({
@@ -145,34 +194,38 @@ class HaierClient:
                     # 监听事件总线来的控制命令
                     async def control_callback(e):
                         await self._send_command(ws, agClientId, e.data['deviceId'], e.data['attributes'])
-                    cancel_control_listen = self._hass.bus.async_listen(EVENT_DEVICE_CONTROL, control_callback)
 
-                    self._hass.bus.fire(EVENT_WSS_GATEWAY_STATUS_CHANGED, {
+                    cancel_control_listen = listen_event(self._hass, EVENT_DEVICE_CONTROL, control_callback)
+
+                    fire_event(self._hass, EVENT_GATEWAY_STATUS_CHANGED, {
                         'status': True
                     })
 
+                    _LOGGER.info('准备收消息啦')
                     async for msg in ws:
+                        _LOGGER.info('收到消息啦')
                         if msg.type == aiohttp.WSMsgType.TEXT:
                             await self._parse_message(msg.data)
                         else:
                             _LOGGER.warning("收到未知类型的消息: {}".format(msg.type))
-                finally:
-                    cancel_control_listen()
-                    event.set()
-                    self._hass.bus.fire(EVENT_WSS_GATEWAY_STATUS_CHANGED, {
-                        'status': False
-                    })
 
-            _LOGGER.debug("Connection disconnected. Waiting to retry.")
-            await asyncio.sleep(30)
+                        if signal.is_set():
+                            _LOGGER.info('listen device stopped.')
+                            break
+            except:
+                _LOGGER.warning("Connection disconnected. Waiting to retry.")
+                await asyncio.sleep(30)
+            finally:
+                cancel_control_listen()
+                heartbeat_signal.set()
+                fire_event(self._hass, EVENT_GATEWAY_STATUS_CHANGED, {
+                    'status': False
+                })
+                _LOGGER.info('listen device stopped.')
 
     @staticmethod
     async def _send_heartbeat(ws, agClientId: str, event: threading.Event):
-        while True:
-            if event.is_set():
-                _LOGGER.info("Stop heartbeat...")
-                break
-
+        while not event.is_set():
             try:
                 await ws.send_str(json.dumps({
                     'agClientId': agClientId,
@@ -185,9 +238,11 @@ class HaierClient:
 
                 _LOGGER.debug('Sending heartbeat')
             except:
-                _LOGGER.error('Failed to send heartbeat')
+                _LOGGER.exception('Failed to send heartbeat')
 
             await asyncio.sleep(60)
+
+        _LOGGER.info("send heartbeat stopped")
 
     async def _parse_message(self, msg):
         msg = json.loads(msg)
@@ -256,7 +311,7 @@ class HaierClient:
 
             attributes[attribute['name']] = attribute['value']
 
-        self._hass.bus.async_fire(EVENT_DEVICE_DATA_CHANGED, {
+        fire_event(self._hass, EVENT_DEVICE_DATA_CHANGED, {
             'deviceId': deviceId,
             'attributes': attributes
         })
@@ -297,7 +352,7 @@ class HaierClient:
         :return:
         """
         payload = {
-            'clientId': self._client_id,
+            'clientId': CLIENT_ID,
             'token': self._token
         }
 
@@ -326,7 +381,7 @@ class HaierClient:
             'appId': APP_ID,
             'appKey': APP_KEY,
             'appVersion': APP_VERSION,
-            'clientId': self._client_id,
+            'clientId': CLIENT_ID,
             'sequenceId': sequence_id,
             'sign': self._sign(APP_ID, APP_KEY, timestamp, body, api),
             'timestamp': timestamp,

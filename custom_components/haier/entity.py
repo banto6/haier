@@ -6,8 +6,9 @@ from homeassistant.helpers.entity import DeviceInfo, Entity
 
 from . import DOMAIN
 from .core.attribute import HaierAttribute
-from .core.const import EVENT_DEVICE_DATA_CHANGED, EVENT_WSS_GATEWAY_STATUS_CHANGED, EVENT_DEVICE_CONTROL
+from .core.event import EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_STATUS_CHANGED, EVENT_DEVICE_CONTROL
 from .core.device import HaierDevice
+from .core.event import listen_event, fire_event
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,8 +40,7 @@ class HaierAbstractEntity(Entity, ABC):
         # 保存当前设备下所有attribute的数据
         self._attributes_data = {}
         # 取消监听回调
-        self._cancel_status_listen = None
-        self._cancel_data_listen = None
+        self._listen_cancel = []
 
     def _send_command(self, attributes):
         """
@@ -48,7 +48,7 @@ class HaierAbstractEntity(Entity, ABC):
         :param attributes:
         :return:
         """
-        self.hass.bus.fire(EVENT_DEVICE_CONTROL, {
+        fire_event(self.hass, EVENT_DEVICE_CONTROL, {
             'deviceId': self._device.id,
             'attributes': attributes
         })
@@ -63,7 +63,7 @@ class HaierAbstractEntity(Entity, ABC):
             self._attr_available = event.data['status']
             self.schedule_update_ha_state()
 
-        self._cancel_status_listen = self.hass.bus.async_listen(EVENT_WSS_GATEWAY_STATUS_CHANGED, status_callback)
+        self._listen_cancel.append(listen_event(self.hass, EVENT_GATEWAY_STATUS_CHANGED, status_callback))
 
         # 监听数据变化事件
         def data_callback(event):
@@ -74,7 +74,7 @@ class HaierAbstractEntity(Entity, ABC):
             self._update_value()
             self.schedule_update_ha_state()
 
-        self._cancel_data_listen = self.hass.bus.async_listen(EVENT_DEVICE_DATA_CHANGED, data_callback)
+        self._listen_cancel.append(listen_event(self.hass, EVENT_DEVICE_DATA_CHANGED, data_callback))
 
         # 填充快照值
         data_callback(Event('', data={
@@ -83,11 +83,8 @@ class HaierAbstractEntity(Entity, ABC):
         }))
 
     async def async_will_remove_from_hass(self) -> None:
-        if self._cancel_status_listen:
-            self._cancel_status_listen()
-
-        if self._cancel_status_listen:
-            self._cancel_data_listen()
+        for cancel in self._listen_cancel:
+            cancel()
 
 
 

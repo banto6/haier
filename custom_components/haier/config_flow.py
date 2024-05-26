@@ -1,9 +1,10 @@
 import logging
+import time
 from typing import Any, Dict
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_TOKEN, CONF_CLIENT_ID
+from homeassistant.const import CONF_TOKEN
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.config_validation import multi_select
@@ -14,6 +15,7 @@ from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
 
 _LOGGER = logging.getLogger(__name__)
 
+REFRESH_TOKEN = 'refresh_token'
 
 class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 2
@@ -22,12 +24,20 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: Dict[str, str] = {}
         if user_input is not None:
             try:
-                # 校验账号密码是否正确
-                client = HaierClient(self.hass, user_input[CONF_CLIENT_ID], user_input[CONF_TOKEN])
+                # 根据refresh_token获取token
+                client = HaierClient(self.hass, '')
+                token_info = await client.refresh_token(user_input[REFRESH_TOKEN])
+                # 获取用户信息
+                client = HaierClient(self.hass, token_info.token)
                 user_info = await client.get_user_info()
 
                 return self.async_create_entry(title="Haier - {}".format(user_info['mobile']), data={
-                    'account': user_input
+                    'account': {
+                        'token': token_info.token,
+                        'refresh_token': token_info.refresh_token,
+                        'expires_at': int(time.time()) + token_info.expires_in,
+                        'default_load_all_entity': user_input['default_load_all_entity']
+                    }
                 })
             except HaierClientException as e:
                 _LOGGER.warning(str(e))
@@ -37,8 +47,7 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_CLIENT_ID): str,
-                    vol.Required(CONF_TOKEN): str,
+                    vol.Required('refresh_token'): str,
                     vol.Required('default_load_all_entity', default=True): bool,
                 }
             ),
@@ -77,13 +86,17 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         cfg = AccountConfig(self.hass, self.config_entry)
 
         if user_input is not None:
-            # 校验账号密码是否正确
-            client = HaierClient(self.hass, user_input[CONF_CLIENT_ID], user_input[CONF_TOKEN])
             try:
+                # 根据refresh_token获取token
+                client = HaierClient(self.hass, '')
+                token_info = await client.refresh_token(user_input[REFRESH_TOKEN])
+                # 获取用户信息
+                client = HaierClient(self.hass, token_info.token)
                 user_info = await client.get_user_info()
 
-                cfg.client_id = user_input[CONF_CLIENT_ID]
-                cfg.token = user_input[CONF_TOKEN]
+                cfg.token = token_info.token
+                cfg.refresh_token = token_info.refresh_token
+                cfg.expires_at = int(time.time()) + token_info.expires_in
                 cfg.default_load_all_entity = user_input['default_load_all_entity']
                 cfg.save(user_info['mobile'])
 
@@ -96,8 +109,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             step_id="account",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_CLIENT_ID, default=cfg.client_id): str,
-                    vol.Required(CONF_TOKEN, default=cfg.token): str,
+                    vol.Required('refresh_token', default=cfg.refresh_token): str,
                     vol.Required('default_load_all_entity', default=cfg.default_load_all_entity): bool,
                 }
             ),

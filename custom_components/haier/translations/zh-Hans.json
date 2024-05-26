@@ -8,8 +8,7 @@
                 "title": "账号设置",
                 "description": "配置海尔智家账户",
                 "data": {
-                    "client_id": "Client Id",
-                    "token": "Token",
+                    "refresh_token": "Refresh Token",
                     "default_load_all_entity": "默认加载所有实体"
                 }
             }
@@ -30,8 +29,7 @@
             "account": {
                 "title": "账号设置",
                 "data": {
-                    "client_id": "Client Id",
-                    "token": "Token",
+                    "refresh_token": "Refresh Token",
                     "default_load_all_entity": "默认加载所有实体"
                 }
             },

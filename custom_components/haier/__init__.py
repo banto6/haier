@@ -1,5 +1,9 @@
+import asyncio
 import json
 import logging
+import threading
+import time
+import uuid
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -8,20 +12,27 @@ from homeassistant.helpers.storage import Store
 
 from .const import DOMAIN, SUPPORTED_PLATFORMS, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
 from .core.attribute import HaierAttribute
-from .core.client import HaierClient, EVENT_DEVICE_DATA_CHANGED
+from .core.client import HaierClient, EVENT_DEVICE_DATA_CHANGED, HaierClientException, TokenInfo
 from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
 from .core.device import HaierDevice
 
 _LOGGER = logging.getLogger(__name__)
 
-
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {
-        'devices': []
+        'identity': str(uuid.uuid4()),
+        'devices': [],
+        'signals': []
     })
 
+    await try_update_token(hass, entry)
+    # 定时更新token
+    token_signal = threading.Event()
+    hass.async_create_background_task(token_updater(hass, entry, token_signal), 'haier-token-updater')
+    hass.data[DOMAIN]['signals'].append(token_signal)
+
     account_cfg = AccountConfig(hass, entry)
-    client = HaierClient(hass, account_cfg.client_id, account_cfg.token)
+    client = HaierClient(hass, account_cfg.token)
     devices = await client.get_devices()
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
 
@@ -43,7 +54,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         }, ensure_ascii=False))
 
     # 开始监听数据
-    hass.async_create_background_task(client.listen_devices(devices), 'haier-websocket')
+    device_signal = threading.Event()
+    hass.async_create_background_task(client.listen_devices(devices, device_signal), 'haier-websocket')
+    hass.data[DOMAIN]['signals'].append(device_signal)
 
     for platform in SUPPORTED_PLATFORMS:
         hass.async_create_task(
@@ -54,11 +67,59 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     return True
 
+async def token_updater(hass: HomeAssistant, entry: ConfigEntry, signal: threading.Event):
+    """
+    每1小时检查一次token有效性，若token刷新则重载集成
+    :param hass:
+    :param entry:
+    :param signal:
+    :return:
+    """
+    while not signal.is_set():
+        if await try_update_token(hass, entry):
+            _LOGGER.info('token refreshed, reload integration...')
+            await hass.config_entries.async_reload(entry.entry_id)
+            break
+        else:
+            _LOGGER.debug('token is valid')
+
+        await asyncio.sleep(3600)
+
+async def try_update_token(hass: HomeAssistant, entry: ConfigEntry):
+    """
+    尝试刷新token，刷新成功返回True，如refresh_token无效则会抛出异常
+    :param hass:
+    :param entry:
+    :return:
+    """
+    account_cfg = AccountConfig(hass, entry)
+    client = HaierClient(hass, account_cfg.token)
+
+    token_valid = True
+    try:
+        await client.get_user_info()
+    except HaierClientException:
+        token_valid = False
+
+    # token有效且里过期时间大于1天时不更新token
+    if token_valid and account_cfg.expires_at - int(time.time()) > 86400:
+        return False
+
+    token_info = await client.refresh_token(account_cfg.refresh_token)
+    account_cfg.token = token_info.token
+    account_cfg.refresh_token = token_info.refresh_token
+    account_cfg.expires_at = int(time.time()) + token_info.expires_in
+    account_cfg.save()
+
+    return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     for platform in SUPPORTED_PLATFORMS:
         if not await hass.config_entries.async_forward_entry_unload(entry, platform):
             return False
+
+    for signal in hass.data[DOMAIN]['signals']:
+        signal.set()
 
     del hass.data[DOMAIN]
 
@@ -68,21 +129,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 async def entry_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     _LOGGER.debug('reload haier integration...')
     await hass.config_entries.async_reload(entry.entry_id)
-
-
-async def async_migrate_entry(hass, config_entry: ConfigEntry):
-    _LOGGER.info("Migrating from version %s", config_entry.version)
-
-    if config_entry.version == 1:
-        config_entry.version = 2
-        hass.config_entries.async_update_entry(config_entry, data={
-            'account': dict(config_entry.data)
-        })
-
-    _LOGGER.info("Migration to version %s successful", config_entry.version)
-
-    return True
-
 
 async def async_remove_config_entry_device(hass: HomeAssistant, config: ConfigEntry, device: DeviceEntry) -> bool:
     device_id = list(device.identifiers)[0][1]

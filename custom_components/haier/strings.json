@@ -6,8 +6,7 @@
         "step": {
             "user": {
                 "data": {
-                    "client_id": "Client Id",
-                    "token": "Token",
+                    "refresh_token": "Refresh Token",
                     "default_load_all_entity": "Default load all entity"
                 },
                 "description": "Enter your Haier Token.",
@@ -30,8 +29,7 @@
             "account": {
                 "title": "Account information",
                 "data": {
-                    "client_id": "Client Id",
-                    "token": "Token",
+                    "refresh_token": "Refresh Token",
                     "default_load_all_entity": "Default load all entity"
                 }
             },
