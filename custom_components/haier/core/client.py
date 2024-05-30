@@ -6,6 +6,7 @@ import logging
 import random
 import threading
 import time
+import uuid
 import zlib
 from typing import List
 from urllib.parse import urlparse
@@ -20,10 +21,8 @@ from .event import listen_event, fire_event
 
 _LOGGER = logging.getLogger(__name__)
 
-APP_ID = 'MB-UZHSH-0001'
-APP_KEY = '5dfca8714eb26e3a776e58a8273c8752'
-APP_VERSION = '8.5.1'
-CLIENT_ID = '44CB9A76-5A62-4FC2-9CD9-4BC7D95C645A'
+APP_ID = 'MB-SHEZJAPPWXXCX-0000'
+APP_KEY = '79ce99cc7f9804663939676031b8a427'
 
 REFRESH_TOKEN_API = 'https://zj.haier.net/api-gw/oauthserver/account/v1/refreshToken'
 GET_USER_INFO_API = 'https://account-api.haier.net/v2/haier/userinfo'
@@ -62,7 +61,8 @@ class HaierClientException(Exception):
 
 class HaierClient:
 
-    def __init__(self, hass: HomeAssistant, token: str):
+    def __init__(self, hass: HomeAssistant, client_id: str, token: str):
+        self._client_id = client_id
         self._token = token
         self._hass = hass
         self._session = async_get_clientsession(hass)
@@ -168,7 +168,11 @@ class HaierClient:
 
         _LOGGER.debug("WSSGateway: %s", server)
 
-        # https://docs.aiohttp.org/en/stable/client_quickstart.html#aiohttp-client-websockets
+        # 集成reload后会有一段时间内同时存在两个listen_device，上一次监听退出后会发送EVENT_GATEWAY_STATUS_CHANGED导致实体变为不可用
+        # 加入process_id则是为了方便识别出哪一个才是正在运行中的listen_device
+        process_id = str(uuid.uuid4())
+        self._hass.data['current_listen_devices_process_id'] = process_id
+
         agClientId = self._token
         while not signal.is_set():
             heartbeat_signal = threading.Event()
@@ -201,9 +205,7 @@ class HaierClient:
                         'status': True
                     })
 
-                    _LOGGER.info('准备收消息啦')
                     async for msg in ws:
-                        _LOGGER.info('收到消息啦')
                         if msg.type == aiohttp.WSMsgType.TEXT:
                             await self._parse_message(msg.data)
                         else:
@@ -213,14 +215,18 @@ class HaierClient:
                             _LOGGER.info('listen device stopped.')
                             break
             except:
-                _LOGGER.warning("Connection disconnected. Waiting to retry.")
+                _LOGGER.exception("Connection disconnected. Waiting to retry.")
                 await asyncio.sleep(30)
             finally:
                 cancel_control_listen()
                 heartbeat_signal.set()
-                fire_event(self._hass, EVENT_GATEWAY_STATUS_CHANGED, {
-                    'status': False
-                })
+                if process_id == self._hass.data['current_listen_devices_process_id']:
+                    fire_event(self._hass, EVENT_GATEWAY_STATUS_CHANGED, {
+                        'status': False
+                    })
+                else:
+                    _LOGGER.debug('process_id not match, skip...')
+
                 _LOGGER.info('listen device stopped.')
 
     @staticmethod
@@ -352,7 +358,7 @@ class HaierClient:
         :return:
         """
         payload = {
-            'clientId': CLIENT_ID,
+            'clientId': self._client_id,
             'token': self._token
         }
 
@@ -380,8 +386,7 @@ class HaierClient:
             'accessToken': self._token,
             'appId': APP_ID,
             'appKey': APP_KEY,
-            'appVersion': APP_VERSION,
-            'clientId': CLIENT_ID,
+            'clientId': self._client_id,
             'sequenceId': sequence_id,
             'sign': self._sign(APP_ID, APP_KEY, timestamp, body, api),
             'timestamp': timestamp,

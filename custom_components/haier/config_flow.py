@@ -15,6 +15,7 @@ from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
 
 _LOGGER = logging.getLogger(__name__)
 
+CLIENT_ID = 'client_id'
 REFRESH_TOKEN = 'refresh_token'
 
 class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -25,14 +26,15 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 # 根据refresh_token获取token
-                client = HaierClient(self.hass, '')
+                client = HaierClient(self.hass, user_input[CLIENT_ID], '')
                 token_info = await client.refresh_token(user_input[REFRESH_TOKEN])
                 # 获取用户信息
-                client = HaierClient(self.hass, token_info.token)
+                client = HaierClient(self.hass, user_input[CLIENT_ID], token_info.token)
                 user_info = await client.get_user_info()
 
                 return self.async_create_entry(title="Haier - {}".format(user_info['mobile']), data={
                     'account': {
+                        'client_id': user_input[CLIENT_ID],
                         'token': token_info.token,
                         'refresh_token': token_info.refresh_token,
                         'expires_at': int(time.time()) + token_info.expires_in,
@@ -47,7 +49,8 @@ class HaierConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required('refresh_token'): str,
+                    vol.Required(CLIENT_ID): str,
+                    vol.Required(REFRESH_TOKEN): str,
                     vol.Required('default_load_all_entity', default=True): bool,
                 }
             ),
@@ -88,17 +91,20 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             try:
                 # 根据refresh_token获取token
-                client = HaierClient(self.hass, '')
+                client = HaierClient(self.hass, user_input[CLIENT_ID], '')
                 token_info = await client.refresh_token(user_input[REFRESH_TOKEN])
                 # 获取用户信息
-                client = HaierClient(self.hass, token_info.token)
+                client = HaierClient(self.hass, user_input[CLIENT_ID], token_info.token)
                 user_info = await client.get_user_info()
 
+                cfg.client_id = user_input[CLIENT_ID]
                 cfg.token = token_info.token
                 cfg.refresh_token = token_info.refresh_token
                 cfg.expires_at = int(time.time()) + token_info.expires_in
                 cfg.default_load_all_entity = user_input['default_load_all_entity']
                 cfg.save(user_info['mobile'])
+
+                await self.hass.config_entries.async_reload(self.config_entry.entry_id)
 
                 return self.async_create_entry(title='', data={})
             except HaierClientException as e:
@@ -109,7 +115,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             step_id="account",
             data_schema=vol.Schema(
                 {
-                    vol.Required('refresh_token', default=cfg.refresh_token): str,
+                    vol.Required(CLIENT_ID, default=cfg.client_id): str,
+                    vol.Required(REFRESH_TOKEN, default=cfg.refresh_token): str,
                     vol.Required('default_load_all_entity', default=cfg.default_load_all_entity): bool,
                 }
             ),
@@ -183,6 +190,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             cfg.set_filter_type(user_input['device_id'], user_input['filter_type'])
             cfg.set_target_entities(user_input['device_id'], user_input['target_entities'])
             cfg.save()
+
+            await self.hass.config_entries.async_reload(self.config_entry.entry_id)
 
             return self.async_create_entry(title='', data={})
 

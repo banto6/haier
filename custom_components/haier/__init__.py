@@ -3,7 +3,6 @@ import json
 import logging
 import threading
 import time
-import uuid
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -20,7 +19,6 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {
-        'identity': str(uuid.uuid4()),
         'devices': [],
         'signals': []
     })
@@ -32,7 +30,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[DOMAIN]['signals'].append(token_signal)
 
     account_cfg = AccountConfig(hass, entry)
-    client = HaierClient(hass, account_cfg.token)
+    client = HaierClient(hass, account_cfg.client_id, account_cfg.token)
     devices = await client.get_devices()
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
 
@@ -53,7 +51,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             'attributes': attrs
         }, ensure_ascii=False))
 
-    # 开始监听数据
+    # 监听设备数据
     device_signal = threading.Event()
     hass.async_create_background_task(client.listen_devices(devices, device_signal), 'haier-websocket')
     hass.data[DOMAIN]['signals'].append(device_signal)
@@ -92,8 +90,8 @@ async def try_update_token(hass: HomeAssistant, entry: ConfigEntry):
     :param entry:
     :return:
     """
-    account_cfg = AccountConfig(hass, entry)
-    client = HaierClient(hass, account_cfg.token)
+    cfg = AccountConfig(hass, entry)
+    client = HaierClient(hass, cfg.client_id, cfg.token)
 
     token_valid = True
     try:
@@ -102,14 +100,14 @@ async def try_update_token(hass: HomeAssistant, entry: ConfigEntry):
         token_valid = False
 
     # token有效且里过期时间大于1天时不更新token
-    if token_valid and account_cfg.expires_at - int(time.time()) > 86400:
+    if token_valid and cfg.expires_at - int(time.time()) > 86400:
         return False
 
-    token_info = await client.refresh_token(account_cfg.refresh_token)
-    account_cfg.token = token_info.token
-    account_cfg.refresh_token = token_info.refresh_token
-    account_cfg.expires_at = int(time.time()) + token_info.expires_in
-    account_cfg.save()
+    token_info = await client.refresh_token(cfg.refresh_token)
+    cfg.token = token_info.token
+    cfg.refresh_token = token_info.refresh_token
+    cfg.expires_at = int(time.time()) + token_info.expires_in
+    cfg.save()
 
     return True
 

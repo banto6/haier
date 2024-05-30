@@ -6,6 +6,7 @@
         "step": {
             "user": {
                 "data": {
+                    "client_id": "Client Id",
                     "refresh_token": "Refresh Token",
                     "default_load_all_entity": "Default load all entity"
                 },
@@ -29,6 +30,7 @@
             "account": {
                 "title": "Account information",
                 "data": {
+                    "client_id": "Client Id",
                     "refresh_token": "Refresh Token",
                     "default_load_all_entity": "Default load all entity"
                 }

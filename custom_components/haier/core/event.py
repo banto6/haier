@@ -9,12 +9,12 @@ EVENT_DEVICE_DATA_CHANGED = 'device_data_changed'
 EVENT_GATEWAY_STATUS_CHANGED = 'gateway_status_changed'
 
 
-def wrap_event(hass: HomeAssistant, name: str) -> str:
-    return '{}_{}_{}'.format(DOMAIN, hass.data[DOMAIN]['identity'], name)
+def wrap_event(name: str) -> str:
+    return '{}_{}'.format(DOMAIN, name)
 
 
 def fire_event(hass: HomeAssistant, event: str, data: dict) -> None:
-    hass.bus.fire(wrap_event(hass, event), data)
+    hass.bus.fire(wrap_event(event), data)
 
 
 def listen_event(
@@ -22,4 +22,4 @@ def listen_event(
         event: str,
         callback: Callable[[Event], Coroutine[Any, Any, None] | None]
 ) -> CALLBACK_TYPE:
-    return hass.bus.async_listen(wrap_event(hass, event), callback)
+    return hass.bus.async_listen(wrap_event(event), callback)
