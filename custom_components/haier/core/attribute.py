@@ -223,7 +223,7 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             return SensorDeviceClass.WATER, UnitOfVolume.LITERS
 
         if '用气量' in attribute['desc']:
-            return SensorDeviceClass.GAS, UnitOfVolume.CUBIC_METERS
+            return SensorDeviceClass.GAS, UnitOfVolume.LITERS
 
         if '用电量' in attribute['desc']:
             return SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR
