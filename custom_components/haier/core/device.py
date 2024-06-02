@@ -24,7 +24,7 @@ class HaierDevice:
 
     @property
     def name(self):
-        return self._raw_data['deviceName']
+        return self._raw_data['deviceName'] if 'deviceName' in self._raw_data else self.id
 
     @property
     def type(self):
