@@ -184,12 +184,10 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
     def _get_wind_direction_vertical(self) -> str:
         if self._attribute.ext['exist_multiple_vents']:
-            return self._attributes_data['windDirectionVerticalL']
-
-        return self._attributes_data['windDirectionVertical']
+            return self._attributes_data.get('windDirectionVerticalL', '0')
+        return self._attributes_data.get('windDirectionVertical', '0')
 
     def _get_wind_direction_horizontal(self) -> str:
         if self._attribute.ext['exist_multiple_vents']:
-            return self._attributes_data['windDirectionHorizontalL']
-
-        return self._attributes_data['windDirectionHorizontal']
+            return self._attributes_data.get('windDirectionHorizontalL', '0')
+        return self._attributes_data.get('windDirectionHorizontal', '0')
