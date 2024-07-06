@@ -28,7 +28,7 @@ class HaierDevice:
 
     @property
     def type(self):
-        return self._raw_data['deviceType']
+        return self._raw_data['deviceType'] if 'deviceType' in self._raw_data else None
 
     @property
     def product_code(self):
