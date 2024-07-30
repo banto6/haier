@@ -1,7 +1,7 @@
 {
   "domain": "haier",
   "name": "Haier",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "documentation": "https://github.com/banto6/haier",
   "issue_tracker": "https://github.com/banto6/haier/issues",
   "config_flow": true,
