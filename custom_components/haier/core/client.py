@@ -169,9 +169,9 @@ class HaierClient:
         try:
             cache = await store.async_load()
             if isinstance(cache, str):
-                raise RuntimeError('cache data is invalid')
+                raise RuntimeError('cache is invalid')
         except Exception:
-            _LOGGER.exception("Device {} load cache digital model exception ".format(device.id))
+            _LOGGER.warning("Device {} cache is invalid".format(device.id))
             await store.async_remove()
 
         if cache:
