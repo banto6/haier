@@ -164,10 +164,12 @@ class HaierClient:
         :param device:
         :return:
         """
-        store = Store(self._hass, 2, 'haier/device_{}.json'.format(device.id))
+        store = Store(self._hass, 1, 'haier/device_{}.json'.format(device.id))
         cache = None
         try:
             cache = await store.async_load()
+            if isinstance(cache, str):
+                raise RuntimeError('cache data is invalid')
         except Exception:
             _LOGGER.exception("Device {} load cache digital model exception ".format(device.id))
             await store.async_remove()
