@@ -55,8 +55,8 @@ class HaierDevice:
         # noinspection PyBroadException
         try:
             parser = V1SpecAttributeParser()
-            properties = await self._client.get_digital_model_from_cache(self)
-            for item in properties:
+            attributes = await self._client.get_digital_model_from_cache(self)
+            for item in attributes:
                 try:
                     attr = parser.parse_attribute(item)
                     if attr:
@@ -64,18 +64,18 @@ class HaierDevice:
                 except:
                     _LOGGER.exception("Haier device %s attribute %s parsing error occurred", self.id, item['name'])
 
-            iter = parser.parse_global(properties)
+            iter = parser.parse_global(attributes)
             if iter:
                 for item in iter:
                     self._attributes.append(item)
 
-            # 从properties中读取实体值
-            for attribute in properties:
-                if 'value' not in attribute:
-                    continue
-
-                self._attribute_snapshot_data[attribute['name']] = attribute['value']
-
+            snapshot_data = await self._client.get_device_snapshot_data(self.id)
+            _LOGGER.debug(
+                'device %s snapshot data fetch successful. data: %s',
+                self.id,
+                json.dumps(snapshot_data)
+            )
+            self._attribute_snapshot_data = snapshot_data
         except Exception:
             _LOGGER.exception('Haier device %s init failed', self.id)
 

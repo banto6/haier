@@ -93,7 +93,6 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             yield self._parse_as_cover(attributes)
 
 
-
     @staticmethod
     def _parse_as_sensor(attribute):
         if V1SpecAttributeParser._is_binary_attribute(attribute):

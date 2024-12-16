@@ -193,6 +193,23 @@ class HaierClient:
 
         return attributes
 
+    async def get_device_snapshot_data(self, deviceId: str) -> dict:
+        """
+        获取指定设备最新的属性数据
+        :param deviceId:
+        :return:
+        """
+        values = {}
+
+        attributes = await self.get_digital_model(deviceId)
+        # 从attributes中读取实体值
+        for attribute in attributes:
+            if 'value' not in attribute:
+                continue
+
+            values[attribute['name']] = attribute['value']
+
+        return values
 
     async def listen_devices(self, targetDevices: List[HaierDevice], signal: threading.Event):
         """
