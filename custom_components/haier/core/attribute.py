@@ -6,6 +6,8 @@ from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.components.switch import SwitchDeviceClass
 from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE, UnitOfVolume, UnitOfEnergy
 
+from custom_components.haier.helpers import equals_ignore_case, contains_any_ignore_case
+
 _LOGGER = logging.getLogger(__name__)
 
 class HaierAttribute:
@@ -58,14 +60,14 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         if not attribute['writable'] and attribute['readable']:
             return self._parse_as_sensor(attribute)
 
-        if attribute['writable'] and attribute['valueRange']['type'] == 'STEP' and attribute['valueRange']['dataStep']['dataType'] in ['Integer', 'Double']:
+        if attribute['writable'] and equals_ignore_case(attribute['valueRange']['type'], 'STEP') and contains_any_ignore_case(attribute['valueRange']['dataStep']['dataType'], ['Integer', 'Double']):
             return self._parse_as_number(attribute)
 
         # 一定要在select之前，不然会被select覆盖
         if attribute['writable'] and V1SpecAttributeParser._is_binary_attribute(attribute):
             return self._parse_as_switch(attribute)
 
-        if attribute['writable'] and attribute['valueRange']['type'] == 'LIST':
+        if attribute['writable'] and equals_ignore_case(attribute['valueRange']['type'], 'LIST'):
             return self._parse_as_select(attribute)
 
         return None
@@ -100,7 +102,7 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
 
         options = {}
         ext = {}
-        if attribute['valueRange']['type'] == 'LIST':
+        if equals_ignore_case(attribute['valueRange']['type'], 'LIST'):
             value_comparison_table = {}
             for item in attribute['valueRange']['dataList']:
                 value_comparison_table[str(item['data'])] = item['desc']
@@ -109,7 +111,7 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             options['options'] = list(value_comparison_table.values())
             ext['value_comparison_table'] = value_comparison_table
 
-        if attribute['valueRange']['type'] == 'STEP':
+        if equals_ignore_case(attribute['valueRange']['type'], 'STEP'):
             device_class, unit = V1SpecAttributeParser._guess_device_class_and_unit(attribute)
             if device_class:
                 options['device_class'] = device_class
@@ -222,10 +224,10 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
     def _is_binary_attribute(attribute):
         valueRange = attribute['valueRange']
 
-        return (valueRange['type'] == 'LIST'
+        return (equals_ignore_case(valueRange['type'], 'LIST')
                 and len(valueRange['dataList']) == 2
-                and valueRange['dataList'][0]['data'] in ['true', 'false']
-                and valueRange['dataList'][1]['data'] in ['true', 'false'])
+                and contains_any_ignore_case(valueRange['dataList'][0]['data'], ['true', 'false'])
+                and contains_any_ignore_case(valueRange['dataList'][1]['data'], ['true', 'false']))
 
     @staticmethod
     def _guess_device_class_and_unit(attribute) -> (str, str):
