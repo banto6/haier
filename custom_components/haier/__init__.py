@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 import threading
 import time
@@ -7,7 +6,6 @@ import time
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntry
-from homeassistant.helpers.storage import Store
 
 from .const import DOMAIN, SUPPORTED_PLATFORMS, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
 from .core.attribute import HaierAttribute
@@ -35,21 +33,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     _LOGGER.debug('共获取到{}个设备'.format(len(devices)))
 
     hass.data[DOMAIN]['devices'] = devices
-
-    # 保存设备attribute,方便调试
-    for device in devices:
-        store = Store(hass, 1, 'haier/device_{}.json'.format(device.id))
-        attrs = await client.get_digital_model(device.id)
-        await store.async_save(json.dumps({
-            'device': {
-                'name': device.name,
-                'type': device.type,
-                'product_code': device.product_code,
-                'product_name': device.product_name,
-                'wifi_type': device.wifi_type
-            },
-            'attributes': attrs
-        }, ensure_ascii=False))
 
     # 监听设备数据
     device_signal = threading.Event()

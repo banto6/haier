@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.storage import Store
 
 from .device import HaierDevice
 from .event import EVENT_DEVICE_CONTROL, EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_STATUS_CHANGED
@@ -156,6 +157,40 @@ class HaierClient:
                 return []
 
             return json.loads(content['detailInfo'][deviceId])['attributes']
+
+    async def get_digital_model_from_cache(self, device: HaierDevice) -> list:
+        """
+        尝试从缓存中获取设备attributes，若获取失败则自动从远程获取并保存到缓存中
+        :param device:
+        :return:
+        """
+        store = Store(self._hass, 2, 'haier/device_{}.json'.format(device.id))
+        cache = None
+        try:
+            cache = await store.async_load()
+        except Exception:
+            _LOGGER.exception("Device {} load cache digital model exception ".format(device.id))
+            await store.async_remove()
+
+        if cache:
+            _LOGGER.info("Device {} get digital model from cache successful".format(device.id))
+            return cache['attributes']
+
+        _LOGGER.info("Device {} get digital model from cache fail, attempt to obtain remotely".format(device.id))
+        attributes = await self.get_digital_model(device.id)
+        await store.async_save({
+            'device': {
+                'name': device.name,
+                'type': device.type,
+                'product_code': device.product_code,
+                'product_name': device.product_name,
+                'wifi_type': device.wifi_type
+            },
+            'attributes': attributes
+        })
+
+        return attributes
+
 
     async def listen_devices(self, targetDevices: List[HaierDevice], signal: threading.Event):
         """

@@ -55,7 +55,7 @@ class HaierDevice:
         # noinspection PyBroadException
         try:
             parser = V1SpecAttributeParser()
-            properties = await self._client.get_digital_model(self.id)
+            properties = await self._client.get_digital_model_from_cache(self)
             for item in properties:
                 try:
                     attr = parser.parse_attribute(item)
