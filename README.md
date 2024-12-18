@@ -11,7 +11,7 @@
 - Select
 - Sensor
 - Binary Sensor
-- Climate (Beta)
+- Climate
 
 ## 安装
 
@@ -24,6 +24,12 @@
 配置 > 设备与服务 >  集成 >  添加集成 > 搜索`haier`
 
 或者点击: [![添加集成](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start?domain=haier)
+
+
+## 常见问题
+
+遇到问题提交issues前，请先查看[常见问题](https://github.com/banto6/haier/issues/186)中是否已存在。
+
 
 ## 调试
 在`configuration.yaml`中加入以下配置来打开调试日志。
