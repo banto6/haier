@@ -112,9 +112,12 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             ext['value_comparison_table'] = value_comparison_table
 
         if equals_ignore_case(attribute['valueRange']['type'], 'STEP'):
-            device_class, unit = V1SpecAttributeParser._guess_device_class_and_unit(attribute)
+            state_class, device_class, unit = V1SpecAttributeParser._guess_state_class_device_class_and_unit(attribute)
             if device_class:
                 options['device_class'] = device_class
+
+            if state_class:
+                options['state_class'] = state_class
 
             if unit:
                 options['native_unit_of_measurement'] = unit
@@ -130,7 +133,7 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             'native_step': step['step']
         }
 
-        _, unit = V1SpecAttributeParser._guess_device_class_and_unit(attribute)
+        _, _, unit = V1SpecAttributeParser._guess_state_class_device_class_and_unit(attribute)
         if unit:
             options['native_unit_of_measurement'] = unit
 
@@ -230,24 +233,33 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
                 and contains_any_ignore_case(valueRange['dataList'][1]['data'], ['true', 'false']))
 
     @staticmethod
-    def _guess_device_class_and_unit(attribute) -> (str, str):
+    def _guess_state_class_device_class_and_unit(attribute) -> (str, str, str):
         """
-        猜测device class和unit
+        猜测 state class, device class和unit
         :return:
         """
+
+        state_class = None
+
+        if '累计' in attribute['desc']:
+            state_class = SensorStateClass.TOTAL
+        
+        if '本次' in attribute['desc']:
+            state_class = SensorStateClass.TOTAL_INCREASING
+
         if '温度' in attribute['desc']:
-            return SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS
+            return state_class, SensorDeviceClass.TEMPERATURE, UnitOfTemperature.CELSIUS
 
         if '湿度' in attribute['desc']:
-            return SensorDeviceClass.HUMIDITY, PERCENTAGE
+            return state_class, SensorDeviceClass.HUMIDITY, PERCENTAGE
 
         if '用水量' in attribute['desc']:
-            return SensorDeviceClass.WATER, UnitOfVolume.LITERS
+            return state_class, SensorDeviceClass.WATER, UnitOfVolume.LITERS
 
         if '用气量' in attribute['desc']:
-            return SensorDeviceClass.GAS, UnitOfVolume.LITERS
+            return state_class, SensorDeviceClass.GAS, UnitOfVolume.LITERS
 
         if '用电量' in attribute['desc']:
-            return SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR
+            return state_class, SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR
 
-        return None, None
+        return state_class, None, None
