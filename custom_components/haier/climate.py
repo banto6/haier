@@ -55,7 +55,9 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
         self._attr_supported_features = ClimateEntityFeature.TARGET_TEMPERATURE \
                                         | ClimateEntityFeature.FAN_MODE \
-                                        | ClimateEntityFeature.SWING_MODE
+                                        | ClimateEntityFeature.SWING_MODE \
+                                        | ClimateEntityFeature.TURN_OFF \
+                                        | ClimateEntityFeature.TURN_ON
 
     def _update_value(self):
         if 'indoorTemperature' in self._attributes_data:
@@ -101,6 +103,12 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
                     if wind_direction_vertical != 0:
                         self._attr_swing_mode = SWING_VERTICAL
+
+    def turn_on(self) -> None:
+        self.set_hvac_mode(HVACMode.AUTO)
+
+    def turn_off(self) -> None:
+        self.set_hvac_mode(HVACMode.OFF)
 
     def set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         # 关机
