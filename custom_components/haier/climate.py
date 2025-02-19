@@ -14,6 +14,22 @@ from .helpers import try_read_as_bool
 
 _LOGGER = logging.getLogger(__name__)
 
+HVAC_MODE_MAPPING = {
+    0: HVACMode.AUTO,
+    1: HVACMode.COOL,
+    2: HVACMode.DRY,
+    4: HVACMode.HEAT,
+    6: HVACMode.FAN_ONLY
+}
+
+def get_operation_mode_from_hvac_mode(hvac_mode: HVACMode) -> int:
+    for code, mode in enumerate(HVAC_MODE_MAPPING):
+        if mode == hvac_mode:
+            return code
+
+    return 0
+
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities) -> None:
     await async_register_entity(
@@ -30,6 +46,7 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
     def __init__(self, device: HaierDevice, attribute: HaierAttribute):
         super().__init__(device, attribute)
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
+
         self._attr_hvac_modes = [
             HVACMode.OFF,
             HVACMode.AUTO,
@@ -68,44 +85,39 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
         self._attr_target_temperature = float(self._attributes_data['targetTemperature'])
 
+        # 关机状态
         if not try_read_as_bool(self._attributes_data['onOffStatus']):
-            # 关机状态
             self._attr_hvac_mode = HVACMode.OFF
             self._attr_fan_mode = FAN_OFF
             self._attr_swing_mode = SWING_OFF
+            return
+
+        # 开机状态
+        self._attr_hvac_mode = self._get_hvac_mode()
+
+        self._attr_fan_mode = {
+            1: FAN_HIGH,
+            2: FAN_MEDIUM,
+            3: FAN_LOW,
+            5: FAN_AUTO
+        }.get(int(self._get_wind_speed()))
+
+        wind_direction_vertical = int(self._get_wind_direction_vertical())
+        wind_direction_horizontal = int(self._get_wind_direction_horizontal())
+        if wind_direction_horizontal == 0 and wind_direction_vertical == 0:
+            self._attr_swing_mode = SWING_OFF
         else:
-            # 开机状态
-            self._attr_hvac_mode = {
-                0: HVACMode.AUTO,
-                1: HVACMode.COOL,
-                2: HVACMode.DRY,
-                4: HVACMode.HEAT,
-                6: HVACMode.FAN_ONLY
-            }.get(int(self._attributes_data['operationMode']))
-
-            self._attr_fan_mode = {
-                1: FAN_HIGH,
-                2: FAN_MEDIUM,
-                3: FAN_LOW,
-                5: FAN_AUTO
-            }.get(int(self._get_wind_speed()))
-
-            wind_direction_vertical = int(self._get_wind_direction_vertical())
-            wind_direction_horizontal = int(self._get_wind_direction_horizontal())
-            if wind_direction_horizontal == 0 and wind_direction_vertical == 0:
-                self._attr_swing_mode = SWING_OFF
+            if wind_direction_horizontal != 0 and wind_direction_vertical != 0:
+                self._attr_swing_mode = SWING_BOTH
             else:
-                if wind_direction_horizontal != 0 and wind_direction_vertical != 0:
-                    self._attr_swing_mode = SWING_BOTH
-                else:
-                    if wind_direction_horizontal != 0:
-                        self._attr_swing_mode = SWING_HORIZONTAL
+                if wind_direction_horizontal != 0:
+                    self._attr_swing_mode = SWING_HORIZONTAL
 
-                    if wind_direction_vertical != 0:
-                        self._attr_swing_mode = SWING_VERTICAL
+                if wind_direction_vertical != 0:
+                    self._attr_swing_mode = SWING_VERTICAL
 
     def turn_on(self) -> None:
-        self.set_hvac_mode(HVACMode.AUTO)
+        self.set_hvac_mode(self._get_hvac_mode())
 
     def turn_off(self) -> None:
         self.set_hvac_mode(HVACMode.OFF)
@@ -125,13 +137,7 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
             })
 
         self._send_command({
-            'operationMode': {
-                HVACMode.AUTO: 0,
-                HVACMode.COOL: 1,
-                HVACMode.DRY: 2,
-                HVACMode.HEAT: 4,
-                HVACMode.FAN_ONLY: 6
-            }[hvac_mode]
+            'operationMode': get_operation_mode_from_hvac_mode(hvac_mode)
         })
 
     def set_fan_mode(self, fan_mode: str) -> None:
@@ -193,9 +199,18 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
     def _get_wind_direction_vertical(self) -> str:
         if self._attribute.ext['exist_multiple_vents']:
             return self._attributes_data.get('windDirectionVerticalL', '0')
+
         return self._attributes_data.get('windDirectionVertical', '0')
 
     def _get_wind_direction_horizontal(self) -> str:
         if self._attribute.ext['exist_multiple_vents']:
             return self._attributes_data.get('windDirectionHorizontalL', '0')
+
         return self._attributes_data.get('windDirectionHorizontal', '0')
+
+    def _get_hvac_mode(self):
+        mode = int(self._attributes_data['operationMode'])
+        if mode in HVAC_MODE_MAPPING:
+            return HVAC_MODE_MAPPING[mode]
+
+        return HVACMode.AUTO
