@@ -173,6 +173,7 @@ class HaierClient:
         except Exception:
             _LOGGER.warning("Device {} cache is invalid".format(device.id))
             await store.async_remove()
+            cache = None
 
         if cache:
             _LOGGER.info("Device {} get digital model from cache successful".format(device.id))
