@@ -32,6 +32,10 @@ class HaierSensor(HaierAbstractEntity, SensorEntity):
         comparison_table = self._attribute.ext.get('value_comparison_table', {})
 
         value = self._attributes_data[self._attribute.key]
+        if value in (None, ''):
+            self._attr_native_value = None
+            return
+
         self._attr_native_value = comparison_table[value] if value in comparison_table else value
 
 
