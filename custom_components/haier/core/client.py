@@ -32,6 +32,9 @@ GET_DEVICES_API = 'https://uws.haier.net/uds/v1/protected/deviceinfos'
 GET_WSS_GW_API = 'https://uws.haier.net/gmsWS/wsag/assign'
 GET_DIGITAL_MODEL_API = 'https://uws.haier.net/shadow/v1/devdigitalmodels'
 
+FORCE_REFRESH_PRODUCT_NAMES = [
+    'JSQ30-16R3BWU1'
+]
 
 def random_str(length: int = 32) -> str:
     return ''.join(random.choice('abcdef1234567890') for _ in range(length))
@@ -293,6 +296,18 @@ class HaierClient:
                         }
                     }))
 
+                    # 对于部分设备需要定时发送刷新命令以保持数据更新
+                    force_refresh_devices = [
+                        d for d in targetDevices
+                        if d.product_name in FORCE_REFRESH_PRODUCT_NAMES
+                    ]
+
+                    if force_refresh_devices:
+                        self._hass.async_create_background_task(
+                            self._send_force_refresh(ws, agClientId, heartbeat_signal, force_refresh_devices),
+                            'haier-wss-force-refresh'
+                        )
+
                     # 监听事件总线来的控制命令
                     async def control_callback(e):
                         await self._send_command(ws, agClientId, e.data['deviceId'], e.data['attributes'])
@@ -351,6 +366,21 @@ class HaierClient:
             await asyncio.sleep(60)
 
         _LOGGER.info("send heartbeat stopped")
+
+    @staticmethod
+    async def _send_force_refresh(ws, agClientId: str, event: threading.Event, devices: List[HaierDevice]):
+        while not event.is_set():
+            for device in devices:
+                try:
+                    await HaierClient._send_command(ws, agClientId, device.id, {'getAllProperty': 'getAllProperty'})
+
+                    _LOGGER.debug('Sent force refresh command to device: %s', device.id)
+                except:
+                    _LOGGER.exception('Failed to send force refresh to device: %s', device.id)
+
+            await asyncio.sleep(60)
+
+        _LOGGER.info("send force refresh stopped")
 
     async def _parse_message(self, msg):
         msg = json.loads(msg)
