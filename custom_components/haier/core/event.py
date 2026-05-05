@@ -7,8 +7,7 @@ from custom_components.haier import DOMAIN
 EVENT_DEVICE_CONTROL = 'device_control'
 EVENT_DEVICE_DATA_CHANGED = 'device_data_changed'
 EVENT_DEVICE_ONLINE_CHANGED = 'device_online_changed'
-EVENT_DEVICE_AVAILABLE_CHANGED = 'device_available_changed'
-EVENT_GATEWAY_STATUS_CHANGED = 'gateway_status_changed'
+EVENT_GATEWAY_DISCONNECTED = 'gateway_disconnected'
 
 
 def wrap_event(name: str) -> str:

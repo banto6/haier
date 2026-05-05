@@ -4,7 +4,6 @@ from typing import Any, Dict
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_TOKEN
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.config_validation import multi_select

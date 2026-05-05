@@ -10,13 +10,11 @@ _LOGGER = logging.getLogger(__name__)
 class HaierDevice:
     _raw_data: dict
     _attributes: List[HaierAttribute]
-    _attribute_snapshot_data: dict
 
     def __init__(self, client, raw: dict):
         self._client = client
         self._raw_data = raw
         self._attributes = []
-        self._attribute_snapshot_data = {}
 
     @property
     def id(self):
@@ -46,10 +44,6 @@ class HaierDevice:
     def attributes(self) -> List[HaierAttribute]:
         return self._attributes
 
-    @property
-    def attribute_snapshot_data(self) -> dict:
-        return self._attribute_snapshot_data
-
     async def async_init(self):
         # 解析Attribute
         # noinspection PyBroadException
@@ -68,14 +62,6 @@ class HaierDevice:
             if iter:
                 for item in iter:
                     self._attributes.append(item)
-
-            snapshot_data = await self._client.get_device_snapshot_data(self.id)
-            _LOGGER.debug(
-                'device %s snapshot data fetch successful. data: %s',
-                self.id,
-                json.dumps(snapshot_data)
-            )
-            self._attribute_snapshot_data = snapshot_data
         except Exception:
             _LOGGER.exception('Haier device %s init failed', self.id)
 

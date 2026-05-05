@@ -1,8 +1,10 @@
 import logging
-from homeassistant.components.cover import CoverEntity,CoverEntityFeature;
+
+from homeassistant.components.cover import CoverEntity;
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.const import UnitOfTemperature, Platform
+
 from . import async_register_entity
 from .core.attribute import HaierAttribute
 from .core.device import HaierDevice

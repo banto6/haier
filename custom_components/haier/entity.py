@@ -1,14 +1,13 @@
 import logging
 from abc import ABC, abstractmethod
 
-from homeassistant.core import Event
 from homeassistant.helpers.entity import DeviceInfo, Entity
 
 from . import DOMAIN
 from .core.attribute import HaierAttribute
 from .core.device import HaierDevice
-from .core.event import EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_STATUS_CHANGED, EVENT_DEVICE_CONTROL, \
-    EVENT_DEVICE_ONLINE_CHANGED
+from .core.event import EVENT_DEVICE_DATA_CHANGED, EVENT_DEVICE_CONTROL, \
+    EVENT_DEVICE_ONLINE_CHANGED, EVENT_GATEWAY_DISCONNECTED
 from .core.event import listen_event, fire_event
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,10 +37,10 @@ class HaierAbstractEntity(Entity, ABC):
 
         self._device = device
         self._attribute = attribute
+        # 默认为不可用状态
+        self._attr_available = False
         # 保存当前设备下所有attribute的数据
         self._attributes_data = {}
-        # 取消监听回调
-        self._listen_cancel = []
 
     def _send_command(self, attributes):
         """
@@ -59,24 +58,26 @@ class HaierAbstractEntity(Entity, ABC):
         pass
 
     async def async_added_to_hass(self) -> None:
-        # 监听状态
-        def status_callback(event):
-            self._attr_available = event.data['status']
+        # 监听网关状态
+        def gateway_disconnected_callback(event):
+            self._attr_available = False
             self.schedule_update_ha_state()
 
-        self._listen_cancel.append(listen_event(self.hass, EVENT_GATEWAY_STATUS_CHANGED, status_callback))
+        self.async_on_remove(listen_event(self.hass, EVENT_GATEWAY_DISCONNECTED, gateway_disconnected_callback))
 
         # 监听数据变化事件
         def data_callback(event):
             if event.data['deviceId'] != self._device.id:
                 return
 
+            self._attr_available = True
             self._attributes_data = event.data['attributes']
             self._update_value()
             self.schedule_update_ha_state()
 
-        self._listen_cancel.append(listen_event(self.hass, EVENT_DEVICE_DATA_CHANGED, data_callback))
+        self.async_on_remove(listen_event(self.hass, EVENT_DEVICE_DATA_CHANGED, data_callback))
 
+        # 监听设备在线状态
         def device_online_callback(event):
             if event.data['deviceId'] != self._device.id:
                 return
@@ -84,17 +85,4 @@ class HaierAbstractEntity(Entity, ABC):
             self._attr_available = event.data['online']
             self.schedule_update_ha_state()
 
-        self._listen_cancel.append(listen_event(self.hass, EVENT_DEVICE_ONLINE_CHANGED, device_online_callback))
-
-        # 填充快照值
-        data_callback(Event('', data={
-            'deviceId': self._device.id,
-            'attributes': self._device.attribute_snapshot_data
-        }))
-
-    async def async_will_remove_from_hass(self) -> None:
-        for cancel in self._listen_cancel:
-            cancel()
-
-
-
+        self.async_on_remove(listen_event(self.hass, EVENT_DEVICE_ONLINE_CHANGED, device_online_callback))
