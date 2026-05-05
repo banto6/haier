@@ -6,8 +6,9 @@ from homeassistant.helpers.entity import DeviceInfo, Entity
 
 from . import DOMAIN
 from .core.attribute import HaierAttribute
-from .core.event import EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_STATUS_CHANGED, EVENT_DEVICE_CONTROL
 from .core.device import HaierDevice
+from .core.event import EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_STATUS_CHANGED, EVENT_DEVICE_CONTROL, \
+    EVENT_DEVICE_ONLINE_CHANGED
 from .core.event import listen_event, fire_event
 
 _LOGGER = logging.getLogger(__name__)
@@ -75,6 +76,15 @@ class HaierAbstractEntity(Entity, ABC):
             self.schedule_update_ha_state()
 
         self._listen_cancel.append(listen_event(self.hass, EVENT_DEVICE_DATA_CHANGED, data_callback))
+
+        def device_online_callback(event):
+            if event.data['deviceId'] != self._device.id:
+                return
+
+            self._attr_available = event.data['online']
+            self.schedule_update_ha_state()
+
+        self._listen_cancel.append(listen_event(self.hass, EVENT_DEVICE_ONLINE_CHANGED, device_online_callback))
 
         # 填充快照值
         data_callback(Event('', data={

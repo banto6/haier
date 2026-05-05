@@ -8,17 +8,20 @@ import threading
 import time
 import uuid
 import zlib
+from datetime import timedelta
 from functools import wraps
-from typing import List
+from typing import List, Dict
 from urllib.parse import urlparse
 
 import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.storage import Store
 
 from .device import HaierDevice
-from .event import EVENT_DEVICE_CONTROL, EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_STATUS_CHANGED
+from .event import EVENT_DEVICE_CONTROL, EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_STATUS_CHANGED, \
+    EVENT_DEVICE_ONLINE_CHANGED
 from .event import listen_event, fire_event
 
 _LOGGER = logging.getLogger(__name__)
@@ -258,6 +261,44 @@ class HaierClient:
 
         return values
 
+    @retry_on_exception(exceptions=(aiohttp.ClientError, asyncio.TimeoutError))
+    async def get_devices_online_status(self) -> Dict[str, bool]:
+        """
+        获取所有设备的在线状态
+        :return:
+        """
+        headers = await self._generate_common_headers(GET_DEVICES_API)
+        async with self._session.get(url=GET_DEVICES_API, headers=headers) as response:
+            content = await response.json(content_type=None)
+            self._assert_response_successful(content)
+
+            devices = {}
+            for device in content['deviceinfos']:
+                devices[device['deviceId']] = device['online']
+
+            return devices
+
+    async def _watch_devices_online_status(self):
+        """
+        监控设备在线状态
+        :return:
+        """
+        prev_online_status = {}
+
+        async def task(now):
+            statues = await self.get_devices_online_status()
+            for key, value in statues.items():
+                if key not in prev_online_status or prev_online_status[key] != value:
+                    fire_event(self._hass, EVENT_DEVICE_ONLINE_CHANGED, {
+                        'deviceId': key,
+                        'online': value
+                    })
+
+        # 手动运行一次保证设备初始化状态正确
+        await task(None)
+
+        return async_track_time_interval(self._hass, task, timedelta(seconds=60))
+
     async def listen_devices(self, targetDevices: List[HaierDevice], signal: threading.Event):
         """
 
@@ -295,6 +336,9 @@ class HaierClient:
                             'devs': [device.id for device in targetDevices]
                         }
                     }))
+
+                    # 监控设备在线状态
+                    await self._watch_devices_online_status()
 
                     # 对于部分设备需要定时发送刷新命令以保持数据更新
                     force_refresh_devices = [
