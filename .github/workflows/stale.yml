@@ -19,3 +19,4 @@ jobs:
           stale-issue-label: 'stale'
           stale-issue-message: '此 Issue 已经有 15 天没有活动了。为了保持 Issue 列表的整洁，它已被自动标记为 stale。如果接下来 7 天内没有任何更新或回复，此 Issue 将被自动关闭。感谢你的理解与配合。'
           close-issue-message: '由于在标记为 stale 后 7 天内没有进一步的活动，此 Issue 已被自动关闭。如果问题仍然存在或你有新的进展，请随时重新打开它或留言。'
+          exempt-issue-labels: 'bug,enhancement'
