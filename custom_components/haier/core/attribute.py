@@ -94,6 +94,24 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         if 'openDegree' in all_attribute_keys:
             yield self._parse_as_cover(attributes)
 
+        # 洗碗机/洗衣机：对只读LIST类型的洗涤模式属性，保留原Sensor作为状态读取，
+        # 同时额外生成Select实体用于在HA中切换模式
+        _control_attrs = {'washprog', 'partitionwashstatus', 'runningmode'}
+        for attr in attributes:
+            if attr['name'].lower() in _control_attrs \
+                    and equals_ignore_case(attr['valueRange']['type'], 'LIST'):
+                value_comparison_table = {}
+                for item in attr['valueRange']['dataList']:
+                    value_comparison_table[str(item['data'])] = item['desc']
+                    value_comparison_table[str(item['desc'])] = item['data']
+                yield HaierAttribute(
+                    attr['name'] + '_sel',
+                    attr['desc'],
+                    Platform.SELECT,
+                    {'options': [item['desc'] for item in attr['valueRange']['dataList']]},
+                    {'value_comparison_table': value_comparison_table, 'data_key': attr['name']}
+                )
+
 
     @staticmethod
     def _parse_as_sensor(attribute):

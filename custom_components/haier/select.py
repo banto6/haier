@@ -32,11 +32,13 @@ class HaierSelect(HaierAbstractEntity, SelectEntity):
             raise ValueError('value_comparison_table must exist')
 
     def _update_value(self):
-        self._attr_current_option = self._get_value_from_comparison_table(self._attributes_data[self._attribute.key])
+        data_key = self._attribute.ext.get('data_key', self._attribute.key)
+        self._attr_current_option = self._get_value_from_comparison_table(self._attributes_data[data_key])
 
     def select_option(self, option: str) -> None:
+        data_key = self._attribute.ext.get('data_key', self._attribute.key)
         self._send_command({
-            self._attribute.key: self._get_value_from_comparison_table(option)
+            data_key: self._get_value_from_comparison_table(option)
         })
 
     def _get_value_from_comparison_table(self, value):
