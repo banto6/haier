@@ -96,9 +96,8 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
     return async_track_time_interval(hass, task, timedelta(hours=1))
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
-    for platform in SUPPORTED_PLATFORMS:
-        if not await hass.config_entries.async_forward_entry_unload(entry, platform):
-            return False
+    if not await hass.config_entries.async_unload_platforms(entry, SUPPORTED_PLATFORMS):
+        return False
 
     # 停止token更新
     if hass.data[DOMAIN]['cancel_token_updater']:
