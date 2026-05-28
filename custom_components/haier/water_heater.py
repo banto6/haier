@@ -39,9 +39,6 @@ class HaierWaterHeater(HaierAbstractEntity, WaterHeaterEntity):
         super().__init__(device, attribute)
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_supported_features = SUPPORT_FLAGS
-        # 默认的0-70温度范围太宽，homekit不支持
-        self._attr_min_temp = 35
-        self._attr_max_temp = 50
 
     @property
     def operation_list(self):
