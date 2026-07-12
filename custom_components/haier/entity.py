@@ -21,7 +21,6 @@ class HaierAbstractEntity(Entity, ABC):
 
     def __init__(self, device: HaierDevice, attribute: HaierAttribute):
         self._attr_unique_id = '{}.{}_{}'.format(DOMAIN, device.id, attribute.key).lower()
-        self.entity_id = self._attr_unique_id
         self._attr_should_poll = False
 
         self._attr_device_info = DeviceInfo(

@@ -138,6 +138,13 @@ class HaierDeviceGateway:
     async def _init_devices(self, target_devices: List[HaierDevice]):
         device_online_statues = await self._client.get_devices_online_status()
 
+        for device in target_devices:
+            if device_online_statues.get(device.id) is False:
+                fire_event(self._hass, EVENT_DEVICE_ONLINE_CHANGED, {
+                    'deviceId': device.id,
+                    'online': False
+                })
+
         async def _fetch_snapshot(device):
             # 跳过已离线的设备
             if device.id in device_online_statues and device_online_statues[device.id] is False:
@@ -151,7 +158,13 @@ class HaierDeviceGateway:
                 'attributes': snapshot_data
             })
 
-        await asyncio.gather(*[_fetch_snapshot(d) for d in target_devices], return_exceptions=True)
+        async def _fetch_snapshot_safely(device):
+            try:
+                await _fetch_snapshot(device)
+            except Exception:
+                _LOGGER.exception("Failed to fetch initial snapshot for device: %s", device.id)
+
+        await asyncio.gather(*[_fetch_snapshot_safely(d) for d in target_devices])
 
     async def _parse_message(self, msg):
         msg = json.loads(msg)

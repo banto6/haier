@@ -31,14 +31,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     _LOGGER.info('共获取到{}个设备'.format(len(devices)))
     hass.data[DOMAIN]['devices'] = devices
 
-    # 启动网关
+    await hass.config_entries.async_forward_entry_setups(entry, SUPPORTED_PLATFORMS)
+
+    # 实体完成注册后再启动网关，避免初始快照事件无人监听。
     gateway = HaierDeviceGateway(hass, client, account_cfg.token)
     hass.data[DOMAIN]['gateway_task'] = hass.async_create_background_task(
         gateway.connect(devices),
         'haier-gateway'
     )
-
-    await hass.config_entries.async_forward_entry_setups(entry, SUPPORTED_PLATFORMS)
 
     entry.async_on_unload(entry.add_update_listener(entry_update_listener))
 
