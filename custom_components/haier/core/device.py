@@ -2,7 +2,7 @@ import json
 import logging
 from typing import List
 
-from .attribute import HaierAttribute, V1SpecAttributeParser
+from .attribute import HaierAttribute, V1SpecAttributeParser, apply_spec_fixes
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,6 +50,7 @@ class HaierDevice:
         try:
             parser = V1SpecAttributeParser()
             attributes = await self._client.get_digital_model_from_cache(self)
+            apply_spec_fixes(attributes)
             for item in attributes:
                 try:
                     attr = parser.parse_attribute(item)

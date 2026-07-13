@@ -10,6 +10,27 @@ from custom_components.haier.helpers import equals_ignore_case, contains_any_ign
 
 _LOGGER = logging.getLogger(__name__)
 
+# Haier服务器返回的设备模型有时不准确：部分实际可控制的属性被错误标记为只读。
+# 在解析前对这类属性的读写能力进行修正，使其能被现有解析逻辑正确识别为可控实体，
+# 避免在集成层为每个属性单独打补丁。
+# key为属性名，value为需要覆盖到该属性上的字段。
+ATTRIBUTE_SPEC_FIXES = {
+    # 屏显开关：模型标记为只读(writable=false)，实际可写
+    'screenDisplayStatus': {'writable': True},
+}
+
+
+def apply_spec_fixes(attributes: List[dict]) -> None:
+    """
+    修正Haier服务器返回的错误设备模型
+    :param attributes: 设备数字模型的属性列表，会被就地修改
+    """
+    for attribute in attributes:
+        fix = ATTRIBUTE_SPEC_FIXES.get(attribute.get('name'))
+        if fix:
+            attribute.update(fix)
+
+
 class HaierAttribute:
 
     def __init__(self, key: str, display_name: str, platform: Platform, options: dict = {}, ext: dict = {}):
