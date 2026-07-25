@@ -33,7 +33,7 @@ class HaierSelect(HaierAbstractEntity, SelectEntity):
 
     def _update_value(self):
         data_key = self._attribute.ext.get('data_key', self._attribute.key)
-        self._attr_current_option = self._get_value_from_comparison_table(self._attributes_data[data_key])
+        self._attr_current_option = self._get_value_from_comparison_table(self._attributes_data.get(data_key))
 
     def select_option(self, option: str) -> None:
         data_key = self._attribute.ext.get('data_key', self._attribute.key)

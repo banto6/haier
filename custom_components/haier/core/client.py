@@ -26,36 +26,33 @@ GET_DEVICES_API = 'https://uws.haier.net/uds/v1/protected/deviceinfos'
 GET_WSS_GW_API = 'https://uws.haier.net/gmsWS/wsag/assign'
 GET_DIGITAL_MODEL_API = 'https://uws.haier.net/shadow/v1/devdigitalmodels'
 
-def retry_on_exception(exceptions, max_tries=3):
+def retry_on_exception(exceptions, max_tries=3, base_delay=1):
     """
-    重试装饰器
+    重试装饰器，支持指数退避
     :param exceptions: 需要捕获并重试的异常（元组）
-    :param max_tries: 最大尝试次数
+    :param max_tries: 最大尝试次数（含首次调用）
+    :param base_delay: 基础延迟秒数，每次重试翻倍（1s → 2s → 4s）
     """
 
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             last_exception = None
-            attempt = 0
 
-            while True:
+            for attempt in range(max_tries):
                 try:
                     return await func(*args, **kwargs)
                 except exceptions as err:
-                    if attempt < max_tries:
+                    last_exception = err
+                    if attempt < max_tries - 1:
+                        delay = base_delay * (2 ** attempt)
                         _LOGGER.warning(
-                            "捕获到异常 %s。进行第 %s 次重试...",
-                            type(err).__name__, attempt + 1
+                            "捕获到异常 %s。第 %s/%s 次重试将在 %ss 后进行...",
+                            type(err).__name__, attempt + 1, max_tries, delay
                         )
-
+                        await asyncio.sleep(delay)
                     else:
-                        last_exception = err
-                        break
-                finally:
-                    attempt += 1
-
-            _LOGGER.error("达到最大重试次数 (%s): %s", max_tries, last_exception)
+                        _LOGGER.error("达到最大重试次数 (%s): %s", max_tries, last_exception)
 
             raise last_exception
 

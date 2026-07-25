@@ -31,7 +31,11 @@ class HaierBinarySensor(HaierAbstractEntity, BinarySensorEntity):
 
     def _update_value(self):
         try:
-            self._attr_is_on = try_read_as_bool(self._attributes_data[self._attribute.key])
+            value = self._attributes_data.get(self._attribute.key)
+            if value is not None:
+                self._attr_is_on = try_read_as_bool(value)
+            else:
+                raise ValueError('value is None')
         except ValueError:
             _LOGGER.exception('entity [{}] read value failed'.format(self._attr_unique_id))
             self._attr_available = False

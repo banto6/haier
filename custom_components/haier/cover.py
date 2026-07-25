@@ -27,8 +27,9 @@ class HaierCover(HaierAbstractEntity, CoverEntity):
         super().__init__(device, attribute)
 
     def _update_value(self):
-        self._attr_is_closed = try_read_as_bool(self._attributes_data['onOffStatus'])
-        self._attr_current_cover_position = int(self._attributes_data['openDegree'])
+        self._attr_is_closed = try_read_as_bool(self._attributes_data.get('onOffStatus', False))
+        open_degree = self._attributes_data.get('openDegree', '0')
+        self._attr_current_cover_position = int(open_degree)
 
     def open_cover(self, **kwargs) -> None:
         _LOGGER.debug("执行窗帘打开")

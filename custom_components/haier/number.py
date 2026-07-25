@@ -29,7 +29,7 @@ class HaierNumber(HaierAbstractEntity, NumberEntity):
         super().__init__(device, attribute)
 
     def _update_value(self):
-        self._attr_native_value = self._attributes_data[self._attribute.key]
+        self._attr_native_value = self._attributes_data.get(self._attribute.key)
 
     def set_native_value(self, value: float) -> None:
         self._send_command({

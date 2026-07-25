@@ -54,16 +54,18 @@ class HaierWaterHeater(HaierAbstractEntity, WaterHeaterEntity):
         if 'outWaterTemp' in self._attributes_data:
             self._attr_current_temperature = float(self._attributes_data['outWaterTemp'])
 
-        self._attr_target_temperature = float(self._attributes_data['targetTemp'])
+        if 'targetTemp' in self._attributes_data:
+            self._attr_target_temperature = float(self._attributes_data['targetTemp'])
 
-        if not try_read_as_bool(self._attributes_data['onOffStatus']):
-            # 关机状态
-            self._attr_current_operation = STATE_OFF
-            self._attr_is_away_mode_on = True
-        else:
+        on_off = self._attributes_data.get('onOffStatus')
+        if on_off is not None and try_read_as_bool(on_off):
             # 开机状态
             self._attr_current_operation = STATE_GAS
             self._attr_is_away_mode_on = False
+        else:
+            # 关机状态或数据缺失
+            self._attr_current_operation = STATE_OFF
+            self._attr_is_away_mode_on = True
 
     def turn_away_mode_on(self):
         """Turn away mode on."""

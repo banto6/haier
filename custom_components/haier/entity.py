@@ -71,7 +71,15 @@ class HaierAbstractEntity(Entity, ABC):
 
             self._attr_available = True
             self._attributes_data = event.data['attributes']
-            self._update_value()
+            try:
+                self._update_value()
+            except Exception:
+                _LOGGER.exception(
+                    'Failed to update value for entity %s (device: %s), '
+                    'attributes_data keys: %s',
+                    self._attr_unique_id, self._device.id,
+                    list(self._attributes_data.keys()) if self._attributes_data else 'EMPTY'
+                )
             self.schedule_update_ha_state()
 
         self.async_on_remove(listen_event(self.hass, EVENT_DEVICE_DATA_CHANGED, data_callback))

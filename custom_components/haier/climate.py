@@ -66,10 +66,12 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
         if 'indoorHumidity' in self._attributes_data and float(self._attributes_data['indoorHumidity']) != 0:
             self._attr_current_humidity = float(self._attributes_data['indoorHumidity'])
 
-        self._attr_target_temperature = float(self._attributes_data['targetTemperature'])
+        if 'targetTemperature' in self._attributes_data:
+            self._attr_target_temperature = float(self._attributes_data['targetTemperature'])
 
-        if not try_read_as_bool(self._attributes_data['onOffStatus']):
-            # 关机状态
+        on_off = self._attributes_data.get('onOffStatus')
+        if on_off is None or not try_read_as_bool(on_off):
+            # 关机状态或数据缺失
             self._attr_hvac_mode = HVACMode.OFF
             self._attr_fan_mode = FAN_OFF
             self._attr_swing_mode = SWING_OFF
@@ -81,14 +83,15 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
                 2: HVACMode.DRY,
                 4: HVACMode.HEAT,
                 6: HVACMode.FAN_ONLY
-            }.get(int(self._attributes_data['operationMode']))
+            }.get(int(self._attributes_data.get('operationMode', 0)))
 
+            wind_speed = self._get_wind_speed()
             self._attr_fan_mode = {
                 1: FAN_HIGH,
                 2: FAN_MEDIUM,
                 3: FAN_LOW,
                 5: FAN_AUTO
-            }.get(int(self._get_wind_speed()))
+            }.get(int(wind_speed)) if wind_speed else FAN_AUTO
 
             wind_direction_vertical = int(self._get_wind_direction_vertical())
             wind_direction_horizontal = int(self._get_wind_direction_horizontal())
@@ -119,7 +122,9 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
             return
 
         # 关机状态则先开机
-        if not try_read_as_bool(self._attributes_data['onOffStatus']):
+        if try_read_as_bool(self._attributes_data.get('onOffStatus', False)):
+            pass  # 已开机
+        else:
             self._send_command({
                 'onOffStatus': True
             })
@@ -186,9 +191,9 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
     def _get_wind_speed(self) -> str:
         if self._attribute.ext['exist_multiple_vents']:
-            return self._attributes_data['windSpeedL']
+            return self._attributes_data.get('windSpeedL', '5')
 
-        return self._attributes_data['windSpeed']
+        return self._attributes_data.get('windSpeed', '5')
 
     def _get_wind_direction_vertical(self) -> str:
         if self._attribute.ext['exist_multiple_vents']:
