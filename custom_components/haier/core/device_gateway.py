@@ -8,14 +8,16 @@ from datetime import timedelta
 from typing import List
 
 import aiohttp
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.event import async_track_time_interval
 
 from .client import HaierClient
+from .config import AccountConfig
 from .device import HaierDevice
 from .event import EVENT_DEVICE_CONTROL, EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_DISCONNECTED, \
-    EVENT_DEVICE_ONLINE_CHANGED
+    EVENT_DEVICE_ONLINE_CHANGED, EVENT_TOKEN_REFRESH_REQUESTED
 from .event import listen_event, fire_event
 
 _LOGGER = logging.getLogger(__name__)
@@ -31,11 +33,32 @@ def random_str(length: int = 32) -> str:
 
 class HaierDeviceGateway:
 
-    def __init__(self, hass: HomeAssistant, client: HaierClient, token: str):
+    def __init__(self, hass: HomeAssistant, client: HaierClient, token: str, config_entry: ConfigEntry = None):
         self._hass = hass
         self._client = client
         self._token = token
+        self._config_entry = config_entry
         self._session = async_get_clientsession(hass)
+
+    def _get_latest_token(self) -> str:
+        """
+        获取最新的token。
+        若配置了config_entry则从中读取（token可能在运行期间被刷新），
+        否则使用初始化时的token
+        """
+        if self._config_entry is None:
+            return self._token
+
+        try:
+            cfg = AccountConfig(self._hass, self._config_entry)
+            latest = cfg.token
+            if latest:
+                self._token = latest
+                self._client.update_token(latest)
+        except Exception:
+            _LOGGER.warning("读取最新token失败，使用旧token重连", exc_info=True)
+
+        return self._token
 
     async def connect(self, target_devices: List[HaierDevice]):
         """
@@ -43,24 +66,32 @@ class HaierDeviceGateway:
         :param target_devices:  需要监听数据变化的设备
         :return:
         """
+        consecutive_failures = 0
         while True:
             try:
                 await self._connect(target_devices)
+                consecutive_failures = 0
             except asyncio.CancelledError:
                 _LOGGER.debug("device gateway stopped")
                 return
             except:
+                consecutive_failures += 1
                 _LOGGER.exception("device gateway disconnected. Waiting to retry.")
+                # 连续失败时请求立即刷新token（token可能已失效导致连接被服务端拒绝），
+                # 由token刷新器节流处理，避免重试风暴
+                if consecutive_failures == 1:
+                    fire_event(self._hass, EVENT_TOKEN_REFRESH_REQUESTED, {})
                 await asyncio.sleep(30)
 
     async def _connect(self, target_devices: List[HaierDevice]):
+        token = self._get_latest_token()
         server = await self._client.get_device_gateway()
         _LOGGER.debug('device gateway: {}'.format(server))
 
-        agClientId = self._token
+        agClientId = token
         cancels = []
         try:
-            url = '{}/userag?token={}&agClientId={}'.format(server, self._token, agClientId)
+            url = '{}/userag?token={}&agClientId={}'.format(server, token, agClientId)
             async with self._session.ws_connect(url) as ws:
                 _LOGGER.debug('device gateway connected')
 

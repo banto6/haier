@@ -8,6 +8,7 @@ EVENT_DEVICE_CONTROL = 'device_control'
 EVENT_DEVICE_DATA_CHANGED = 'device_data_changed'
 EVENT_DEVICE_ONLINE_CHANGED = 'device_online_changed'
 EVENT_GATEWAY_DISCONNECTED = 'gateway_disconnected'
+EVENT_TOKEN_REFRESH_REQUESTED = 'token_refresh_requested'
 
 
 def wrap_event(name: str) -> str:

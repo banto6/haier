@@ -108,6 +108,14 @@ class HaierClient:
         self._hass = hass
         self._session = async_get_clientsession(hass)
 
+    def update_token(self, token: str):
+        """
+        更新token。token刷新后由网关在重连前调用，
+        确保使用最新的token建立WebSocket连接
+        :param token: 新token
+        """
+        self._token = token
+
     @retry_on_exception(exceptions=(aiohttp.ClientError, asyncio.TimeoutError))
     async def refresh_token(self, refresh_token: str) -> TokenInfo:
         """

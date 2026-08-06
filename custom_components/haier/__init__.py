@@ -11,6 +11,7 @@ from .const import DOMAIN, SUPPORTED_PLATFORMS, FILTER_TYPE_EXCLUDE, FILTER_TYPE
 from .core.client import HaierClient, HaierClientException, TokenInfo
 from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
 from .core.device_gateway import HaierDeviceGateway
+from .core.event import EVENT_TOKEN_REFRESH_REQUESTED, listen_event
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     await hass.config_entries.async_forward_entry_setups(entry, SUPPORTED_PLATFORMS)
 
     # 实体完成注册后再启动网关，避免初始快照事件无人监听。
-    gateway = HaierDeviceGateway(hass, client, account_cfg.token)
+    gateway = HaierDeviceGateway(hass, client, account_cfg.token, entry)
     hass.data[DOMAIN]['gateway_task'] = hass.async_create_background_task(
         gateway.connect(devices),
         'haier-gateway'
@@ -54,7 +55,10 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
     :param entry:
     :return:
     """
-    async def try_update_token():
+    # 记录上次刷新尝试时间，避免网关断线重连时触发刷新风暴
+    last_refresh_attempt = 0.0
+
+    async def try_update_token() -> bool:
         """
         尝试刷新token，刷新成功返回True，如refresh_token无效则会抛出异常
         :return:
@@ -68,6 +72,11 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
         try:
             await client.get_user_info()
         except HaierClientException:
+            token_valid = False
+        except Exception:
+            # 网络波动等原因导致无法验证token有效性时，同样走刷新流程，
+            # 刷新成功会保存新token，刷新失败则由上层捕获并记录日志
+            _LOGGER.warning("验证token有效性失败，尝试刷新", exc_info=True)
             token_valid = False
 
         # token有效且里过期时间大于1天时不更新token
@@ -93,10 +102,33 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
             _LOGGER.exception('token update failed')
 
     # 手动执行一次更新
-    await try_update_token()
+    try:
+        await try_update_token()
+    except Exception:
+        _LOGGER.exception('initial token update failed')
 
     # 每1小时检查一次token有效性，若token刷新则重载集成
-    return async_track_time_interval(hass, task, timedelta(hours=1))
+    cancel_interval = async_track_time_interval(hass, task, timedelta(hours=1))
+
+    # 网关断线时立即尝试刷新token，而不是等待下一个整点
+    async def refresh_on_gateway_disconnect(event):
+        nonlocal last_refresh_attempt
+        now = time.monotonic()
+        if now - last_refresh_attempt < 300:
+            _LOGGER.debug('token refresh throttled')
+            return
+        last_refresh_attempt = now
+        await task(None)
+
+    cancel_event_listener = listen_event(
+        hass, EVENT_TOKEN_REFRESH_REQUESTED, refresh_on_gateway_disconnect
+    )
+
+    def cancel_all():
+        cancel_interval()
+        cancel_event_listener()
+
+    return cancel_all
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     if not await hass.config_entries.async_unload_platforms(entry, SUPPORTED_PLATFORMS):
