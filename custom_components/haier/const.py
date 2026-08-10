@@ -2,6 +2,8 @@ from homeassistant.const import Platform
 
 DOMAIN = 'haier'
 
+CONFIG_ENTRY_VERSION = 3
+
 SUPPORTED_PLATFORMS = [
     Platform.SELECT,
     Platform.NUMBER,

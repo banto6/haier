@@ -32,6 +32,7 @@ APP_SOURCES = {
 }
 
 REFRESH_TOKEN_API = 'https://zj.haier.net/api-gw/oauthserver/account/v1/refreshToken'
+PHONE_LOGIN_API = 'https://zj.haier.net/api-gw/oauthserver/account/v1/login'
 GET_USER_INFO_API = 'https://account-api.haier.net/v2/haier/userinfo'
 GET_DEVICES_API = 'https://uws.haier.net/uds/v1/protected/deviceinfos'
 GET_WSS_GW_API = 'https://uws.haier.net/gmsWS/wsag/assign'
@@ -115,6 +116,31 @@ class HaierClient:
         :param token: 新token
         """
         self._token = token
+
+    @retry_on_exception(exceptions=(aiohttp.ClientError, asyncio.TimeoutError))
+    async def phone_login(self, phone: str, password: str) -> TokenInfo:
+        """
+        手机号+密码登录（使用 App 来源的 appId/appKey）
+        :param phone: 手机号
+        :param password: 密码
+        :return: TokenInfo
+        """
+        payload = {
+            'username': phone,
+            'password': password
+        }
+
+        headers = await self._generate_common_headers(PHONE_LOGIN_API, json.dumps(payload))
+        async with self._session.post(url=PHONE_LOGIN_API, headers=headers, json=payload) as response:
+            content = await response.json(content_type=None)
+            self._assert_response_successful(content)
+
+            token_info = content['data']['tokenInfo']
+            return TokenInfo(
+                token_info['accountToken'],
+                token_info['refreshToken'],
+                token_info['expiresIn']
+            )
 
     @retry_on_exception(exceptions=(aiohttp.ClientError, asyncio.TimeoutError))
     async def refresh_token(self, refresh_token: str) -> TokenInfo:

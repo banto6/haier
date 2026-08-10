@@ -4,16 +4,29 @@ from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import DOMAIN, SUPPORTED_PLATFORMS, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
 from .core.client import HaierClient, HaierClientException, TokenInfo
-from .core.config import AccountConfig, DeviceFilterConfig, EntityFilterConfig
+from .core.config import (
+    AccountConfig,
+    DeviceFilterConfig,
+    EntityFilterConfig,
+    PreferencesConfig,
+)
 from .core.device_gateway import HaierDeviceGateway
 from .core.event import EVENT_TOKEN_REFRESH_REQUESTED, listen_event
+from .core.migration import CONFIG_ENTRY_MIGRATOR
 
 _LOGGER = logging.getLogger(__name__)
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """迁移旧版配置。"""
+    return CONFIG_ENTRY_MIGRATOR.migrate(hass, entry)
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {
@@ -23,13 +36,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     })
 
     # 定时更新token
-    hass.data[DOMAIN]['cancel_token_updater'] = await token_updater(hass, entry)
+    try:
+        hass.data[DOMAIN]['cancel_token_updater'] = await token_updater(hass, entry)
+    except HaierClientException as err:
+        raise ConfigEntryNotReady('Haier authentication failed') from err
 
     account_cfg = AccountConfig(hass, entry)
+    preferences_cfg = PreferencesConfig(hass, entry)
     client = HaierClient(hass, account_cfg.client_id, account_cfg.token, account_cfg.app_source)
 
     # 是否忽略设备离线状态，供实体在收到离线事件时判断是否保留最后状态
-    hass.data[DOMAIN]['ignore_device_offline'] = account_cfg.ignore_device_offline
+    hass.data[DOMAIN]['ignore_device_offline'] = preferences_cfg.ignore_device_offline
 
     devices = await client.get_devices()
     _LOGGER.info('共获取到{}个设备'.format(len(devices)))
@@ -102,6 +119,8 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
                 await hass.config_entries.async_reload(entry.entry_id)
             else:
                 _LOGGER.debug('token is valid')
+        except HaierClientException:
+            _LOGGER.warning('token refresh authentication failed')
         except Exception:
             _LOGGER.exception('token update failed')
 

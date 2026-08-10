@@ -24,11 +24,6 @@ class AccountConfig:
     # token来源客户端，决定请求使用的appId/appKey，须与token的来源客户端一致
     app_source: str = None
 
-    default_load_all_entity: bool = None
-
-    # 是否忽略设备离线状态。为True时设备离线不会将实体标记为不可用，而是保留最后一次的状态
-    ignore_device_offline: bool = None
-
     def __init__(self, hass: HomeAssistant, config: ConfigEntry):
         self._hass = hass
         self._config = config
@@ -39,8 +34,6 @@ class AccountConfig:
         self.refresh_token = cfg.get('refresh_token', '')
         self.expires_at = cfg.get('expires_at', 0)
         self.app_source = cfg.get('app_source', DEFAULT_APP_SOURCE)
-        self.default_load_all_entity = cfg.get('default_load_all_entity', True)
-        self.ignore_device_offline = cfg.get('ignore_device_offline', False)
 
     def save(self, mobile: str = None):
         self._hass.config_entries.async_update_entry(
@@ -53,7 +46,34 @@ class AccountConfig:
                     'token': self.token,
                     'refresh_token': self.refresh_token,
                     'expires_at': self.expires_at,
-                    'app_source': self.app_source,
+                    'app_source': self.app_source
+                }
+            }
+        )
+
+
+class PreferencesConfig:
+    """偏好配置。"""
+
+    default_load_all_entity: bool = None
+
+    # 是否忽略设备离线状态。为True时设备离线不会将实体标记为不可用，而是保留最后一次的状态
+    ignore_device_offline: bool = None
+
+    def __init__(self, hass: HomeAssistant, config: ConfigEntry):
+        self._hass = hass
+        self._config = config
+
+        cfg = config.data.get('preferences', {})
+        self.default_load_all_entity = cfg.get('default_load_all_entity', True)
+        self.ignore_device_offline = cfg.get('ignore_device_offline', False)
+
+    def save(self):
+        self._hass.config_entries.async_update_entry(
+            self._config,
+            data={
+                **self._config.data,
+                'preferences': {
                     'default_load_all_entity': self.default_load_all_entity,
                     'ignore_device_offline': self.ignore_device_offline
                 }
@@ -134,7 +154,7 @@ class EntityFilterConfig:
     def __init__(self, hass: HomeAssistant, config: ConfigEntry):
         self._hass = hass
         self._config = config
-        self._account_cfg = AccountConfig(hass, config)
+        self._preferences_cfg = PreferencesConfig(hass, config)
         self._cfg = config.data.get('entity_filter', [])
 
     def set_filter_type(self, device_id: str, filter_type: str):
@@ -153,7 +173,7 @@ class EntityFilterConfig:
             if item['device_id'] == device_id:
                 return item['filter_type']
         else:
-            return FILTER_TYPE_EXCLUDE if self._account_cfg.default_load_all_entity else FILTER_TYPE_INCLUDE
+            return FILTER_TYPE_EXCLUDE if self._preferences_cfg.default_load_all_entity else FILTER_TYPE_INCLUDE
 
     def set_target_entities(self, device_id: str, entities: List[str]):
         if not isinstance(entities, list):

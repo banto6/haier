@@ -1,42 +1,80 @@
 {
     "config": {
         "error": {
-            "auth_error": "Authentication failed"
+            "auth_error": "Authentication failed: {reason}"
         },
         "step": {
             "user": {
+                "title": "Connect Haier",
+                "description": "Choose a sign-in method.",
+                "menu_options": {
+                    "phone_login": "Sign in by automatically getting a token with your account and password (recommended)",
+                    "manual": "Sign in with a manually entered token (advanced)"
+                }
+            },
+            "manual": {
                 "data": {
                     "client_id": "Client Id",
                     "refresh_token": "Refresh Token",
-                    "app_source": "Token source",
-                    "default_load_all_entity": "Default load all entity",
-                    "ignore_device_offline": "Ignore device offline status (keep last state when offline)"
+                    "app_source": "Token source"
                 },
-                "description": "Enter your Haier Token.",
-                "title": "Configure account information"
+                "description": "Enter your Client ID and a valid refresh token.",
+                "title": "Connect Haier"
+            },
+            "phone_login": {
+                "title": "Connect Haier",
+                "description": "Enter your Haier Smart Home account phone number and password. Your password is used only for this sign-in and is not saved to Home Assistant.",
+                "data": {
+                    "phone": "Phone number",
+                    "password": "Password"
+                }
             }
         }
     },
     "options": {
         "error": {
-            "auth_error": "Authentication failed"
+            "auth_error": "Authentication failed: {reason}"
         },
         "step": {
             "init": {
                 "menu_options": {
                     "account": "Update account",
                     "device": "Device Filter",
-                    "entity_device_selector": "Entity Filter"
+                    "entity_device_selector": "Entity Filter",
+                    "preferences": "Preferences"
                 }
             },
             "account": {
-                "title": "Account information",
+                "title": "Update account",
+                "description": "Choose a sign-in method.",
+                "menu_options": {
+                    "account_phone_login": "Sign in by automatically getting a token with your account and password (recommended)",
+                    "account_manual": "Sign in with a manually entered token (advanced)"
+                }
+            },
+            "account_phone_login": {
+                "title": "Update account",
+                "description": "Enter your Haier Smart Home account phone number and password. Your password is used only for this sign-in and is not saved to Home Assistant.",
+                "data": {
+                    "phone": "Phone number",
+                    "password": "Password"
+                }
+            },
+            "account_manual": {
+                "title": "Update account",
+                "description": "Enter your Client ID and a valid refresh token.",
                 "data": {
                     "client_id": "Client Id",
                     "refresh_token": "Refresh Token",
-                    "app_source": "Token source",
-                    "default_load_all_entity": "Default load all entity",
-                    "ignore_device_offline": "Ignore device offline status (keep last state when offline)"
+                    "app_source": "Token source"
+                }
+            },
+            "preferences": {
+                "title": "Preferences",
+                "description": "Configure common integration options.",
+                "data": {
+                    "default_load_all_entity": "Load all entities by default",
+                    "ignore_device_offline": "Ignore offline device status (keep the last state while offline)"
                 }
             },
             "device": {
