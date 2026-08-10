@@ -58,9 +58,13 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
     # 记录上次刷新尝试时间，避免网关断线重连时触发刷新风暴
     last_refresh_attempt = 0.0
 
-    async def try_update_token() -> bool:
+    async def try_update_token(force: bool = False) -> bool:
         """
         尝试刷新token，刷新成功返回True，如refresh_token无效则会抛出异常
+
+        若 force=True，则跳过 token 有效性检查强制刷新。
+        用于网关断线场景：il token 虽在 REST 接口仍有效，
+        但海尔 WebSocket 网关可能已拒绝该 token。
         :return:
         """
         _LOGGER.debug("try update token...")
@@ -80,7 +84,7 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
             token_valid = False
 
         # token有效且里过期时间大于1天时不更新token
-        if token_valid and cfg.expires_at - int(time.time()) > 86400:
+        if not force and token_valid and cfg.expires_at - int(time.time()) > 86400:
             return False
 
         token_info = await client.refresh_token(cfg.refresh_token)
@@ -91,9 +95,9 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
 
         return True
 
-    async def task(now):
+    async def task(now, force: bool = False):
         try:
-            if await try_update_token():
+            if await try_update_token(force=force):
                 _LOGGER.info('token refreshed, reload integration...')
                 await hass.config_entries.async_reload(entry.entry_id)
             else:
@@ -110,7 +114,9 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
     # 每1小时检查一次token有效性，若token刷新则重载集成
     cancel_interval = async_track_time_interval(hass, task, timedelta(hours=1))
 
-    # 网关断线时立即尝试刷新token，而不是等待下一个整点
+    # 网关断线时立即强制刷新token，而不是等待下一个整点。
+    # 注意这里必须 force=True：网关断线通常意味着 token 已被海尔 WS 网关拒绝，
+    # 此时 REST 接口可能仍返回 token 有效，若不强制刷新会一直用被拒的 token 重连。
     async def refresh_on_gateway_disconnect(event):
         nonlocal last_refresh_attempt
         now = time.monotonic()
@@ -118,7 +124,7 @@ async def token_updater(hass: HomeAssistant, entry: ConfigEntry):
             _LOGGER.debug('token refresh throttled')
             return
         last_refresh_attempt = now
-        await task(None)
+        await task(None, force=True)
 
     cancel_event_listener = listen_event(
         hass, EVENT_TOKEN_REFRESH_REQUESTED, refresh_on_gateway_disconnect
