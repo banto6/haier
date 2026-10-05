@@ -71,7 +71,16 @@ class HaierAbstractEntity(Entity, ABC):
 
             self._attr_available = True
             self._attributes_data = event.data['attributes']
-            self._update_value()
+            try:
+                self._update_value()
+            except KeyError as e:
+                # 云端下发的快照并不总是包含该设备的全部属性，缺少本实体所需的
+                # 属性时保留上一次的值，等待下一次包含该属性的推送。
+                _LOGGER.debug(
+                    'entity [%s] attribute %s missing in this snapshot, keep previous value',
+                    self._attr_unique_id, e
+                )
+                return
             self.schedule_update_ha_state()
 
         self.async_on_remove(listen_event(self.hass, EVENT_DEVICE_DATA_CHANGED, data_callback))
