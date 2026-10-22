@@ -4,7 +4,7 @@ from typing import List
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.components.switch import SwitchDeviceClass
-from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE, UnitOfVolume, UnitOfEnergy
+from homeassistant.const import Platform, UnitOfTemperature, PERCENTAGE, UnitOfVolume, UnitOfEnergy, UnitOfTime
 
 from custom_components.haier.helpers import equals_ignore_case, contains_any_ignore_case
 
@@ -309,5 +309,8 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
 
         if '用电量' in attribute['desc']:
             return state_class, SensorDeviceClass.ENERGY, UnitOfEnergy.KILO_WATT_HOUR
+
+        if '时间' in attribute['desc'] or '时长' in attribute['desc']:
+            return state_class, SensorDeviceClass.DURATION, UnitOfTime.MINUTES
 
         return state_class, None, None
