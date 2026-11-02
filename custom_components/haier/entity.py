@@ -2,6 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 
 from homeassistant.helpers.entity import DeviceInfo, Entity
+from homeassistant.util import slugify
 
 from . import DOMAIN
 from .core.attribute import HaierAttribute
@@ -21,6 +22,7 @@ class HaierAbstractEntity(Entity, ABC):
 
     def __init__(self, device: HaierDevice, attribute: HaierAttribute):
         self._attr_unique_id = '{}.{}_{}'.format(DOMAIN, device.id, attribute.key).lower()
+        self.entity_id = '{}.{}'.format(attribute.platform, slugify(self._attr_unique_id))
         self._attr_should_poll = False
 
         self._attr_device_info = DeviceInfo(
