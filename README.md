@@ -26,6 +26,25 @@
 或者点击: [![添加集成](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start?domain=haier)
 
 
+## 发送原始指令
+
+通过 `haier.send_raw_command` 可向指定海尔设备发送原始控制指令。
+
+- `device_id`：海尔侧的原始设备ID，可在对应设备信息的“序列号”中查看，填写时需保留大小写。
+- `attrs`： 原始控制指令
+
+以支持以下属性的热水器为例，将目标温度设为 42℃：
+
+```yaml
+action: haier.send_raw_command
+data:
+  device_id: AABBCCDDEEFF
+  attrs:
+    targetTemp: "42"
+```
+
+集成会将 `attrs` 原样提交给网关，不校验或转换其中的内容。调用成功仅表示控制事件已提交，不代表设备已执行指令。
+
 ## 常见问题
 
 遇到问题提交issues前，请先查看[常见问题](https://github.com/banto6/haier/issues/186)中是否已存在。
