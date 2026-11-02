@@ -12,7 +12,8 @@ SUPPORTED_PLATFORMS = [
     Platform.SWITCH,
     Platform.CLIMATE,
     Platform.WATER_HEATER,
-    Platform.COVER
+    Platform.COVER,
+    Platform.BUTTON,
 ]
 
 FILTER_TYPE_INCLUDE = 'include'
