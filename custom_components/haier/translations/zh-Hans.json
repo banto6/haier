@@ -102,5 +102,19 @@
                 }
             }
         }
+    },
+    "services": {
+        "send_raw_command": {
+            "name": "发送原始指令",
+            "description": "使用海尔原始设备ID发送属性，内容不做校验。",
+            "fields": {
+                "device_id": {
+                    "name": "海尔设备ID"
+                },
+                "attrs": {
+                    "name": "属性"
+                }
+            }
+        }
     }
 }

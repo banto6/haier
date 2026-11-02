@@ -29,7 +29,8 @@ class HaierAbstractEntity(Entity, ABC):
             identifiers={(DOMAIN, device.id.lower())},
             name=device.name,
             manufacturer='海尔',
-            model=device.product_name
+            model=device.product_name,
+            serial_number=device.id,
         )
 
         self._attr_name = attribute.display_name

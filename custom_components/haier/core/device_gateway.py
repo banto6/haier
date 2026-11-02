@@ -12,6 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.event import async_track_time_interval
 
+from ..const import DOMAIN
 from .client import HaierClient
 from .device import HaierDevice
 from .event import EVENT_DEVICE_CONTROL, EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_DISCONNECTED, \
@@ -63,6 +64,7 @@ class HaierDeviceGateway:
             url = '{}/userag?token={}&agClientId={}'.format(server, self._token, agClientId)
             async with self._session.ws_connect(url) as ws:
                 _LOGGER.debug('device gateway connected')
+                self._set_connected(True)
 
                 # 订阅设备状态
                 await ws.send_str(json.dumps({
@@ -102,9 +104,20 @@ class HaierDeviceGateway:
                     else:
                         _LOGGER.warning("收到未知类型的消息: {}".format(msg.type))
         finally:
+            self._set_connected(False)
             fire_event(self._hass, EVENT_GATEWAY_DISCONNECTED, {})
             for cancel in cancels:
                 cancel()
+
+    def _set_connected(self, connected: bool) -> None:
+        """
+        记录网关连接状态，供服务调用判断指令能否下发
+        :param connected:
+        :return:
+        """
+        # 集成卸载时会先取消网关任务再清理hass.data，此处需要兼容data已被清理的情况
+        if DOMAIN in self._hass.data:
+            self._hass.data[DOMAIN]['gateway_connected'] = connected
 
     async def _start_heartbeat_sender(self, ws, agClientId: str):
         async def task(now):

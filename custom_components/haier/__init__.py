@@ -18,6 +18,7 @@ from .core.config import (
 )
 from .core.device_gateway import HaierDeviceGateway
 from .core.migration import CONFIG_ENTRY_MIGRATOR
+from .services import async_setup_services, async_unload_services
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,6 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         'devices': [],
         'cancel_token_updater': None,
         'gateway_task': None,
+        'gateway_connected': False,
     })
 
     # 定时更新token
@@ -59,6 +61,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         gateway.connect(devices),
         'haier-gateway'
     )
+
+    async_setup_services(hass)
 
     entry.async_on_unload(entry.add_update_listener(entry_update_listener))
 
@@ -130,6 +134,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     if hass.data[DOMAIN]['gateway_task']:
         hass.data[DOMAIN]['gateway_task'].cancel()
         _LOGGER.info('gateway task cancelled')
+
+    async_unload_services(hass)
 
     del hass.data[DOMAIN]
 

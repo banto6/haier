@@ -1,0 +1,12 @@
+send_raw_command:
+  fields:
+    device_id:
+      required: true
+      example: AABBCCDDEEFF
+      selector:
+        text:
+    attrs:
+      required: true
+      example: '{"targetTemp": "42", "onOffStatus": true}'
+      selector:
+        object:

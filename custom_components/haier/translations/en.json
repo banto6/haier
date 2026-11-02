@@ -102,5 +102,19 @@
                 }
             }
         }
+    },
+    "services": {
+        "send_raw_command": {
+            "name": "Send raw command",
+            "description": "Send attributes unchanged using a Haier device ID.",
+            "fields": {
+                "device_id": {
+                    "name": "Haier device ID"
+                },
+                "attrs": {
+                    "name": "Attributes"
+                }
+            }
+        }
     }
 }
