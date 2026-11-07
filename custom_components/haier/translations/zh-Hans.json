@@ -3,11 +3,21 @@
         "error": {
             "auth_error": "认证失败：{reason}"
         },
+        "abort": {
+            "get_access_token_error": "未能获取有效的访问令牌",
+            "auth_implementation_unset": "授权实现未设置",
+            "oauth_token_error": "OAuth 授权处理失败",
+            "oauth_redirect_mismatch": "网页登录不可用：海尔只接受回调地址 {required}，而根据当前 Home Assistant 的访问地址推导出的回调是 {current}。请把「设置 → 系统 → 网络」中的 external_url 配置为与之匹配的地址后重试，或改用账号密码登录。",
+            "reauth_successful": "重新认证成功。",
+            "already_configured": "该账号已配置。若要重新授权，请先在「设置 → 设备与服务」中删除原有的 Haier 集成。",
+            "oauth_unsupported_ha_version": "当前 Home Assistant 版本没有提供网页授权所需的内部函数，请改用账号密码或手动填写 Token 登录。"
+        },
         "step": {
             "user": {
                 "title": "连接海尔",
                 "description": "选择一种登录方式。",
                 "menu_options": {
+                    "oauth": "通过官方授权页登录获取 Token（推荐）",
                     "phone_login": "使用账号密码自动获取 Token 登录（推荐）",
                     "manual": "手动填写 Token 登录（高级）"
                 }
@@ -35,6 +45,9 @@
         "error": {
             "auth_error": "认证失败：{reason}"
         },
+        "abort": {
+            "reauth_started": "已开始重新认证，请关闭本对话框，在 Haier 集成卡片上完成授权。"
+        },
         "step": {
             "init": {
                 "menu_options": {
@@ -48,6 +61,7 @@
                 "title": "更新账户",
                 "description": "选择一种登录方式。",
                 "menu_options": {
+                    "account_oauth": "改用官方授权页重新授权",
                     "account_phone_login": "使用账号密码自动获取 Token 登录（推荐）",
                     "account_manual": "手动填写 Token 登录（高级）"
                 }
