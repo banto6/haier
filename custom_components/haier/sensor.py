@@ -8,6 +8,7 @@ from homeassistant.core import HomeAssistant
 from . import async_register_entity
 from .core.attribute import HaierAttribute
 from .core.device import HaierDevice
+from .core.runtime import HaierRuntimeData
 from .entity import HaierAbstractEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -19,14 +20,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         entry,
         async_add_entities,
         Platform.SENSOR,
-        lambda device, attribute: HaierSensor(device, attribute)
+        lambda device, attribute, runtime: HaierSensor(device, attribute, runtime)
     )
 
 
 class HaierSensor(HaierAbstractEntity, SensorEntity):
 
-    def __init__(self, device: HaierDevice, attribute: HaierAttribute):
-        super().__init__(device, attribute)
+    def __init__(self, device: HaierDevice, attribute: HaierAttribute, runtime: HaierRuntimeData):
+        super().__init__(device, attribute, runtime)
 
     def _update_value(self):
         comparison_table = self._attribute.ext.get('value_comparison_table', {})
