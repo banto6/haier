@@ -35,10 +35,15 @@ class AccountConfig:
         self.expires_at = cfg.get('expires_at', 0)
         self.app_source = cfg.get('app_source', DEFAULT_APP_SOURCE)
 
-    def save(self, mobile: str = None):
+    def save(self, identity: str = None):
+        """写回账户配置。
+
+        :param identity: 账号标识（手机号或 userId）。给了就顺带更新条目标题，
+            标题格式须与 __init__._build_entry_unique_id 的解析保持一致。
+        """
         self._hass.config_entries.async_update_entry(
             self._config,
-            title='Haier: {}'.format(mobile) if mobile else self._config.title,
+            title='Haier - {}'.format(identity) if identity else self._config.title,
             data={
                 **self._config.data,
                 'account': {
@@ -47,7 +52,9 @@ class AccountConfig:
                     'refresh_token': self.refresh_token,
                     'expires_at': self.expires_at,
                     'app_source': self.app_source
-                }
+                },
+                # 换账号时同步更新账号标识，unique_id 的解析优先读这个字段
+                **({'identity': identity} if identity else {}),
             }
         )
 
