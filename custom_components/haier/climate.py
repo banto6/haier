@@ -14,6 +14,8 @@ from .helpers import try_read_as_bool
 
 _LOGGER = logging.getLogger(__name__)
 
+NATIVE_TEMPERATURE = hasattr(ClimateEntity, "native_current_temperature")
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities) -> None:
     await async_register_entity(
@@ -29,7 +31,10 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
     def __init__(self, device: HaierDevice, attribute: HaierAttribute):
         super().__init__(device, attribute)
-        self._attr_temperature_unit = UnitOfTemperature.CELSIUS
+        if NATIVE_TEMPERATURE:
+            self._attr_native_temperature_unit = UnitOfTemperature.CELSIUS
+        else:
+            self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_hvac_modes = [
             HVACMode.OFF,
             HVACMode.AUTO,
@@ -61,12 +66,18 @@ class HaierClimate(HaierAbstractEntity, ClimateEntity):
 
     def _update_value(self):
         if 'indoorTemperature' in self._attributes_data:
-            self._attr_current_temperature = float(self._attributes_data['indoorTemperature'])
+            if NATIVE_TEMPERATURE:
+                self._attr_native_current_temperature = float(self._attributes_data['indoorTemperature'])
+            else:
+                self._attr_current_temperature = float(self._attributes_data['indoorTemperature'])
 
         if 'indoorHumidity' in self._attributes_data and float(self._attributes_data['indoorHumidity']) != 0:
             self._attr_current_humidity = float(self._attributes_data['indoorHumidity'])
 
-        self._attr_target_temperature = float(self._attributes_data['targetTemperature'])
+        if NATIVE_TEMPERATURE:
+            self._attr_native_target_temperature = float(self._attributes_data['targetTemperature'])
+        else:
+            self._attr_target_temperature = float(self._attributes_data['targetTemperature'])
 
         if not try_read_as_bool(self._attributes_data['onOffStatus']):
             # 关机状态
