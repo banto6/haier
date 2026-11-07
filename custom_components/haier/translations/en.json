@@ -3,11 +3,21 @@
         "error": {
             "auth_error": "Authentication failed: {reason}"
         },
+        "abort": {
+            "get_access_token_error": "Failed to obtain a valid access token",
+            "auth_implementation_unset": "Authorization implementation is not set",
+            "oauth_token_error": "OAuth authorization processing failed",
+            "oauth_redirect_mismatch": "Web login is unavailable: Haier only accepts the callback {required}, but the callback derived from this Home Assistant instance is {current}. Set external_url under Settings > System > Network to a matching address and retry, or sign in with account and password instead.",
+            "reauth_successful": "Re-authentication successful.",
+            "already_configured": "This account is already configured. Remove the existing Haier integration from Settings > Devices & Services first if you want to re-authorize it.",
+            "oauth_unsupported_ha_version": "This Home Assistant version does not provide the helper needed for web authorization. Please use phone + password or a manual token instead."
+        },
         "step": {
             "user": {
                 "title": "Connect Haier",
                 "description": "Choose a sign-in method.",
                 "menu_options": {
+                    "oauth": "Sign in via official authorization to get a token (recommended)",
                     "phone_login": "Sign in by automatically getting a token with your account and password (recommended)",
                     "manual": "Sign in with a manually entered token (advanced)"
                 }
@@ -35,6 +45,9 @@
         "error": {
             "auth_error": "Authentication failed: {reason}"
         },
+        "abort": {
+            "reauth_started": "Re-authentication started. Close this dialog and finish the authorization in the Haier integration card."
+        },
         "step": {
             "init": {
                 "menu_options": {
@@ -48,6 +61,7 @@
                 "title": "Update account",
                 "description": "Choose a sign-in method.",
                 "menu_options": {
+                    "account_oauth": "Re-authorize via official authorization",
                     "account_phone_login": "Sign in by automatically getting a token with your account and password (recommended)",
                     "account_manual": "Sign in with a manually entered token (advanced)"
                 }
