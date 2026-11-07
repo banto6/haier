@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 from datetime import timedelta
@@ -22,10 +23,56 @@ from .services import async_setup_services, async_unload_services
 
 _LOGGER = logging.getLogger(__name__)
 
+_ENTRY_TITLE_PREFIX = 'Haier - '
+# 旧版本经 Options 换号后标题写成 'Haier: {账号}'，解析时一并兼容
+_LEGACY_TITLE_PREFIX = 'Haier: '
+
+
+def _build_entry_unique_id(entry: ConfigEntry) -> str | None:
+    """按「登录方式:账号标识」生成唯一键。
+
+    账号标识优先取 entry.data['identity']（新条目写入）；老条目没有这个字段，
+    只能从 title 里取（格式为 "Haier - {账号标识}"，历史上有过 "Haier: "
+    的写法，两种都认）。用户手动改过标题的老条目会取不到，此时返回 None，
+    该条目保持无 unique_id，不会被误拦。
+
+    :param entry: 配置条目
+    :return: 唯一键，取不到时返回 None
+    """
+    account = entry.data.get('account') or {}
+    if isinstance(account, str):
+        try:
+            account = json.loads(account)
+        except ValueError:
+            account = {}
+
+    identity = str(entry.data.get('identity') or '').strip()
+    if not identity:
+        title = entry.title or ''
+        for prefix in (_ENTRY_TITLE_PREFIX, _LEGACY_TITLE_PREFIX):
+            if title.startswith(prefix):
+                identity = title[len(prefix):].strip()
+                break
+
+    if not identity:
+        return None
+
+    return 'phone:{}'.format(identity)
+
 
 async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """迁移旧版配置。"""
-    return CONFIG_ENTRY_MIGRATOR.migrate(hass, entry)
+    if not CONFIG_ENTRY_MIGRATOR.migrate(hass, entry):
+        return False
+
+    # 老条目没有 unique_id，补上之后重复添加才会被 config flow 拦下
+    if not entry.unique_id:
+        unique_id = _build_entry_unique_id(entry)
+        if unique_id:
+            hass.config_entries.async_update_entry(entry, unique_id=unique_id)
+            _LOGGER.info('配置条目补齐 unique_id: %s', unique_id)
+
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):

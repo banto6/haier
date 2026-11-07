@@ -196,6 +196,29 @@ class HaierClient:
             return devices
 
     @retry_on_exception(exceptions=(aiohttp.ClientError, asyncio.TimeoutError))
+    async def get_devices_basic(self) -> List[Dict]:
+        """
+        只取设备 ID 与名称，不拉取数字模型。
+
+        供接入前的设备冲突检查使用：get_devices() 会为每台设备请求一次数字模型，
+        配置流程里不需要这份开销。
+
+        :return: [{'id': 设备ID, 'name': 设备名称}]
+        """
+        headers = await self._generate_common_headers(GET_DEVICES_API)
+        async with self._session.get(url=GET_DEVICES_API, headers=headers) as response:
+            content = await response.json(content_type=None)
+            self._assert_response_successful(content)
+
+            return [
+                {
+                    'id': item.get('deviceId', ''),
+                    'name': item.get('deviceName') or item.get('deviceId', '')
+                }
+                for item in content.get('deviceinfos', [])
+            ]
+
+    @retry_on_exception(exceptions=(aiohttp.ClientError, asyncio.TimeoutError))
     async def get_digital_model(self, deviceId: str) -> list:
         """
         获取设备attributes

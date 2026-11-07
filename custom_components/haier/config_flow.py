@@ -5,8 +5,9 @@ from typing import Any
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.config_entries import ConfigFlowResult
-from homeassistant.core import callback
+from homeassistant.config_entries import ConfigEntry, ConfigFlowResult
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.config_validation import multi_select
 
 from .const import (
@@ -34,13 +35,81 @@ APP_SOURCE_OPTIONS = {
     APP_SOURCE_APP: 'App',
 }
 
+ENTRY_TITLE_FORMAT = "Haier - {}"
+
+# 去重键前缀。账号密码与手动 Token 都只取得到手机号，所以统一用 phone；
+# 以后若出现只能拿到其它账号标识的登录方式，再加前缀区分（两套标识无法换算）。
+ACCOUNT_SCOPE = "phone"
+
+
+def _entry_title(identity: str) -> str:
+    """配置条目标题，格式须与 __init__._build_entry_unique_id 的解析保持一致。"""
+    return ENTRY_TITLE_FORMAT.format(identity)
+
+
+def _unique_id(identity: str) -> str:
+    """去重键：登录方式前缀 + 账号标识。"""
+    return "{}:{}".format(ACCOUNT_SCOPE, identity)
+
+
+async def _async_device_conflicts(
+    hass: HomeAssistant,
+    account: dict[str, Any],
+    ignore_entry: ConfigEntry | None = None,
+) -> list[str]:
+    """找出与已有条目重叠的设备。
+
+    实体的 unique_id 只由设备 ID 派生（见 entity.py），同一台设备被两个条目
+    同时接入时，后加载的实体会因 unique_id 冲突被整批丢弃，表现为"第二个账号
+    拉取不到设备"。所以接入前先比对一次设备注册表。
+
+    :param hass: Home Assistant 实例
+    :param account: 待接入账号的认证信息
+    :param ignore_entry: 不参与比对的条目（重新认证/换号时传原条目，它本来
+        就持有这些设备）
+    :return: 冲突设备的描述列表，空列表表示没有冲突
+    """
+    try:
+        client = HaierClient(
+            hass, account['client_id'], account['token'], account['app_source']
+        )
+        devices = await client.get_devices_basic()
+    except Exception as err:  # noqa: BLE001 - 检查失败不应阻塞接入流程
+        _LOGGER.warning("Device conflict check skipped: %s", err)
+        return []
+
+    registry = dr.async_get(hass)
+    known = {
+        identifier.lower()
+        for device in registry.devices.values()
+        for domain, identifier in device.identifiers
+        if domain == DOMAIN
+    }
+    if ignore_entry is not None:
+        owned = {
+            identifier.lower()
+            for device in dr.async_entries_for_config_entry(
+                registry, ignore_entry.entry_id
+            )
+            for domain, identifier in device.identifiers
+            if domain == DOMAIN
+        }
+        known -= owned
+
+    return [
+        "{}（{}）".format(item["name"], item["id"])
+        for item in devices
+        if item["id"].lower() in known
+    ]
+
 
 @dataclass(frozen=True)
 class AuthenticationResult:
     """认证成功结果。"""
 
     account: dict[str, Any]
-    mobile: str
+    # 账号标识：账号密码 / 手动 Token 都取 account/info 里的手机号
+    identity: str
 
 
 class LoginFlowMixin:
@@ -74,7 +143,7 @@ class LoginFlowMixin:
                         'expires_at': int(time.time()) + token_info.expires_in,
                         'app_source': APP_SOURCE_APP,
                     },
-                    mobile=user_info['mobile']
+                    identity=user_info['mobile']
                 )
             except HaierClientException as e:
                 _LOGGER.warning(str(e))
@@ -125,7 +194,7 @@ class LoginFlowMixin:
                         'expires_at': int(time.time()) + token_info.expires_in,
                         'app_source': app_source,
                     },
-                    mobile=user_info['mobile']
+                    identity=user_info['mobile']
                 )
             except HaierClientException as e:
                 _LOGGER.warning(str(e))
@@ -168,17 +237,58 @@ class HaierConfigFlow(LoginFlowMixin, config_entries.ConfigFlow, domain=DOMAIN):
             menu_options=['phone_login', 'manual']
         )
 
+    async def _async_ensure_unique_account(self, identity: str) -> None:
+        """同一账号重复添加时中止流程，避免生成第二套实体。
+
+        注意 async_set_unique_id 在这个 HA 版本是 async 方法，必须 await：
+        漏掉 await 时协程不会执行，context 里的 unique_id 一直是 None，
+        下面的 _abort_if_unique_id_configured 会因为 self.unique_id is None
+        直接 return，等于完全没去重。
+
+        :param identity: 账号标识（手机号）
+        """
+        await self.async_set_unique_id(_unique_id(identity), raise_on_progress=False)
+        self._abort_if_unique_id_configured()
+
+    async def _async_abort_if_device_in_use(
+        self, account: dict[str, Any], ignore_entry: ConfigEntry | None = None
+    ) -> ConfigFlowResult | None:
+        """设备与已有条目重叠时中止流程。
+
+        :param account: 待接入账号的认证信息
+        :param ignore_entry: 不参与比对的条目
+        :return: 有冲突时返回中止结果，否则返回 None
+        """
+        conflicts = await _async_device_conflicts(self.hass, account, ignore_entry)
+        if not conflicts:
+            return None
+
+        names = "、".join(conflicts)
+        _LOGGER.warning("Device(s) already managed by another Haier entry: %s", names)
+        return self.async_abort(
+            reason="device_already_in_use",
+            description_placeholders={"devices": names},
+        )
+
+    async def _async_finish(self, result: AuthenticationResult) -> ConfigFlowResult:
+        """认证成功后的落库：去重、检查设备重叠，然后创建条目。"""
+        await self._async_ensure_unique_account(result.identity)
+
+        abort = await self._async_abort_if_device_in_use(result.account)
+        if abort is not None:
+            return abort
+
+        return self.async_create_entry(
+            title=_entry_title(result.identity),
+            data={"account": result.account, "identity": result.identity},
+        )
+
     async def async_step_manual(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         result = await self._async_manual_login_form('manual', user_input)
         if not isinstance(result, AuthenticationResult):
             return result
 
-        return self.async_create_entry(
-            title="Haier - {}".format(result.mobile),
-            data={
-                'account': result.account
-            }
-        )
+        return await self._async_finish(result)
 
     async def async_step_phone_login(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """手机号+密码登录"""
@@ -186,12 +296,7 @@ class HaierConfigFlow(LoginFlowMixin, config_entries.ConfigFlow, domain=DOMAIN):
         if not isinstance(result, AuthenticationResult):
             return result
 
-        return self.async_create_entry(
-            title="Haier - {}".format(result.mobile),
-            data={
-                'account': result.account
-            }
-        )
+        return await self._async_finish(result)
 
     @staticmethod
     @callback
@@ -231,7 +336,7 @@ class OptionsFlowHandler(LoginFlowMixin, config_entries.OptionsFlow):
         cfg.refresh_token = result.account['refresh_token']
         cfg.expires_at = result.account['expires_at']
         cfg.app_source = result.account['app_source']
-        cfg.save(result.mobile)
+        cfg.save(result.identity)
 
         await self.hass.config_entries.async_reload(self.config_entry.entry_id)
 
