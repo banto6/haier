@@ -9,7 +9,7 @@ from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import DOMAIN, SUPPORTED_PLATFORMS, FILTER_TYPE_EXCLUDE, FILTER_TYPE_INCLUDE
-from .core.client import HaierClient, HaierClientException, TokenInfo
+from .core.client import HaierClient, HaierClientException
 from .core.config import (
     AccountConfig,
     DeviceFilterConfig,
@@ -18,6 +18,7 @@ from .core.config import (
 )
 from .core.device_gateway import HaierDeviceGateway
 from .core.migration import CONFIG_ENTRY_MIGRATOR
+from .core.runtime import HaierRuntimeData
 from .services import async_setup_services, async_unload_services
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,16 +30,9 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    hass.data.setdefault(DOMAIN, {
-        'devices': [],
-        'cancel_token_updater': None,
-        'gateway_task': None,
-        'gateway_connected': False,
-    })
-
     # 定时更新token
     try:
-        hass.data[DOMAIN]['cancel_token_updater'] = await token_updater(hass, entry)
+        cancel_token_updater = await token_updater(hass, entry)
     except HaierClientException as err:
         raise ConfigEntryNotReady('Haier authentication failed') from err
 
@@ -46,20 +40,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     preferences_cfg = PreferencesConfig(hass, entry)
     client = HaierClient(hass, account_cfg.client_id, account_cfg.token, account_cfg.app_source)
 
-    # 是否忽略设备离线状态，供实体在收到离线事件时判断是否保留最后状态
-    hass.data[DOMAIN]['ignore_device_offline'] = preferences_cfg.ignore_device_offline
-
     devices = await client.get_devices()
     _LOGGER.info('共获取到{}个设备'.format(len(devices)))
-    hass.data[DOMAIN]['devices'] = devices
+
+    gateway = HaierDeviceGateway(hass, client, account_cfg.token, entry.entry_id)
+
+    # 每个条目一份运行时状态。原先放在 hass.data[DOMAIN] 里，多个条目会互相
+    # 覆盖设备列表与任务槽位，卸载任一条目还会把整块数据删掉。
+    runtime = HaierRuntimeData(
+        entry_id=entry.entry_id,
+        client=client,
+        devices=devices,
+        gateway=gateway,
+        ignore_device_offline=preferences_cfg.ignore_device_offline,
+        cancel_token_updater=cancel_token_updater,
+    )
+    entry.runtime_data = runtime
 
     await hass.config_entries.async_forward_entry_setups(entry, SUPPORTED_PLATFORMS)
 
     # 实体完成注册后再启动网关，避免初始快照事件无人监听。
-    gateway = HaierDeviceGateway(hass, client, account_cfg.token)
-    hass.data[DOMAIN]['gateway_task'] = hass.async_create_background_task(
+    runtime.gateway_task = hass.async_create_background_task(
         gateway.connect(devices),
-        'haier-gateway'
+        'haier-gateway-{}'.format(entry.entry_id)
     )
 
     async_setup_services(hass)
@@ -125,19 +128,25 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     if not await hass.config_entries.async_unload_platforms(entry, SUPPORTED_PLATFORMS):
         return False
 
-    # 停止token更新
-    if hass.data[DOMAIN]['cancel_token_updater']:
-        hass.data[DOMAIN]['cancel_token_updater']()
-        _LOGGER.info('token updater stopped')
+    runtime: HaierRuntimeData | None = getattr(entry, 'runtime_data', None)
+    if runtime is not None:
+        # 停止token更新
+        if runtime.cancel_token_updater:
+            runtime.cancel_token_updater()
+            _LOGGER.info('token updater stopped')
 
-    # 断开网关
-    if hass.data[DOMAIN]['gateway_task']:
-        hass.data[DOMAIN]['gateway_task'].cancel()
-        _LOGGER.info('gateway task cancelled')
+        # 断开网关
+        if runtime.gateway_task:
+            runtime.gateway_task.cancel()
+            _LOGGER.info('gateway task cancelled')
 
-    async_unload_services(hass)
-
-    del hass.data[DOMAIN]
+    # 服务是 domain 级的，只在最后一个条目卸载时注销，
+    # 否则另一个条目还在跑却调不到 send_raw_command
+    if not [
+        item for item in hass.config_entries.async_entries(DOMAIN)
+        if item.entry_id != entry.entry_id
+    ]:
+        async_unload_services(hass)
 
     return True
 
@@ -151,11 +160,14 @@ async def async_remove_config_entry_device(hass: HomeAssistant, config: ConfigEn
 
     _LOGGER.info('Device [{}] removing...'.format(device_id))
 
-    for device in hass.data[DOMAIN]['devices']:
-        if device.id.lower() == device_id:
-            target_device = device
+    runtime: HaierRuntimeData | None = getattr(config, 'runtime_data', None)
+    target_device = None
+    for item in runtime.devices if runtime is not None else []:
+        if item.id.lower() == device_id.lower():
+            target_device = item
             break
-    else:
+
+    if target_device is None:
         _LOGGER.error('Device [{}] not found'.format(device_id))
         return False
 
@@ -172,8 +184,9 @@ async def async_remove_config_entry_device(hass: HomeAssistant, config: ConfigEn
     return True
 
 async def async_register_entity(hass: HomeAssistant, entry: ConfigEntry, async_add_entities, platform, setup) -> None:
+    runtime: HaierRuntimeData = entry.runtime_data
     entities = []
-    for device in hass.data[DOMAIN]['devices']:
+    for device in runtime.devices:
         if DeviceFilterConfig.is_skip(hass, entry, device.id):
             continue
 
@@ -184,6 +197,6 @@ async def async_register_entity(hass: HomeAssistant, entry: ConfigEntry, async_a
             if EntityFilterConfig.is_skip(hass, entry, device.id, attribute.key):
                 continue
 
-            entities.append(setup(device, attribute))
+            entities.append(setup(device, attribute, runtime))
 
     async_add_entities(entities)

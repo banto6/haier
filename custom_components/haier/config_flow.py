@@ -196,12 +196,26 @@ class HaierConfigFlow(LoginFlowMixin, config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry: config_entries.ConfigEntry) -> config_entries.OptionsFlow:
-        return OptionsFlowHandler(config_entry)
+        # HA 2025.1 起 OptionsFlow 不再通过构造函数接收 config_entry，
+        # 统一走只读属性 self.config_entry
+        return OptionsFlowHandler()
 
 
 class OptionsFlowHandler(LoginFlowMixin, config_entries.OptionsFlow):
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self._config_entry = config_entry
+    # 实体筛选的中间状态（先选设备再选实体），只在本次选项流存活期间有效。
+    # 以前存在 hass.data[DOMAIN]['entity_filter_target_device']，是全局共享的。
+    _entity_filter_target_device: str = ""
+
+    @property
+    def _devices(self):
+        """当前条目的设备列表。
+
+        以前读 hass.data[DOMAIN]['devices']，多个条目时拿到的是最后加载的那个
+        条目的设备，筛选或删除设备会操作到别的账号上。改为读本条目自己的运行时
+        状态（entry.runtime_data）。
+        """
+        runtime = getattr(self.config_entry, 'runtime_data', None)
+        return runtime.devices if runtime is not None else []
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """
@@ -313,7 +327,7 @@ class OptionsFlowHandler(LoginFlowMixin, config_entries.OptionsFlow):
             return self.async_create_entry(title='', data={})
 
         devices = {}
-        for item in self.hass.data[DOMAIN]['devices']:
+        for item in self._devices:
             devices[item.id] = item.name
 
         return self.async_show_form(
@@ -336,11 +350,11 @@ class OptionsFlowHandler(LoginFlowMixin, config_entries.OptionsFlow):
         :return:
         """
         if user_input is not None:
-            self.hass.data[DOMAIN]['entity_filter_target_device'] = user_input['target_device']
+            self._entity_filter_target_device = user_input['target_device']
             return await self.async_step_entity_filter()
 
         devices = {}
-        for item in self.hass.data[DOMAIN]['devices']:
+        for item in self._devices:
             devices[item.id] = item.name
 
         return self.async_show_form(
@@ -369,8 +383,8 @@ class OptionsFlowHandler(LoginFlowMixin, config_entries.OptionsFlow):
 
             return self.async_create_entry(title='', data={})
 
-        target_device_id = self.hass.data[DOMAIN].pop('entity_filter_target_device', '')
-        for device in self.hass.data[DOMAIN]['devices']:
+        target_device_id = self._entity_filter_target_device
+        for device in self._devices:
             if device.id == target_device_id:
                 target_device = device
                 break

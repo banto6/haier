@@ -9,6 +9,7 @@ from homeassistant.core import HomeAssistant
 from . import async_register_entity
 from .core.attribute import HaierAttribute
 from .core.device import HaierDevice
+from .core.runtime import HaierRuntimeData
 from .entity import HaierAbstractEntity
 from .helpers import try_read_as_bool
 
@@ -21,14 +22,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         entry,
         async_add_entities,
         Platform.SWITCH,
-        lambda device, attribute: HaierSwitch(device, attribute)
+        lambda device, attribute, runtime: HaierSwitch(device, attribute, runtime)
     )
 
 
 class HaierSwitch(HaierAbstractEntity, SwitchEntity):
 
-    def __init__(self, device: HaierDevice, attribute: HaierAttribute):
-        super().__init__(device, attribute)
+    def __init__(self, device: HaierDevice, attribute: HaierAttribute, runtime: HaierRuntimeData):
+        super().__init__(device, attribute, runtime)
 
     def _update_value(self):
         try:

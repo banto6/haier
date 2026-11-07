@@ -12,7 +12,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.event import async_track_time_interval
 
-from ..const import DOMAIN
 from .client import HaierClient
 from .device import HaierDevice
 from .event import EVENT_DEVICE_CONTROL, EVENT_DEVICE_DATA_CHANGED, EVENT_GATEWAY_DISCONNECTED, \
@@ -32,11 +31,14 @@ def random_str(length: int = 32) -> str:
 
 class HaierDeviceGateway:
 
-    def __init__(self, hass: HomeAssistant, client: HaierClient, token: str):
+    def __init__(self, hass: HomeAssistant, client: HaierClient, token: str, entry_id: str):
         self._hass = hass
         self._client = client
         self._token = token
+        self._entry_id = entry_id
         self._session = async_get_clientsession(hass)
+        # 本条目网关的连接状态，供 send_raw_command 判断指令能否下发
+        self.connected = False
 
     async def connect(self, target_devices: List[HaierDevice]):
         """
@@ -87,6 +89,10 @@ class HaierDeviceGateway:
 
                 # 监听事件总线来的控制命令
                 async def control_callback(e):
+                    # 事件总线是全局的，多个条目各自起网关时不能把别人的命令也发一遍
+                    if e.data.get('entry_id') != self._entry_id:
+                        return
+
                     await self._send_command(ws, agClientId, e.data['deviceId'], e.data['attributes'])
 
                 cancels.append(listen_event(self._hass, EVENT_DEVICE_CONTROL, control_callback))
@@ -105,7 +111,9 @@ class HaierDeviceGateway:
                         _LOGGER.warning("收到未知类型的消息: {}".format(msg.type))
         finally:
             self._set_connected(False)
-            fire_event(self._hass, EVENT_GATEWAY_DISCONNECTED, {})
+            fire_event(self._hass, EVENT_GATEWAY_DISCONNECTED, {
+                'entry_id': self._entry_id
+            })
             for cancel in cancels:
                 cancel()
 
@@ -115,9 +123,7 @@ class HaierDeviceGateway:
         :param connected:
         :return:
         """
-        # 集成卸载时会先取消网关任务再清理hass.data，此处需要兼容data已被清理的情况
-        if DOMAIN in self._hass.data:
-            self._hass.data[DOMAIN]['gateway_connected'] = connected
+        self.connected = connected
 
     async def _start_heartbeat_sender(self, ws, agClientId: str):
         async def task(now):
@@ -154,6 +160,7 @@ class HaierDeviceGateway:
         for device in target_devices:
             if device_online_statues.get(device.id) is False:
                 fire_event(self._hass, EVENT_DEVICE_ONLINE_CHANGED, {
+                    'entry_id': self._entry_id,
                     'deviceId': device.id,
                     'online': False
                 })
@@ -167,6 +174,7 @@ class HaierDeviceGateway:
 
             snapshot_data = await self._client.get_device_snapshot_data(device.id)
             fire_event(self._hass, EVENT_DEVICE_DATA_CHANGED, {
+                'entry_id': self._entry_id,
                 'deviceId': device.id,
                 'attributes': snapshot_data
             })
@@ -209,6 +217,7 @@ class HaierDeviceGateway:
             for device_id in data['devs']:
                 online = msg['content']['businType'] == 'DevOnlineNotify'
                 fire_event(self._hass, EVENT_DEVICE_ONLINE_CHANGED, {
+                    'entry_id': self._entry_id,
                     'deviceId': device_id,
                     'online': online
                 })
@@ -261,6 +270,7 @@ class HaierDeviceGateway:
             attributes[attribute['name']] = attribute['value']
 
         fire_event(self._hass, EVENT_DEVICE_DATA_CHANGED, {
+            'entry_id': self._entry_id,
             'deviceId': deviceId,
             'attributes': attributes
         })
