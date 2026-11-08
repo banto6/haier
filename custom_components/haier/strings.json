@@ -3,6 +3,10 @@
         "error": {
             "auth_error": "Authentication failed: {reason}"
         },
+        "abort": {
+            "already_configured": "This account is already configured. To switch sign-in method, remove the existing Haier integration from Settings > Devices & Services first.",
+            "device_already_in_use": "Devices of this account are already managed by another Haier integration: {devices}. A device can only be managed by one integration. Remove the existing integration first if you want to switch accounts."
+        },
         "step": {
             "user": {
                 "title": "Connect Haier",
@@ -81,7 +85,7 @@
                 "title": "Device Filter",
                 "description": "过滤方式为Exclude时，设备列表中已勾选的设备将不会接入；过滤方式为Include时则只接入设备列表中已勾选的设备",
                 "data": {
-                    "filter_method": "Filter method",
+                    "filter_type": "Filter method",
                     "target_devices": "Device List"
                 }
             },
@@ -97,7 +101,7 @@
                 "description": "过滤方式为Exclude时，设备列表中已勾选的设备将不会接入；过滤方式为Include时则只接入设备列表中已勾选的设备",
                 "data": {
                     "device_id": "Target device（do not modify）",
-                    "filter_method": "Filter method",
+                    "filter_type": "Filter method",
                     "target_entities": "Entities"
                 }
             }

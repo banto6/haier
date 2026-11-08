@@ -3,6 +3,10 @@
         "error": {
             "auth_error": "认证失败：{reason}"
         },
+        "abort": {
+            "already_configured": "This account is already configured. To switch sign-in method, remove the existing Haier integration from Settings > Devices & Services first.",
+            "device_already_in_use": "Devices of this account are already managed by another Haier integration: {devices}. A device can only be managed by one integration. Remove the existing integration first if you want to switch accounts."
+        },
         "step": {
             "user": {
                 "title": "连接海尔",
@@ -81,7 +85,7 @@
                 "title": "设备筛选",
                 "description": "筛选方式为Exclude时，设备列表中已勾选的设备将不会接入；筛选方式为Include时则只接入设备列表中已勾选的设备",
                 "data": {
-                    "filter_method": "筛选方式",
+                    "filter_type": "筛选方式",
                     "target_devices": "设备列表"
                 }
             },

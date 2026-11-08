@@ -81,10 +81,20 @@ def _migrate_v2_to_v3(data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _migrate_v3_to_v4(data: dict[str, Any]) -> dict[str, Any]:
+    """迁移版本 3 到版本 4。
+
+    本版没有 data 结构变化，提升版本号是为了让 `async_migrate_entry` 有机会
+    给老条目补齐 unique_id（见 __init__ 里的 _build_entry_unique_id）。
+    """
+    return data
+
+
 CONFIG_ENTRY_MIGRATOR = ConfigEntryMigrator(
     target_version=CONFIG_ENTRY_VERSION,
     migrations={
         1: _migrate_v1_to_v2,
         2: _migrate_v2_to_v3,
+        3: _migrate_v3_to_v4,
     },
 )
