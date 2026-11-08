@@ -5,22 +5,40 @@ from typing import Any
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.config_entries import ConfigFlowResult
-from homeassistant.core import callback
+from homeassistant.config_entries import ConfigEntry, ConfigFlowResult
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.data_entry_flow import AbortFlow
+from homeassistant.helpers import config_entry_oauth2_flow
+from homeassistant.helpers.config_entry_oauth2_flow import (
+    async_register_implementation,
+)
 from homeassistant.helpers.config_validation import multi_select
 
 from .const import (
     CONFIG_ENTRY_VERSION,
+    DEFAULT_LANGUAGE,
+    DEFAULT_REGION,
     DOMAIN,
     FILTER_TYPE_EXCLUDE,
     FILTER_TYPE_INCLUDE,
+    OAUTH2_CALLBACK_URL,
 )
-from .core.client import HaierClientException, HaierClient, APP_SOURCE_APP, APP_SOURCE_WXAPP, DEFAULT_APP_SOURCE
+from .core.client import HaierClientException, HaierClient, APP_SOURCE_APP, APP_SOURCE_OAUTH, APP_SOURCE_WXAPP, DEFAULT_APP_SOURCE
 from .core.config import (
     AccountConfig,
     DeviceFilterConfig,
     EntityFilterConfig,
     PreferencesConfig,
+)
+from .haier import (
+    async_get_account_info,
+    generate_ag_client_id,
+)
+from .haier.oauth2 import (
+    HaierOAuth2Implementation,
+    get_redirect_uri,
+    is_registered_callback,
+    supports_oauth2_login,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -158,15 +176,154 @@ class LoginFlowMixin:
         )
 
 
-class HaierConfigFlow(LoginFlowMixin, config_entries.ConfigFlow, domain=DOMAIN):
+class HaierConfigFlow(
+    LoginFlowMixin, config_entry_oauth2_flow.AbstractOAuth2FlowHandler, domain=DOMAIN
+):
     VERSION = CONFIG_ENTRY_VERSION
+    DOMAIN = DOMAIN
+
+    def __init__(self) -> None:
+        """Initialize the config flow."""
+        super().__init__()
+        self._region: str = DEFAULT_REGION
+        self._language: str = DEFAULT_LANGUAGE
+        self._ag_client_id: str = ""
+        self._token: dict[str, Any] = {}
+        self._auth_implementation: str = ""
+        # 重新认证时指向被修复的原条目，为 None 表示添加新账号
+        self._reauth_entry: ConfigEntry | None = None
+
+    @property
+    def logger(self) -> logging.Logger:
+        """Return logger."""
+        return _LOGGER
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """选择登录方式"""
         return self.async_show_menu(
             step_id="user",
-            menu_options=['phone_login', 'manual']
+            menu_options=['oauth', 'phone_login', 'manual']
         )
+
+    async def async_step_oauth(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Handle OAuth authorization."""
+        if not supports_oauth2_login():
+            _LOGGER.error(
+                "oauth login unavailable: state helper missing in this HA version"
+            )
+            return self.async_abort(reason="oauth_unsupported_ha_version")
+
+        if not self._ag_client_id:
+            # 重新认证时沿用原条目的 clientId，避免把账户重新绑到一个新实例上
+            if self._reauth_entry is not None:
+                cfg = AccountConfig(self.hass, self._reauth_entry)
+                if cfg.app_source == APP_SOURCE_OAUTH:
+                    self._ag_client_id = cfg.client_id
+            if not self._ag_client_id:
+                self._ag_client_id = generate_ag_client_id(self._region)
+
+        # 海尔只为这个 client_id 注册了一个回调地址，且换 token 时会逐字符比对。
+        # 先用 HA 的对外地址推导一次：不匹配就在这里说清楚，别让用户白跑一趟
+        # 授权页再被 invalid_grant 拒掉。
+        redirect_uri = get_redirect_uri(self.hass)
+        if not is_registered_callback(redirect_uri):
+            _LOGGER.warning(
+                "oauth redirect mismatch: derived=%s required=%s",
+                redirect_uri,
+                OAUTH2_CALLBACK_URL,
+            )
+            return self.async_abort(
+                reason="oauth_redirect_mismatch",
+                description_placeholders={
+                    "current": redirect_uri,
+                    "required": OAUTH2_CALLBACK_URL,
+                },
+            )
+
+        implementation = HaierOAuth2Implementation(
+            self.hass, self._ag_client_id, self._region
+        )
+        async_register_implementation(self.hass, DOMAIN, implementation)
+
+        return await self.async_step_pick_implementation(
+            user_input={"implementation": DOMAIN}
+        )
+
+    async def async_oauth_create_entry(
+        self, data: dict[str, Any]
+    ) -> config_entries.ConfigFlowResult:
+        """Create config entry after OAuth2 authorization."""
+        token = data.get("token")
+        if not isinstance(token, dict) or not token.get("access_token"):
+            return self.async_abort(reason="get_access_token_error")
+        self._token = token
+        auth_implementation = data.get("auth_implementation")
+        if not isinstance(auth_implementation, str) or not auth_implementation:
+            return self.async_abort(reason="auth_implementation_unset")
+        self._auth_implementation = auth_implementation
+
+        try:
+            account_info = await async_get_account_info(
+                self.hass,
+                self._region,
+                self._ag_client_id,
+                self._token["access_token"],
+                self._language,
+            )
+
+            account = {
+                "client_id": self._ag_client_id,
+                "token": self._token["access_token"],
+                "refresh_token": self._token["refresh_token"],
+                "expires_at": int(time.time()) + self._token["expires_in"],
+                "app_source": APP_SOURCE_OAUTH,
+            }
+            # 网页授权只拿得到 userId，账号密码登录拿的是手机号，两者无法换算，
+            # 所以条目标题与去重键都用这一侧的标识
+            identity = str(account_info["userId"])
+
+            if self._reauth_entry is not None:
+                # 重新授权：原地更新原条目，设备、实体与自动化都保留
+                self.hass.config_entries.async_update_entry(
+                    self._reauth_entry,
+                    title="Haier - {}".format(identity),
+                    data={
+                        **self._reauth_entry.data,
+                        "account": account,
+                        "identity": identity,
+                    },
+                )
+                return self.async_abort(reason="reauth_successful")
+
+            # 同一账号重复授权时拦下。注意 async_set_unique_id 是 async 方法，
+            # 漏掉 await 时协程不会执行，unique_id 恒为 None，去重会静默失效。
+            await self.async_set_unique_id(
+                "oauth:{}".format(identity), raise_on_progress=False
+            )
+            self._abort_if_unique_id_configured()
+
+            return self.async_create_entry(
+                title="Haier - {}".format(identity),
+                data={"account": account, "identity": identity},
+            )
+        except AbortFlow:
+            # 账号已配置的中止要穿透，别被下面的兜底吞成 oauth_token_error
+            raise
+        except Exception as err:
+            _LOGGER.error("Error processing OAuth callback: %s", err, exc_info=True)
+            return self.async_abort(reason="oauth_token_error")
+
+    async def async_step_reauth(
+        self, entry_data: dict[str, Any]
+    ) -> ConfigFlowResult:
+        """重新认证：网页授权的 token 过期且续期失败时由 HA 触发。"""
+        entry_id = self.context.get("entry_id")
+        self._reauth_entry = (
+            self.hass.config_entries.async_get_entry(entry_id) if entry_id else None
+        )
+        return await self.async_step_oauth()
 
     async def async_step_manual(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         result = await self._async_manual_login_form('manual', user_input)
@@ -218,8 +375,19 @@ class OptionsFlowHandler(LoginFlowMixin, config_entries.OptionsFlow):
         """选择账户登录方式。"""
         return self.async_show_menu(
             step_id="account",
-            menu_options=['account_phone_login', 'account_manual']
+            menu_options=['account_oauth', 'account_phone_login', 'account_manual']
         )
+
+    async def async_step_account_oauth(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """改用官方网页授权登录。
+
+        OAuth 回调固定回到 config entry flow，Options 流里接不到，所以这里只
+        拉起条目的重新认证流程，让用户回到集成卡片上完成授权。
+        """
+        self.config_entry.async_start_reauth(self.hass)
+        return self.async_abort(reason="reauth_started")
 
     async def _async_save_account_authentication(
         self, result: AuthenticationResult

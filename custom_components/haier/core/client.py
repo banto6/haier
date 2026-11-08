@@ -13,6 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.storage import Store
 
+from ..const import APP_ID as OAUTH_APP_ID, APP_VERSION as OAUTH_APP_VERSION
 from .device import HaierDevice
 
 _LOGGER = logging.getLogger(__name__)
@@ -21,6 +22,10 @@ _LOGGER = logging.getLogger(__name__)
 # 会返回 43005 授权异常或失败，所以此处须与token的来源客户端一致
 APP_SOURCE_WXAPP = 'wxapp'
 APP_SOURCE_APP = 'app'
+# 网页授权（OAuth2 授权码换 token）。这类 token 由 ha.haier.net 的 OAuth2 端点签发，
+# 业务接口仍按 wxapp 的 appId/appKey 签名（实测唯一能通过 uws 校验的组合），
+# 但刷新必须回到签发它的 OAuth2 端点，走 zj 网关的 refreshToken 会失败。
+APP_SOURCE_OAUTH = 'oauth'
 
 DEFAULT_APP_SOURCE = APP_SOURCE_WXAPP
 
@@ -29,9 +34,14 @@ APP_SOURCES = {
     APP_SOURCE_WXAPP: ('MB-SHEZJAPPWXXCX-0000', '79ce99cc7f9804663939676031b8a427'),
     # App
     APP_SOURCE_APP: ('MB-UZHSH-0001', '5dfca8714eb26e3a776e58a8273c8752'),
+    # 网页授权签发的 token 走业务接口时仍用 wxapp 的凭据：uws 校验的是
+    # appId/appKey 组合，而该 token 的签发方不参与业务请求的签名。
+    APP_SOURCE_OAUTH: ('MB-SHEZJAPPWXXCX-0000', '79ce99cc7f9804663939676031b8a427'),
 }
 
 REFRESH_TOKEN_API = 'https://zj.haier.net/api-gw/oauthserver/account/v1/refreshToken'
+# 网页授权 token 的刷新端点，与上面 zj 网关的不是同一个体系，二者不可混用
+OAUTH_REFRESH_TOKEN_API = 'https://ha.haier.net/api-gw/ha/se/account/refresh/token'
 PHONE_LOGIN_API = 'https://zj.haier.net/api-gw/oauthserver/account/v1/login'
 GET_USER_INFO_API = 'https://account-api.haier.net/v2/haier/userinfo'
 GET_DEVICES_API = 'https://uws.haier.net/uds/v1/protected/deviceinfos'
@@ -154,6 +164,57 @@ class HaierClient:
                 token_info['accountToken'],
                 token_info['refreshToken'],
                 token_info['expiresIn']
+            )
+
+    @retry_on_exception(exceptions=(aiohttp.ClientError, asyncio.TimeoutError))
+    async def oauth_refresh_token(self, refresh_token: str) -> TokenInfo:
+        """
+        刷新网页授权（OAuth2 authorization_code）签发的 token
+
+        与 refresh_token() 的区别：
+        - 端点是 ha.haier.net 的 OAuth2 端点，不是 zj 网关的 refreshToken
+        - 请求头用授权时的 appId（APP_ID）+ ag_client_id，不带 sign（该端点不签名）
+        - body 须显式带 grantType=refresh_token
+        :param refresh_token: 授权/上次刷新拿到的 refreshToken
+        :return: TokenInfo
+        """
+        if not refresh_token:
+            raise HaierClientException('缺少 refresh_token，需要重新网页授权')
+
+        payload = {
+            'refreshToken': refresh_token,
+            'clientId': self._client_id,
+            'grantType': 'refresh_token'
+        }
+
+        headers = {
+            'Connection': 'keep-alive',
+            'Content-Type': 'application/json;charset=utf-8',
+            'appId': OAUTH_APP_ID,
+            'appVersion': OAUTH_APP_VERSION,
+            'clientId': self._client_id,
+            'Accept-Language': 'zh',
+            'timestamp': str(int(time.time() * 1000)),
+            'User-Agent': 'Apache-HttpClient/4.5.14 (Java/1.8.0_442)'
+        }
+
+        async with self._session.post(url=OAUTH_REFRESH_TOKEN_API, headers=headers, json=payload) as response:
+            content = await response.json(content_type=None)
+            self._assert_response_successful(content)
+
+            data = content.get('data') or {}
+            access_token = data.get('accessToken')
+            if not access_token:
+                raise HaierClientException('OAuth2 刷新响应缺少 accessToken: {}'.format(content))
+
+            _LOGGER.debug('OAuth2 token refreshed via ha gateway (clientId=%s)', self._client_id)
+
+            return TokenInfo(
+                access_token,
+                # 刷新可能不返回新的 refreshToken，此时沿用旧的
+                data.get('refreshToken') or refresh_token,
+                # 正常返回 10 天；缺失时给个保守值，下一轮仍会再校验
+                int(data.get('expiresIn') or 86400)
             )
 
     @retry_on_exception(exceptions=(aiohttp.ClientError, asyncio.TimeoutError))
