@@ -89,14 +89,26 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
             # https://github.com/banto6/haier/issues/53 有空调分左右风区
             ['targetTemperature', 'operationMode', 'windSpeedL', 'windSpeedR']
         ]
+        is_climate = False
         for feature_fields in climate_feature_fields:
             if len(list(set(feature_fields) - set(all_attribute_keys))) == 0:
                 yield self._parse_as_climate(attributes, feature_fields)
+                is_climate = True
                 break
 
         # 燃气热水器
         if 'outWaterTemp' in all_attribute_keys and 'targetTemp' in all_attribute_keys and 'totalUseGasL' in all_attribute_keys:
             yield self._parse_as_gas_water_heater(attributes)
+        # 储水式电热水器
+        # 这类设备的 targetTemperature 是只读属性，实际通过可写的“洗浴温度”组命令
+        # scourTargetTemp 控温，heatingMode 提供半胆/整胆加热模式。
+        # 空调也带 targetTemperature，需要用 is_climate 排除。
+        elif not is_climate \
+                and 'targetTemperature' in all_attribute_keys \
+                and 'currentTemperature' in all_attribute_keys \
+                and 'heatingMode' in all_attribute_keys \
+                and self._find_temperature_setter(attributes) is not None:
+            yield self._parse_as_electric_water_heater(attributes)
 
         # 窗帘
         if 'openDegree' in all_attribute_keys:
@@ -255,6 +267,68 @@ class V1SpecAttributeParser(HaierAttributeParser, ABC):
         }
 
         return HaierAttribute('gas_water_heater', 'GasWaterHeater', Platform.WATER_HEATER, options, ext)
+
+    @staticmethod
+    def _find_temperature_setter(attributes: List[dict]):
+        """查找真正可写的温度控制属性。
+
+        燃气热水器为 targetTemp；储水式电热水器的 targetTemperature 只读
+        （其可写标记还可能随设备状态变化），控温实际使用可写组命令
+        scourTargetTemp（物模型描述为“洗浴温度”），因此优先选择它。
+        """
+        candidates = ('scourTargetTemp', 'targetTemperature', 'targetTemp')
+        for name in candidates:
+            for attr in attributes:
+                if attr['name'] == name \
+                        and attr.get('writable') \
+                        and equals_ignore_case(attr['valueRange']['type'], 'STEP'):
+                    return attr
+
+        return None
+
+    @staticmethod
+    def _parse_as_electric_water_heater(attributes: List[dict]):
+        setter = V1SpecAttributeParser._find_temperature_setter(attributes)
+        if setter is None:
+            raise RuntimeError('writable temperature attribute not found')
+
+        data_step = setter['valueRange']['dataStep']
+        options = {
+            'min_temp': float(data_step['minValue']),
+            'max_temp': float(data_step['maxValue']),
+            'target_temperature_step': float(data_step.get('step', 1))
+        }
+
+        heating_mode_value_by_option = {}
+        for attr in attributes:
+            if attr['name'] == 'heatingMode':
+                for item in attr['valueRange']['dataList']:
+                    # 0 为“未设置”，不作为可选的加热模式
+                    if str(item['data']) != '0':
+                        heating_mode_value_by_option[item['desc']] = str(item['data'])
+                break
+
+        heating_mode_option_by_value = {
+            value: option for option, value in heating_mode_value_by_option.items()
+        }
+        # 设备上报“未设置”时使用的兜底模式，优先整胆加热
+        default_operation = '整胆加热' if '整胆加热' in heating_mode_value_by_option \
+            else next(iter(heating_mode_value_by_option), None)
+
+        ext = {
+            'customize': True,
+            'water_heater_type': 'electric',
+            'set_temperature_key': setter['name'],
+            'target_temperature_key': 'targetTemperature',
+            'current_temperature_key': 'currentTemperature',
+            'on_off_key': 'onOffStatus',
+            'heating_mode_key': 'heatingMode',
+            'heating_mode_value_by_option': heating_mode_value_by_option,
+            'heating_mode_option_by_value': heating_mode_option_by_value,
+            'default_operation': default_operation
+        }
+
+        return HaierAttribute('water_heater', 'ElectricWaterHeater', Platform.WATER_HEATER, options, ext)
 
     @staticmethod
     def _parse_as_cover(attributes: List[dict]):
